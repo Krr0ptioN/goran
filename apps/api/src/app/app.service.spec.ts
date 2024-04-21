@@ -17,5 +17,8 @@ describe('AppService', () => {
     it('should return "Hello API"', () => {
       expect(service.getData()).toEqual({ message: 'Hello API' });
     });
+    it('should return "ok"', () => {
+      expect(service.getHealthStatus()).toEqual({ status: 'ok' });
+    });
   });
 });
