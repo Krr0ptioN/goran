@@ -13,9 +13,9 @@ describe('AppService', () => {
     service = app.get<AppService>(AppService);
   });
 
-  describe('getData', () => {
+  describe('Healthy Status', () => {
     it('should return "Hello API"', () => {
-      expect(service.getData()).toEqual({ message: 'Hello API' });
+      expect(service.getHealthStatus()).toEqual({ health: 'ok' });
     });
   });
 });
