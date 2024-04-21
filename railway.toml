@@ -1,5 +1,5 @@
 [build]
-nixpacksPlan = {"providers":["...","node"]}
+nixpacksPlan = { "providers" = ["...", "node"] }
 builder = "NIXPACKS"
 buildCommand = "nx build api --prod"
 
