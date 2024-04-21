@@ -1,7 +1,10 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "namedInputs": {
-    "default": ["{projectRoot}/**/*", "sharedGlobals"],
+    "default": [
+      "{projectRoot}/**/*",
+      "sharedGlobals"
+    ],
     "production": [
       "default",
       "!{projectRoot}/.eslintrc.json",
@@ -14,7 +17,6 @@
     ],
     "sharedGlobals": []
   },
-  "nxCloudAccessToken": "OTBlNzAxZjUtODg4YS00MzMxLWE3MjQtNTljM2Q1OWFlNmI5fHJlYWQtd3JpdGU=",
   "plugins": [
     {
       "plugin": "@nx/webpack/plugin",
