@@ -26,6 +26,13 @@ describe('/api', () => {
       .expect({ message: 'Hello API' });
   });
 
+  it(`GET /api/heath`, () => {
+    return request(app.getHttpServer())
+      .get('/health')
+      .expect(200)
+      .expect({ status: 'ok' });
+  });
+
   afterAll(async () => {
     await app.close();
   });
