@@ -1,0 +1,12 @@
+[build]
+nixpacksPlan = {"providers":["...","node"]}
+builder = "NIXPACKS"
+buildCommand = "nx build api --prod"
+
+[deploy]
+numReplicas = 1
+startCommand = "nx serve api --prod"
+healthcheckPath = "/api/health"
+sleepApplication = false
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
