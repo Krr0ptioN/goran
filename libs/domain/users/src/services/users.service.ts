@@ -2,6 +2,7 @@ import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { UpdateUserDto, CreateUserDto } from '../dto';
 import { USERS_REPOSITORY, UsersRepository } from '../repositories';
 import { UserEntityInfo } from '../entities';
+import { SingleEntityReturn } from '@goran/types';
 
 @Injectable()
 export class UsersService {
@@ -25,19 +26,22 @@ export class UsersService {
     return this.userRepo.findAll();
   }
 
-  async findOne(user: Partial<UserEntityInfo>) {
-    return await this.userRepo.findOne(user);
+  findOne(user: Partial<UserEntityInfo>): SingleEntityReturn<UserEntityInfo> {
+    return this.userRepo.findOne(user);
   }
 
-  findOneById(id: number) {
+  findOneById(id: number): SingleEntityReturn<UserEntityInfo> {
     return this.userRepo.findOneById(id);
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
+  update(
+    id: number,
+    updateUserDto: UpdateUserDto
+  ): SingleEntityReturn<UserEntityInfo> {
     return this.userRepo.update(id, updateUserDto);
   }
 
-  delete(user: Partial<UserEntityInfo>) {
+  delete(user: Partial<UserEntityInfo>): SingleEntityReturn<UserEntityInfo> {
     return this.userRepo.delete(user);
   }
 }
