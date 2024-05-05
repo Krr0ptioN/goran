@@ -1,7 +1,7 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { UpdateUserDto, CreateUserDto } from '../dto';
 import { USERS_REPOSITORY, UsersRepository } from '../repositories';
-import { UserEntityInfo } from '../entities';
+import { UserEntity, UserEntityInfo } from '../entities';
 import { SingleEntityReturn } from '@goran/types';
 
 @Injectable()
@@ -26,7 +26,7 @@ export class UsersService {
     return this.userRepo.findAll();
   }
 
-  findOne(user: Partial<UserEntityInfo>): SingleEntityReturn<UserEntityInfo> {
+  findOne(user: Partial<UserEntityInfo>): SingleEntityReturn<UserEntity> {
     return this.userRepo.findOne(user);
   }
 

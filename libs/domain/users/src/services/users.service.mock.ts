@@ -14,7 +14,7 @@ export class UsersServiceMock implements Omit<UsersService, 'userRepo'> {
       ...createUserDto,
       createdAt: new Date(),
       updatedAt: new Date(),
-      id: this.users.length,
+      id,
     });
     return this.users[id];
   }
