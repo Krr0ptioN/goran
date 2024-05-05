@@ -1,8 +1,3 @@
-import { IsEmail } from 'class-validator'
+import { SignInDto } from './signin.dto';
 
-export class VadliateUserPasswordDto {
-  @IsEmail()
-  email: string;
-
-  password: string;
-}
+export class VadliateUserPasswordDto extends SignInDto { }
