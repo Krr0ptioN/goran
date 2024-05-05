@@ -82,7 +82,17 @@ export class AuthenticationPasswordService {
     }
   }
 
-  async verifyPassword(input: PasswordForResetPasswordDto, token: string) {
+  /**
+   * Verifies the password reset attempt and change
+   * the forgotten password to the new provided password.
+   * @param credentials - New password
+   * @param token - user's token of the user that
+   * attempted to reset its password.
+   */
+  async verifyPasswordResetAttempt(
+    credentials: PasswordForResetPasswordDto,
+    token: string
+  ) {
     const userId: number | undefined = await this.cacheManager.get(token);
     if (userId) {
       this.changeForgotPassword(input, userId);
