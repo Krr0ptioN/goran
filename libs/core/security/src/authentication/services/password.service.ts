@@ -54,9 +54,9 @@ export class AuthenticationPasswordService {
     return await hash(password, this.bcryptSaltRounds);
   }
 
-  private generateResetPasswordToken = () => {
+  private generateResetPasswordToken() {
     return randomBytes(32).toString('hex');
-  };
+  }
 
   async changeForgotPassword(
     newPasswordReq: PasswordForResetPasswordDto,
