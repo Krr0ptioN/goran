@@ -85,8 +85,6 @@ export class AuthenticationService {
         );
     }
 
-    public signout(res: Response) {
-        res.cookie('token', '');
-        return res.json({ message: 'Logged out succefully' });
     }
+  }
 }

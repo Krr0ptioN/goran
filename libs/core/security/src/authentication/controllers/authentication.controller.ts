@@ -1,7 +1,5 @@
-import { Body, Controller, Post, UseGuards, Res } from '@nestjs/common';
-import { Response } from 'express';
+import { Body, Controller, Post } from '@nestjs/common';
 import { AuthenticationService } from '../services';
-import { LocalAuthGuard } from '../guards';
 import { SignUpDto, SignInDto } from '../dto';
 import { ApiOperation } from '@nestjs/swagger';
 import { ApiDocsAuthentication } from '../swagger';
@@ -20,12 +18,5 @@ export class AuthenticationController {
   @Post('signin')
   signIn(@Body() body: SignInDto) {
     return this.authService.signin(body);
-  }
-
-  @UseGuards(LocalAuthGuard)
-  @ApiOperation({ summary: ApiDocsAuthentication.operationsSummary.signout })
-  @Post('signout')
-  signout(@Res({ passthrough: true }) res: Response) {
-    return this.authService.signout(res);
   }
 }
