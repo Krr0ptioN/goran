@@ -95,7 +95,7 @@ export class AuthenticationPasswordService {
   ) {
     const userId: number | undefined = await this.cacheManager.get(token);
     if (userId) {
-      this.changeForgotPassword(input, userId);
+      this.changeForgotPassword(credentials, userId);
       this.cacheManager.del(token);
       return {
         message: 'Your password have been reseted successfully',
