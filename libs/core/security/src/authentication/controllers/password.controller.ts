@@ -27,6 +27,6 @@ export class AuthenticationPasswordController {
         @Body() input: PasswordForResetPasswordDto,
         @Param('token') token: string
     ) {
-        return this.passwordService.verifyPassword(input, token);
     }
+    return this.passwordService.verifyPasswordResetAttempt(input, token);
 }
