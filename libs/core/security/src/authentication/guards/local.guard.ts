@@ -27,10 +27,7 @@ export class LocalAuthGuard extends AuthGuard('local') implements CanActivate {
     try {
       const user = await this.tokenService.getUserFromToken(token);
       if (user) {
-        const isTokenRevoked = await this.tokenService.isTokenRevoked(
-          token,
-          user.id
-        );
+        const isTokenRevoked = await this.tokenService.isTokenRevoked(token);
         if (isTokenRevoked == true) {
           throw new UnauthorizedException('Token has been revoked');
         }

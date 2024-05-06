@@ -1,23 +1,31 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InvalidTokenError } from '../errors';
 import { Token } from '../entities';
 import { UserEntity, UsersService } from '@goran/users';
 import { CONFIG_APP } from '@goran/config';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
+import { UserTokenSignature } from '../entities/token-signature.entity';
+
+enum TokenState {
+  REVOKED = 'REVOKED',
+}
 
 @Injectable()
 export class AuthenticationTokenService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-    private readonly usersService: UsersService
+    private readonly usersService: UsersService,
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache
   ) {}
 
   private readonly refreshSecretKey = this.configService.get<string>(
     CONFIG_APP.JWT_REFRESH_SECRET
   );
-  private readonly refreshIn = this.configService.get<string>(
+  private readonly refreshIn = this.configService.get<number>(
     CONFIG_APP.SECURITY_REFRESH_IN
   );
 
@@ -29,18 +37,21 @@ export class AuthenticationTokenService {
     return res;
   }
 
-  generateTokens(payload: { userId: number }): Token {
+  generateTokens(payload: UserTokenSignature): Token {
+    this.logger.verbose(
+      `Generated access and refresh token for ${payload.userId} user`
+    );
     return {
       accessToken: this.generateAccessToken(payload),
       refreshToken: this.generateRefreshToken(payload),
     };
   }
 
-  private generateAccessToken(payload: { userId: number }): string {
+  private generateAccessToken(payload: UserTokenSignature): string {
     return this.jwtService.sign(payload, { secret: this.refreshSecretKey });
   }
 
-  private generateRefreshToken(payload: { userId: number }): string {
+  private generateRefreshToken(payload: UserTokenSignature): string {
     return this.jwtService.sign(payload, {
       secret: this.refreshSecretKey,
       expiresIn: this.refreshIn,
@@ -56,25 +67,12 @@ export class AuthenticationTokenService {
     }
   }
 
-  // TODO:
-  private async isRefreshTokenRevoked(refreshToken: string): Promise<boolean> {
-    // const revokedToken = await this.prisma.revokedToken.findUnique({
-    //   where: {
-    //     token: refreshToken,
-    //   },
-    // });
-    return !!refreshToken;
-  }
-
-  // TODO:
-  async isTokenRevoked(token: string, userId: number): Promise<boolean> {
-    // const revokedToken = await this.prisma.revokedToken.findFirst({
-    //   where: {
-    //     token: token,
-    //     userId: userId,
-    //   },
-    // });
-    return !!(token + userId);
+  async isTokenRevoked(token: string): Promise<boolean> {
+    const revokedToken: string | undefined = await this.cacheManager.get(token);
+    const isRevoken = revokedToken
+      ? revokedToken === TokenState.REVOKED
+      : false;
+    return isRevoken;
   }
 
   async refreshToken(user: UserEntity, refreshToken: string): Promise<Token> {
@@ -83,9 +81,7 @@ export class AuthenticationTokenService {
       throw new InvalidTokenError('Invalid refresh token');
     }
 
-    const isRefreshTokenRevoked = await this.isRefreshTokenRevoked(
-      refreshToken
-    );
+    const isRefreshTokenRevoked = await this.isTokenRevoked(refreshToken);
     if (isRefreshTokenRevoked) {
       throw new InvalidTokenError('Invalid refresh provided');
     }
@@ -94,6 +90,6 @@ export class AuthenticationTokenService {
   }
 
   async revokeToken(token: string) {
-    token;
+    await this.cacheManager.set(token, TokenState.REVOKED, this.refreshIn);
   }
 }
