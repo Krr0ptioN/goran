@@ -5,6 +5,7 @@ import { UsersModule } from '@goran/users';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ConfigModule } from '@nestjs/config';
 import { configSchema } from '@goran/config';
+import { MailModule } from '@goran/mail';
 
 describe('AuthenticationPasswordController', () => {
   let controller: AuthenticationPasswordController;
@@ -13,6 +14,7 @@ describe('AuthenticationPasswordController', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         UsersModule,
+        MailModule,
         ConfigModule.forRoot({
           isGlobal: true,
           envFilePath: ['.env', '.env.local'],

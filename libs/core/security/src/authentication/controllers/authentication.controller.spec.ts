@@ -8,6 +8,7 @@ import {
 import { UsersModule } from '@goran/users';
 import { JwtModule } from '@nestjs/jwt';
 import { CacheModule } from '@nestjs/cache-manager';
+import { MailModule } from '@goran/mail';
 
 describe('AuthenticationController', () => {
   let controller: AuthenticationController;
@@ -16,6 +17,7 @@ describe('AuthenticationController', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         UsersModule,
+        MailModule,
         JwtModule.register({ global: true }),
         CacheModule.register({ isGlobal: true }),
       ],
