@@ -12,12 +12,14 @@ import {
   AuthenticationPasswordService,
 } from './services';
 import { CacheModule } from '@nestjs/cache-manager';
+import { MailModule } from '@goran/mail';
 
 @Module({
   imports: [
     UsersModule,
     JwtModule.register({ global: true }),
     CacheModule.register({ isGlobal: true }),
+    MailModule,
   ],
   exports: [
     AuthenticationService,

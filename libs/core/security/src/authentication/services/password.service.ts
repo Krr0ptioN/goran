@@ -8,6 +8,7 @@ import { hash, compare } from 'bcrypt';
 import { InvalidPasswordResetRequest, InvalidTokenError } from '../errors';
 import { UsersService } from '@goran/users';
 import { CONFIG_APP } from '@goran/config';
+import { MailService } from '@goran/mail';
 
 // NOTE: For Cache-manager v5, provide ttl in milliseconds not seconds
 
@@ -24,20 +25,30 @@ export class AuthenticationPasswordService {
   constructor(
     private configService: ConfigService,
     private usersService: UsersService,
+    private readonly mailService: MailService,
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache
   ) {
-    this.saltOrRounds = this.configService.get<string>(
-      CONFIG_APP.SECURITY_BCRYPT_SALT
-    ) as string;
+    this.saltOrRounds = this.configService.get<number>(
+      CONFIG_APP.SECURITY_BCRYPT_SALT,
+      10
+    );
     this.expireDuration = this.configService.get<number>(
-      CONFIG_APP.SECURITY_EXPIRES_IN
+      CONFIG_APP.SECURITY_EXPIRES_IN,
+      10000
     ) as number;
+    this.serverPasswordResetURL = this.configService.get<string>(
+      CONFIG_APP.SERVER_PASSWORD_RESET_URL
+    ) as string;
   }
 
   // Expire duration for password reset request in milliseconds
   private expireDuration: number;
+  private saltOrRounds: number;
+  private serverPasswordResetURL: string;
 
-  private saltOrRounds: string;
+  private getConfirmationUrl(token: string) {
+    return `${this.serverPasswordResetURL}/${token}`;
+  }
 
   get bcryptSaltRounds() {
     return this.saltOrRounds;
@@ -66,13 +77,18 @@ export class AuthenticationPasswordService {
     return this.usersService.changePassword(hashedPassword, { id: userId });
   }
 
-  // TODO: Use mail service to create
   async requestResetPassword(body: ResetPasswordDto) {
     const token = this.generateResetPasswordToken();
     const user = await this.usersService.findOne({ email: body.email });
 
     if (user) {
       await this.cacheManager.set(token, user.id, this.expireDuration);
+      this.mailService.send({
+        from: 'goran@mardin.cc',
+        to: user.email,
+        subject: 'Password Reset Confirmation',
+        text: this.getConfirmationUrl(token),
+      });
       return {
         expiresIn: this.expireDuration,
         message: `Please checkout your verification link token on your ${body.email} email `,
@@ -94,7 +110,7 @@ export class AuthenticationPasswordService {
     token: string
   ) {
     const userId: number | undefined = await this.cacheManager.get(token);
-    if (userId) {
+    if (userId !== undefined) {
       this.changeForgotPassword(credentials, userId);
       this.cacheManager.del(token);
       return {
