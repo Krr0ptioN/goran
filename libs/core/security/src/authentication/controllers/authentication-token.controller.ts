@@ -1,13 +1,14 @@
 import { Body, Controller, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { LocalAuthGuard } from '../guards';
 import { RefreshTokenInput } from '../dto';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiDocsAuthentication } from '../swagger';
 import { InvalidTokenError } from '../errors';
 import { AuthenticationTokenService } from '../services';
 import { CurrentUser, UserEntity } from '@goran/users';
 import { Request } from 'express';
 
+@ApiTags('auth', 'token')
 @Controller('auth/token')
 export class AuthenticationTokenController {
   constructor(private readonly tokenService: AuthenticationTokenService) {}
@@ -15,6 +16,7 @@ export class AuthenticationTokenController {
   @ApiOperation({
     summary: ApiDocsAuthentication.operationsSummary.revokeSession,
   })
+  @ApiOkResponse()
   @UseGuards(LocalAuthGuard)
   @Post(':token/revoke')
   async revokeSession(@Param('token') token: string) {
@@ -24,6 +26,7 @@ export class AuthenticationTokenController {
   @ApiOperation({
     summary: ApiDocsAuthentication.operationsSummary.refreshToken,
   })
+  @ApiOkResponse()
   @Post('refresh')
   async refreshToken(
     @Req() req: Request,
