@@ -22,8 +22,6 @@
     "drizzle-orm": "^0.30.9",
     "express": "^4.19.2",
     "joi": "^17.13.0",
-    "madge": "^7.0.0",
-    "nestjs-prisma": "^0.23.0",
     "nestjs-resend": "^0.0.3",
     "passport-jwt": "^4.0.1",
     "postgres": "^3.4.4",
@@ -40,6 +38,7 @@
     }
   },
   "devDependencies": {
+    "madge": "^7.0.0",
     "@darraghor/eslint-plugin-nestjs-typed": "^5.0.8",
     "@faker-js/faker": "^8.4.1",
     "@nestjs/schematics": "^10.1.1",
@@ -100,8 +99,6 @@
     "typescript": "~5.4.5",
     "vite": "~5.0.13",
     "vitest": "^1.5.3",
-    "webpack-cli": "^5.1.4",
-    "zod": "^3.23.5",
-    "zod-to-json-schema": "^3.23.0"
+    "webpack-cli": "^5.1.4"
   }
 }
