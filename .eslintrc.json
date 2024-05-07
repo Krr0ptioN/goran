@@ -23,7 +23,10 @@
       },
       "plugins": [
         "@darraghor/nestjs-typed"
-      ]
+      ],
+      "rules": {
+        "@darraghor/nestjs-typed/injectable-should-be-provided": "off"
+      }
     },
     {
       "files": [
