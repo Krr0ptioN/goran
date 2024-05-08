@@ -7,6 +7,7 @@
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "strictPropertyInitialization": false,
     "importHelpers": true,
     "target": "es2015",
     "module": "esnext",
@@ -14,7 +15,16 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@goran/config": ["libs/core/config/src/index.ts"],
+      "@goran/db-data-access": ["libs/data-access/db-data-access/src/index.ts"],
+      "@goran/mail": ["libs/core/mail/src/index.ts"],
+      "@goran/security": ["libs/core/security/src/index.ts"],
+      "@goran/songs": ["libs/domain/songs/src/index.ts"],
+      "@goran/types": ["libs/shared/types/src/index.ts"],
+      "@goran/users": ["libs/domain/users/src/index.ts"],
+      "@goran/utils": ["libs/shared/utils/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }
