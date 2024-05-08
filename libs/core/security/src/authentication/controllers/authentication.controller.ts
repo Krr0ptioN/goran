@@ -1,25 +1,47 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  ClassSerializerInterceptor,
+  Controller,
+  Post,
+  UseInterceptors,
+} from '@nestjs/common';
 import { AuthenticationService } from '../services';
 import { SignUpDto, SignInDto } from '../dto';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiDocsAuthentication } from '../swagger';
+import { SafeUserEntityInfo } from '@goran/users';
+import { UserAuthenticationResponse } from '../responses';
 
 @ApiTags('auth')
+@UseInterceptors(ClassSerializerInterceptor)
 @Controller('auth')
 export class AuthenticationController {
-  constructor(private readonly authService: AuthenticationService) {}
+  constructor(private readonly authService: AuthenticationService) { }
 
-  @ApiOkResponse()
+  @ApiOkResponse({ type: UserAuthenticationResponse })
   @ApiOperation({ summary: ApiDocsAuthentication.operationsSummary.signup })
   @Post('signup')
-  signUp(@Body() body: SignUpDto) {
-    return this.authService.signup(body);
+  async signUp(@Body() body: SignUpDto) {
+    const data = await this.authService.signup(body);
+    const res: UserAuthenticationResponse = {
+      data: {
+        tokens: data.tokens,
+        user: new SafeUserEntityInfo(data.user),
+      },
+      message: 'User signed up successfully',
+    };
+    return res;
   }
 
-  @ApiOkResponse()
+  @ApiOkResponse({ type: UserAuthenticationResponse })
   @ApiOperation({ summary: ApiDocsAuthentication.operationsSummary.signin })
   @Post('signin')
-  signIn(@Body() body: SignInDto) {
-    return this.authService.signin(body);
+  async signIn(@Body() body: SignInDto) {
+    const data = await this.authService.signin(body);
+    const res: UserAuthenticationResponse = {
+      data: { tokens: data.tokens, user: new SafeUserEntityInfo(data.user) },
+      message: 'User signed up successfully',
+    };
+    return res;
   }
 }

@@ -1,41 +1,24 @@
 {
   "root": true,
-  "ignorePatterns": [
-    "**/*"
-  ],
-  "plugins": [
-    "@nx"
-  ],
+  "ignorePatterns": ["**/*"],
+  "plugins": ["@nx"],
   "overrides": [
     {
-      "files": [
-        "*.ts",
-        "*.js"
-      ],
-      "extends": [
-        "plugin:@darraghor/nestjs-typed/recommended"
-      ],
+      "files": ["*.ts", "*.js"],
+      "extends": ["plugin:@darraghor/nestjs-typed/recommended"],
       "parser": "@typescript-eslint/parser",
       "parserOptions": {
-        "project": [
-          "./tsconfig.base.json"
-        ]
+        "project": ["./tsconfig.base.json"]
       },
-      "plugins": [
-        "@darraghor/nestjs-typed"
-      ],
+      "plugins": ["@darraghor/nestjs-typed"],
       "rules": {
         "@darraghor/nestjs-typed/injectable-should-be-provided": "off"
       }
     },
     {
-      "files": [
-        "*.ts",
-        "*.tsx",
-        "*.js",
-        "*.jsx"
-      ],
+      "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
       "rules": {
+        "indent": ["error", 2],
         "@nx/enforce-module-boundaries": [
           "error",
           {
@@ -44,9 +27,7 @@
             "depConstraints": [
               {
                 "sourceTag": "*",
-                "onlyDependOnLibsWithTags": [
-                  "*"
-                ]
+                "onlyDependOnLibsWithTags": ["*"]
               }
             ]
           }
@@ -54,32 +35,17 @@
       }
     },
     {
-      "files": [
-        "*.ts",
-        "*.tsx"
-      ],
-      "extends": [
-        "plugin:@nx/typescript"
-      ],
+      "files": ["*.ts", "*.tsx"],
+      "extends": ["plugin:@nx/typescript"],
       "rules": {}
     },
     {
-      "files": [
-        "*.js",
-        "*.jsx"
-      ],
-      "extends": [
-        "plugin:@nx/javascript"
-      ],
+      "files": ["*.js", "*.jsx"],
+      "extends": ["plugin:@nx/javascript"],
       "rules": {}
     },
     {
-      "files": [
-        "*.spec.ts",
-        "*.spec.tsx",
-        "*.spec.js",
-        "*.spec.jsx"
-      ],
+      "files": ["*.spec.ts", "*.spec.tsx", "*.spec.js", "*.spec.jsx"],
       "env": {
         "jest": true
       },

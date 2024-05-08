@@ -4,7 +4,7 @@ import { Cache } from 'cache-manager';
 import { ConfigService } from '@nestjs/config';
 import { PasswordForResetPasswordDto, ResetPasswordDto } from '../dto';
 import { randomBytes } from 'crypto';
-import { hash, compare } from 'bcrypt';
+import { hash, compare, genSaltSync, hashSync } from 'bcrypt';
 import { InvalidPasswordResetRequest, InvalidTokenError } from '../errors';
 import { UsersService } from '@goran/users';
 import { CONFIG_APP } from '@goran/config';
@@ -22,102 +22,99 @@ import { MailService } from '@goran/mail';
  */
 @Injectable()
 export class AuthenticationPasswordService {
-  constructor(
-    private configService: ConfigService,
-    private usersService: UsersService,
-    private readonly mailService: MailService,
-    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache
-  ) {
-    this.saltOrRounds = this.configService.get<number>(
-      CONFIG_APP.SECURITY_BCRYPT_SALT,
-      10
-    );
-    this.expireDuration = this.configService.get<number>(
-      CONFIG_APP.SECURITY_EXPIRES_IN,
-      10000
-    ) as number;
-    this.serverPasswordResetURL = this.configService.get<string>(
-      CONFIG_APP.SERVER_PASSWORD_RESET_URL
-    ) as string;
-  }
-
-  // Expire duration for password reset request in milliseconds
-  private expireDuration: number;
-  private saltOrRounds: number;
-  private serverPasswordResetURL: string;
-
-  private getConfirmationUrl(token: string) {
-    return `${this.serverPasswordResetURL}/${token}`;
-  }
-
-  get bcryptSaltRounds() {
-    return this.saltOrRounds;
-  }
-
-  async validatePassword(
-    password: string,
-    hashedPassword: string
-  ): Promise<boolean> {
-    return await compare(password, hashedPassword);
-  }
-
-  async hashPassword(password: string): Promise<string> {
-    return await hash(password, this.bcryptSaltRounds);
-  }
-
-  private generateResetPasswordToken() {
-    return randomBytes(32).toString('hex');
-  }
-
-  async changeForgotPassword(
-    newPasswordReq: PasswordForResetPasswordDto,
-    userId: number
-  ) {
-    const hashedPassword = await this.hashPassword(newPasswordReq.newPassword);
-    return this.usersService.changePassword(hashedPassword, { id: userId });
-  }
-
-  async requestResetPassword(body: ResetPasswordDto) {
-    const token = this.generateResetPasswordToken();
-    const user = await this.usersService.findOne({ email: body.email });
-
-    if (user) {
-      await this.cacheManager.set(token, user.id, this.expireDuration);
-      this.mailService.send({
-        from: 'goran@mardin.cc',
-        to: user.email,
-        subject: 'Password Reset Confirmation',
-        text: this.getConfirmationUrl(token),
-      });
-      return {
-        expiresIn: this.expireDuration,
-        message: `Please checkout your verification link token on your ${body.email} email `,
-      };
-    } else {
-      throw new InvalidPasswordResetRequest('User were not found');
+    constructor(
+        private configService: ConfigService,
+        private usersService: UsersService,
+        private readonly mailService: MailService,
+        @Inject(CACHE_MANAGER) private readonly cacheManager: Cache
+    ) {
+        this.expireDuration = this.configService.get<number>(
+            CONFIG_APP.SECURITY_EXPIRES_IN,
+            10000
+        ) as number;
+        this.serverPasswordResetURL = this.configService.get<string>(
+            CONFIG_APP.SERVER_PASSWORD_RESET_URL
+        ) as string;
     }
-  }
 
-  /**
-   * Verifies the password reset attempt and change
-   * the forgotten password to the new provided password.
-   * @param credentials - New password
-   * @param token - user's token of the user that
-   * attempted to reset its password.
-   */
-  async verifyPasswordResetAttempt(
-    credentials: PasswordForResetPasswordDto,
-    token: string
-  ) {
-    const userId: number | undefined = await this.cacheManager.get(token);
-    if (userId !== undefined) {
-      this.changeForgotPassword(credentials, userId);
-      this.cacheManager.del(token);
-      return {
-        message: 'Your password have been reseted successfully',
-      };
-    } else {
-      throw new InvalidTokenError('Invalid or expired token provided.');
+    // Expire duration for password reset request in milliseconds
+    private expireDuration: number;
+    private saltOrRounds = 10;
+    private serverPasswordResetURL: string;
+
+    private getConfirmationUrl(token: string) {
+        return `${this.serverPasswordResetURL}/${token}`;
     }
-  }
+
+    get bcryptSaltRounds() {
+        return this.saltOrRounds;
+    }
+
+    async validatePassword(
+        password: string,
+        hashedPassword: string
+    ): Promise<boolean> {
+        return await compare(password, hashedPassword);
+    }
+
+    hashPassword(password: string): string {
+        const salt = genSaltSync(this.saltOrRounds);
+        return hashSync(password, salt);
+    }
+
+    private generateResetPasswordToken() {
+        return randomBytes(32).toString('hex');
+    }
+
+    async changeForgotPassword(
+        credential: PasswordForResetPasswordDto,
+        userId: number
+    ) {
+        const hashedPassword = this.hashPassword(credential.newPassword);
+        return this.usersService.changePassword(hashedPassword, { id: userId });
+    }
+
+    async requestResetPassword(body: ResetPasswordDto) {
+        const token = this.generateResetPasswordToken();
+        const user = await this.usersService.findOne({ email: body.email });
+
+        if (user) {
+            await this.cacheManager.set(token, user.id, this.expireDuration);
+            this.mailService.send({
+                from: 'goran@mardin.cc',
+                to: user.email,
+                subject: 'Password Reset Confirmation',
+                text: this.getConfirmationUrl(token),
+            });
+            return {
+                expiresIn: this.expireDuration,
+                message: `Please checkout your verification link token on your ${body.email} email `,
+            };
+        } else {
+            throw new InvalidPasswordResetRequest('User were not found');
+        }
+    }
+
+    /**
+     * Verifies the password reset attempt and change
+     * the forgotten password to the new provided password.
+     * @param credentials - New password
+     * @param token - user's token of the user that
+     * attempted to reset its password.
+     */
+    async verifyPasswordResetAttempt(
+        credentials: PasswordForResetPasswordDto,
+        token: string
+    ) {
+        const userId: number | undefined = await this.cacheManager.get(token);
+        if (userId !== undefined) {
+            this.changeForgotPassword(credentials, userId);
+            this.cacheManager.del(token);
+            return {
+                message: 'Your password have been reseted successfully',
+            };
+        } else {
+            throw new InvalidTokenError('Invalid or expired token provided.');
+        }
+    }
 }

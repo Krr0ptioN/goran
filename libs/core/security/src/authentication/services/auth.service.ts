@@ -4,6 +4,7 @@ import {
   NotFoundException,
   BadRequestException,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { Token } from '../entities';
 import { AuthenticationTokenService } from '../services/token.service';
@@ -18,16 +19,14 @@ export class AuthenticationService {
     private passwordService: AuthenticationPasswordService,
     private usersService: UsersService
   ) {}
+  private logger = new Logger(AuthenticationService.name);
 
   async signup(
     payload: SignUpDto
   ): Promise<{ user: UserEntityInfo; tokens: Token }> {
-    const hashedPassword = await this.passwordService.hashPassword(
-      payload.password
-    );
-
+    const hashedPassword = this.passwordService.hashPassword(payload.password);
     try {
-      const user = await this.usersService.create({
+      const user: UserEntityInfo | null = await this.usersService.create({
         ...payload,
         password: hashedPassword,
       });
@@ -36,6 +35,7 @@ export class AuthenticationService {
         const tokens = this.tokenService.generateTokens({
           userId: user.id,
         });
+        this.logger.log(`New user signed up: ${user.email}`);
         return { user, tokens };
       } else {
         throw new InternalServerErrorException(
@@ -43,6 +43,7 @@ export class AuthenticationService {
         );
       }
     } catch (error) {
+      this.logger.error(error);
       throw new ConflictException(`Email ${payload.email} already used.`);
     }
   }
@@ -73,7 +74,7 @@ export class AuthenticationService {
       }
     } catch (error) {
       throw new BadRequestException(
-        'User not found or provided information is invalid.'
+        'User not found or the provided credential is invalid.'
       );
     }
   }
