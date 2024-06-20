@@ -8,30 +8,32 @@ import {
   Delete,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { UsersService } from '../services';
-import { UpdateUserDto, CreateUserDto } from '../dto';
+import { UsersService } from '../../application/services';
+import { UpdateUserDto, CreateUserDto } from './requests';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { UserEntityInfo } from '../entities';
-
-class SingleUserResponse {
-  data: UserEntityInfo;
-}
-
-class UsersQueryResponse {
-  data: UserEntityInfo[];
-}
+import { CreateUserCommand } from '../../application/commands/create-user/create-user.command';
+import { SingleUserResponse } from './responses/single-user-info.dto';
+import { UsersQueryResponse } from './responses/users-query.dto';
 
 @ApiTags('users', 'entity')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService) {}
 
   @ApiOkResponse({
     type: SingleUserResponse,
   })
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
-    const createdUser = await this.usersService.create(createUserDto);
+    const createdUser = await this.usersService.create(
+      new CreateUserCommand(
+        createUserDto.username,
+        createUserDto.email,
+        createUserDto.password,
+        createUserDto.fullname ? createUserDto.fullname : undefined
+      )
+    );
+
     if (createdUser) {
       return { data: createdUser };
     } else {
