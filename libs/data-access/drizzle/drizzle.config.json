@@ -1,0 +1,5 @@
+{
+  "schema": "./src/schema.ts",
+  "out": "./src/drizzle",
+  "breakpoints": true
+}

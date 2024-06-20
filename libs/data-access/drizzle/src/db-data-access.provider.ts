@@ -1,6 +1,5 @@
 import { drizzle } from 'drizzle-orm/neon-http';
 import { neon } from '@neondatabase/serverless';
-import { ConfigService } from '@nestjs/config';
 import { CONFIG_APP } from '@goran/config';
 import * as schema from './schema';
 

@@ -1,9 +1,0 @@
-{
-  "name": "db-data-access",
-  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/data-access/db-data-access/src",
-  "projectType": "library",
-  "tags": [],
-  "// targets": "to see all targets run: nx show project db-data-access --web",
-  "targets": {}
-}

@@ -18,7 +18,7 @@
     "paths": {
       "@goran/common": ["libs/shared/common/src/index.ts"],
       "@goran/config": ["libs/core/config/src/index.ts"],
-      "@goran/db-data-access": ["libs/data-access/db-data-access/src/index.ts"],
+      "@goran/drizzle-data-access": ["libs/data-access/drizzle/src/index.ts"],
       "@goran/mail": ["libs/core/mail/src/index.ts"],
       "@goran/security": ["libs/core/security/src/index.ts"],
       "@goran/songs": ["libs/domain/songs/src/index.ts"],
