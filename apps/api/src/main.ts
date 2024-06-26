@@ -9,7 +9,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const port = process.env.PORT || 3000;
 
-  const { globalPrefix } = registerGlobals(app);
+  const { globalPrefix } = await registerGlobals(app);
   setupSwagger(app);
 
   await app.listen(port);
