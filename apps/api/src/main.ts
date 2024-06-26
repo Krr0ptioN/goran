@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 import { registerGlobals } from './globals';
 import { setupSwagger } from './swagger';
+import { goranBanner } from '@goran/utils';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -13,6 +14,7 @@ async function bootstrap() {
 
   await app.listen(port);
 
+  Logger.log(goranBanner);
   Logger.log(
     `  Application is running on: http://localhost:${port}/${globalPrefix}`
   );
