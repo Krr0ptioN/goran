@@ -5,4 +5,4 @@ import { dbDataAccessProvider } from './db-data-access.provider';
   providers: [dbDataAccessProvider],
   exports: [dbDataAccessProvider],
 })
-export class DbDataAccessModule {}
+export class DrizzleDataAccessModule { }

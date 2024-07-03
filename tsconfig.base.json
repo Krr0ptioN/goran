@@ -21,7 +21,6 @@
       "@goran/drizzle-data-access": ["libs/data-access/drizzle/src/index.ts"],
       "@goran/mail": ["libs/core/mail/src/index.ts"],
       "@goran/security": ["libs/core/security/src/index.ts"],
-      "@goran/songs": ["libs/domain/songs/src/index.ts"],
       "@goran/types": ["libs/shared/types/src/index.ts"],
       "@goran/users": ["libs/domain/users/src/index.ts"],
       "@goran/utils": ["libs/shared/utils/src/index.ts"]
