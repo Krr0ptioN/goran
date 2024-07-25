@@ -1,6 +1,9 @@
 import * as Joi from 'joi';
 
 export enum CONFIG_APP {
+  // Server
+  SERVER_PORT = 'SERVER_PORT',
+  SERVER_ADDRESS = 'SERVER_ADDRES',
   DRIZZLE_DATABASE_URL = 'DRIZZLE_DATABASE_URL',
   SECURITY_EXPIRES_IN = 'SECURITY_EXPIRES_IN',
   SECURITY_BCRYPT_SALT = 'SECURITY_BCRYPT_SALT',
@@ -13,6 +16,8 @@ export enum CONFIG_APP {
 }
 
 export const configSchema = Joi.object({
+  SERVER_PORT: Joi.number().optional().default(3000),
+  SERVER_ADDRESS: Joi.string().optional().default('localhost'),
   DRIZZLE_DATABASE_URL: Joi.string(),
   SECURITY_EXPIRES_IN: Joi.number().required(),
   SECURITY_BCRYPT_SALT: Joi.number().required(),
