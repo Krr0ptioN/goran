@@ -1,4 +1,4 @@
 export * from './application';
 export * from './infrastructure';
 export * from './domain';
-export * from './presenters';
+export * from './users.module';
