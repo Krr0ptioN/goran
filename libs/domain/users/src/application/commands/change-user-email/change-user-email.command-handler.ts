@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Inject, Logger } from '@nestjs/common';
 import { ChangeUserEmailCommand } from './change-user-email.command';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import {
@@ -6,6 +6,7 @@ import {
   UserEntity,
   UserNotFoundError,
   UsersRepository,
+  UsersRepositoryProvider,
 } from '@goran/users';
 import { Err, Ok, Result } from 'oxide.ts';
 import { ConflictException } from '@goran/common';
@@ -15,7 +16,9 @@ import { ConflictException } from '@goran/common';
 export class ChangeUserEmailCommandHandler implements ICommandHandler {
   private readonly logger = new Logger(ChangeUserEmailCommandHandler.name);
 
-  constructor(private readonly userRepo: UsersRepository) {}
+  constructor(
+    @Inject(UsersRepositoryProvider) private readonly userRepo: UsersRepository
+  ) {}
 
   async execute(
     command: ChangeUserEmailCommand
