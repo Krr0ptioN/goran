@@ -1,15 +1,13 @@
 import { Command, CommandProps } from '@goran/common';
+import { UserEntity } from '@goran/users';
 
 export class ChangeUserUsernameCommand extends Command {
-  readonly username: string;
-  readonly email: string;
-  readonly password: string;
-  readonly fullname?: string;
+    readonly user: UserEntity;
+    readonly newUsername: string;
 
-  constructor(props: CommandProps<ChangeUserUsernameCommand>) {
-    super(props);
-    this.email = props.email;
-    this.username = props.username;
-    this.fullname = props.fullname;
-  }
+    constructor(props: CommandProps<ChangeUserUsernameCommand>) {
+        super(props);
+        this.newUsername = props.newUsername;
+        this.user = props.user;
+    }
 }
