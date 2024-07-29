@@ -1,13 +1,13 @@
 import { AggregateRoot, AggregateID } from '@goran/common';
 import { UserDeletedDomainEvent, UserCreatedDomainEvent } from '../../events';
 import { CreateUserProps, UserProps } from './user.types';
-import { randomUUID } from 'crypto';
+import { ulid } from 'ulid';
 
 export class UserEntity extends AggregateRoot<UserProps> {
   protected readonly _id: AggregateID;
 
   static create(create: CreateUserProps): UserEntity {
-    const id = randomUUID();
+    const id = ulid();
     const props: UserProps = { ...create };
     const user = new UserEntity({ id, props });
     user.addEvent(
@@ -29,5 +29,5 @@ export class UserEntity extends AggregateRoot<UserProps> {
     );
   }
 
-  validate(): void {}
+  validate(): void { }
 }
