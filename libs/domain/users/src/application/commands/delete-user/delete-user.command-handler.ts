@@ -1,7 +1,11 @@
-import { Logger } from '@nestjs/common';
+import { Inject, Logger } from '@nestjs/common';
 import { DeleteUserCommand } from './delete-user.command';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { UsersRepository, UserNotFoundError } from '@goran/users';
+import {
+  UsersRepository,
+  UserNotFoundError,
+  UsersRepositoryProvider,
+} from '@goran/users';
 import { Err, Ok, Result } from 'oxide.ts';
 import { ConflictException, ExceptionBase } from '@goran/common';
 
@@ -11,7 +15,9 @@ export class DeleteUserCommandHandler
 {
   private readonly logger = new Logger(DeleteUserCommandHandler.name);
 
-  constructor(private readonly userRepo: UsersRepository) {}
+  constructor(
+    @Inject(UsersRepositoryProvider) private readonly userRepo: UsersRepository
+  ) {}
 
   async execute(
     command: DeleteUserCommand
