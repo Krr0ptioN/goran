@@ -1,6 +1,5 @@
 export * from './guard';
 export * from './api';
-export * from './db';
 export * from './ddd';
 export * from './types';
 export * from './application';

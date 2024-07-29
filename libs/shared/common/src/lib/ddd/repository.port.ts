@@ -1,13 +1,6 @@
 import { Option, Result } from 'oxide.ts';
 import { ExceptionBase } from '../exceptions';
 
-/*  Most of repositories will probably need generic
-    save/find/delete operations, so it's easier
-    to have some shared interfaces.
-    More specific queries should be defined
-    in a respective repository.
-*/
-
 export class Paginated<T> {
     readonly count: number;
     readonly limit: number;
@@ -31,12 +24,13 @@ export type PaginatedQueryParams = {
     orderBy: OrderBy;
 };
 
+export interface WriteManyModelRepositoryPort<Entity> {
+    insert(entities: Entity[]): Promise<Result<Entity[], ExceptionBase>>;
+}
+
 export interface WriteModelRepositoryPort<Entity> {
-    insert(entitiesL: Entity[]): Promise<Result<Entity[], ExceptionBase>>;
     insertOne(entity: Entity): Promise<Result<Entity, ExceptionBase>>;
     delete(entity: Entity): Promise<Result<boolean, ExceptionBase>>;
-
-    transaction<T>(handler: () => Promise<T>): Promise<T>;
 }
 
 export interface ReadModelRepositoryPort<EntityModel> {
