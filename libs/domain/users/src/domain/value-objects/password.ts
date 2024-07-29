@@ -1,16 +1,18 @@
-import { IsNotEmpty, Matches, MaxLength, MinLength } from 'class-validator';
+import { DomainPrimitive, Guard, ValueObject } from '@goran/common';
 
-export class Password {
-  @IsNotEmpty()
-  @MinLength(8, { message: 'Password must be at least 8 characters long' })
-  @MaxLength(20, { message: 'Password must not exceed 20 characters' })
-  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]+$/, {
-    message:
-      'Password must contain at least one lowercase letter, one uppercase letter, and one digit',
-  })
-  public readonly password: string;
+export class PasswordValueObject extends ValueObject<string> {
+    constructor(password: string) {
+        super({ value: password });
+    }
 
-  constructor(password: string) {
-    this.password = password;
-  }
+    protected override validate(props: DomainPrimitive<string>): void {
+        if (
+            Guard.isEmpty(props.value) ||
+            props.value.length > 35 ||
+            props.value.length < 8 ||
+            !props.value.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]+$/)
+        ) {
+            throw new Error('Invalid password format.');
+        }
+    }
 }
