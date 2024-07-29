@@ -1,10 +1,10 @@
+import { Injectable, Inject } from '@nestjs/common';
+import { eq } from 'drizzle-orm/expressions';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import {
     DbDataAccessProvider,
     UsersDataPgTable,
 } from '@goran/drizzle-data-access';
-import { Inject, Injectable } from '@nestjs/common';
-import { NeonHttpDatabase } from 'drizzle-orm/neon-http';
-import { eq } from 'drizzle-orm';
 import {
     UserAlreadyExistsError,
     UserNotFoundError,
@@ -17,18 +17,22 @@ import { Some, None, Option, Ok, Err } from 'oxide.ts';
 import { Paginated, PaginatedQueryParams } from '@goran/common';
 
 @Injectable()
-export class NeonDrizzleUsersRepository implements Partial<UsersRepository> {
+export class PostgreSqlDrizzleUsersRepository
+    implements Partial<UsersRepository> {
     constructor(
-        @Inject(DbDataAccessProvider) readonly db: NeonHttpDatabase,
+        @Inject(DbDataAccessProvider)
+        private readonly db: ReturnType<typeof drizzle>,
         private readonly mapper: UserMapper
     ) { }
 
     async findAllPaginated(params: PaginatedQueryParams): Promise<Paginated<UserModel>> {
-        const records = await this.db
+        const query = this.db
             .select()
             .from(UsersDataPgTable)
             .limit(params.limit)
             .offset(params.offset);
+
+        const records = await query.execute();
 
         return new Paginated({
             data: records,
@@ -39,13 +43,13 @@ export class NeonDrizzleUsersRepository implements Partial<UsersRepository> {
     }
 
     async findOneById(userId: string): Promise<Option<UserModel>> {
-        return await this.db
+        const query = this.db
             .select()
             .from(UsersDataPgTable)
-            .where(eq(UsersDataPgTable.id, userId))
-            .then((result: UserModel[]) => {
-                return result && result.length > 0 ? Some(result[0]) : None;
-            });
+            .where(eq(UsersDataPgTable.id, userId));
+
+        const result = await query.execute();
+        return result.length > 0 ? Some(result[0]) : None;
     }
 
     async findOneByEmail(email: string): Promise<Option<UserModel>> {
@@ -76,7 +80,7 @@ export class NeonDrizzleUsersRepository implements Partial<UsersRepository> {
                 .values(this.mapper.toPersistence(user))
                 .returning()
                 .then((result: UserModel[]) => Ok(this.mapper.toDomain(result[0])))
-                .catch((err: Error) => Err(err));
+                .catch((err) => Err(err));
         } else {
             return Err(new UserAlreadyExistsError());
         }
@@ -124,11 +128,11 @@ export class NeonDrizzleUsersRepository implements Partial<UsersRepository> {
     async delete(user: UserEntity) {
         const userFound = await this.findOneById(user.id);
         if (userFound.isSome()) {
-            return this.db
+            return await this.db
                 .delete(UsersDataPgTable)
                 .where(eq(UsersDataPgTable.id, user.id))
                 .then(() => Ok(true))
-                .catch((err: Error) => Err(err));
+                .catch((err) => Err(err));
         } else {
             return Err(UserNotFoundError);
         }

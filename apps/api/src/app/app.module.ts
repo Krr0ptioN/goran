@@ -7,16 +7,16 @@ import { UsersModule } from '@goran/users';
 import { AuthenticationModule } from '@goran/security';
 
 @Module({
-    imports: [
-        ConfigModule.forRoot({
-            isGlobal: true,
-            envFilePath: ['.env', '.env.local'],
-            validationSchema: configSchema,
-        }),
-        UsersModule,
-        AuthenticationModule,
-    ],
-    controllers: [AppController],
-    providers: [AppService],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: ['.env', '.env.local'],
+      validationSchema: configSchema,
+    }),
+    UsersModule,
+    AuthenticationModule,
+  ],
+  controllers: [AppController],
+  providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

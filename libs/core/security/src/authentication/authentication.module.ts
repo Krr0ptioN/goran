@@ -5,14 +5,31 @@ import {
   AuthenticationController,
   AuthenticationTokenController,
   AuthenticationPasswordController,
-} from './controllers';
+} from '../authentication/presenters/http';
 import {
   AuthenticationService,
   AuthenticationTokenService,
   AuthenticationPasswordService,
-} from './services';
+} from './application/services';
+import {
+  RequestPasswordResetCommandHandler,
+  VerifyPasswordResetAttemptCommandHandler,
+  ResetPasswordCommandHandler,
+} from './application/commands';
 import { CacheModule } from '@nestjs/cache-manager';
 import { MailModule } from '@goran/mail';
+
+const services = [
+  AuthenticationService,
+  AuthenticationTokenService,
+  AuthenticationPasswordService,
+];
+
+const commandHanlders = [
+  RequestPasswordResetCommandHandler,
+  ResetPasswordCommandHandler,
+  VerifyPasswordResetAttemptCommandHandler,
+];
 
 @Module({
   imports: [
@@ -21,20 +38,12 @@ import { MailModule } from '@goran/mail';
     CacheModule.register({ isGlobal: true }),
     MailModule,
   ],
-  exports: [
-    AuthenticationService,
-    AuthenticationTokenService,
-    AuthenticationPasswordService,
-  ],
+  exports: [...services],
   controllers: [
     AuthenticationController,
     AuthenticationPasswordController,
     AuthenticationTokenController,
   ],
-  providers: [
-    AuthenticationService,
-    AuthenticationTokenService,
-    AuthenticationPasswordService,
-  ],
+  providers: [...commandHanlders, ...services],
 })
-export class AuthenticationModule {}
+export class AuthenticationModule { }
