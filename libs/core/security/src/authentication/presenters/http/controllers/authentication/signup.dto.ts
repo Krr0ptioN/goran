@@ -1,5 +1,5 @@
-import { IsEmail, IsDefined } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsEmail, IsDefined, IsOptional } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsPassword, IsUsername } from '../../../../application';
 
 export class SignUpDto {
@@ -17,7 +17,7 @@ export class SignUpDto {
   @IsUsername()
   username: string;
 
-  @IsDefined()
-  @ApiProperty()
-  fullname: string | null;
+  @IsOptional()
+  @ApiPropertyOptional()
+  fullname?: string | null;
 }
