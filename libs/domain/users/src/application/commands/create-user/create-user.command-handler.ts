@@ -3,9 +3,11 @@ import { CreateUserCommand } from './create-user.command';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import {
     UsersRepository,
-    UserEntity,
     UsersRepositoryProvider,
-} from '../../..';
+} from '../../ports/users.repository';
+import {
+    UserEntity,
+} from '../../../domain/entities';
 
 @CommandHandler(CreateUserCommand)
 export class CreateUserCommandHandler

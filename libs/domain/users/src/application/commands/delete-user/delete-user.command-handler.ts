@@ -3,21 +3,22 @@ import { DeleteUserCommand } from './delete-user.command';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import {
   UsersRepository,
-  UserNotFoundError,
   UsersRepositoryProvider,
-} from '@goran/users';
+} from '../../ports/users.repository';
+import {
+  UserNotFoundError,
+} from '../../../domain/errors';
 import { Err, Ok, Result } from 'oxide.ts';
 import { ConflictException, ExceptionBase } from '@goran/common';
 
 @CommandHandler(DeleteUserCommand)
 export class DeleteUserCommandHandler
-  implements ICommandHandler<DeleteUserCommand>
-{
+  implements ICommandHandler<DeleteUserCommand> {
   private readonly logger = new Logger(DeleteUserCommandHandler.name);
 
   constructor(
     @Inject(UsersRepositoryProvider) private readonly userRepo: UsersRepository
-  ) {}
+  ) { }
 
   async execute(
     command: DeleteUserCommand
@@ -28,14 +29,14 @@ export class DeleteUserCommandHandler
     this.logger.debug(`User specifics: ${JSON.stringify(command)}`);
     try {
       const deletedUser = await this.userRepo.delete(command.user);
-      if (deletedUser.isOk()) {
-        this.logger.debug(
-          `User with ${command.user.getProps().email} email has been deleted`
-        );
-        return Ok(deletedUser.unwrap());
-      } else {
+      if (deletedUser.isErr()) {
         return Err(deletedUser.unwrapErr());
       }
+      this.logger.debug(
+        `User with ${command.user.getProps().email} email has been deleted`
+      );
+      return Ok(deletedUser.unwrap());
+
     } catch (error: any) {
       this.logger.debug(
         `Unable to delete user with ${command.user.getProps().email}`

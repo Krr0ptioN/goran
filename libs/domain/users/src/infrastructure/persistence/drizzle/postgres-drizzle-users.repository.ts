@@ -6,15 +6,19 @@ import {
     UsersDataPgTable,
 } from '@goran/drizzle-data-access';
 import {
-    UserAlreadyExistsError,
-    UserNotFoundError,
     UsersRepository,
-    UserEntity,
     UserMapper,
     UserModel,
-} from '../../..';
-import { Some, None, Option, Ok, Err } from 'oxide.ts';
-import { Paginated, PaginatedQueryParams } from '@goran/common';
+} from '../../../application';
+import {
+    UserAlreadyExistsError,
+    UserNotFoundError,
+    UserEntity,
+    UserCreationFailedError,
+    UserDeletionFailedError,
+} from '../../../domain';
+import { Some, None, Option, Ok, Err, Result } from 'oxide.ts';
+import { ExceptionBase, Paginated, PaginatedQueryParams } from '@goran/common';
 
 @Injectable()
 export class PostgreSqlDrizzleUsersRepository
