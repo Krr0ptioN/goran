@@ -27,7 +27,9 @@ export class NeonDrizzleUsersRepository implements Partial<UsersRepository> {
         private readonly mapper: UserMapper
     ) { }
 
-    async findAllPaginated(params: PaginatedQueryParams): Promise<Paginated<UserModel>> {
+    async findAllPaginated(
+        params: PaginatedQueryParams
+    ): Promise<Paginated<UserModel>> {
         const records = await this.db
             .select()
             .from(UsersDataPgTable)
@@ -72,18 +74,32 @@ export class NeonDrizzleUsersRepository implements Partial<UsersRepository> {
             });
     }
 
-    async insertOne(user: UserEntity) {
+    async insertOne(
+        user: UserEntity
+    ): Promise<Result<UserEntity, ExceptionBase>> {
         const userFound = await this.findOneById(user.id);
-        if (userFound.isSome()) {
-            return this.db
-                .insert(UsersDataPgTable)
-                .values(this.mapper.toPersistence(user))
-                .returning()
-                .then((result: UserModel[]) => Ok(this.mapper.toDomain(result[0])))
-                .catch((err: Error) => Err(err));
-        } else {
-            return Err(new UserAlreadyExistsError());
+        if (userFound.isNone()) return Err(new UserAlreadyExistsError());
+        const persistenceModel = this.mapper.toPersistence(user);
+
+        if (!persistenceModel.id || !persistenceModel.username || !persistenceModel.email || !persistenceModel.password) {
+            return Err(new UserCreationFailedError(new Error('Missing required fields')));
         }
+
+        const recordToInsert = {
+            id: persistenceModel.id,
+            username: persistenceModel.username,
+            email: persistenceModel.email,
+            password: persistenceModel.password,
+            createdAt: persistenceModel.createdAt || new Date(),
+            updatedAt: persistenceModel.updatedAt || new Date(),
+            fullname: persistenceModel.fullname ?? null,
+        };
+        return this.db
+            .insert(UsersDataPgTable)
+            .values(recordToInsert)
+            .returning()
+            .then((result: UserModel[]) => Ok(this.mapper.toDomain(result[0])))
+            .catch((err: Error) => Err(new UserCreationFailedError(err)));
     }
 
     async updateEmail(
@@ -127,14 +143,12 @@ export class NeonDrizzleUsersRepository implements Partial<UsersRepository> {
 
     async delete(user: UserEntity) {
         const userFound = await this.findOneById(user.id);
-        if (userFound.isSome()) {
-            return this.db
-                .delete(UsersDataPgTable)
-                .where(eq(UsersDataPgTable.id, user.id))
-                .then(() => Ok(true))
-                .catch((err: Error) => Err(err));
-        } else {
-            return Err(UserNotFoundError);
-        }
+        if (userFound.isNone())
+            return Err(new UserNotFoundError());
+        return this.db
+            .delete(UsersDataPgTable)
+            .where(eq(UsersDataPgTable.id, user.id))
+            .then(() => Ok(true))
+            .catch((err: Error) => Err(new UserDeletionFailedError(err)));
     }
 }
