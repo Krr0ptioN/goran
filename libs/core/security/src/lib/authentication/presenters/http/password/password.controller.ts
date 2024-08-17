@@ -1,9 +1,9 @@
 import { Controller } from '@nestjs/common';
-import { Body, Param, Post } from '@nestjs/common';
-import { AuthenticationPasswordService } from '../services';
-import { PasswordForResetPasswordDto, ResetPasswordDto } from '../dto';
+import { Body, Post } from '@nestjs/common';
+import { AuthenticationPasswordService } from '../../../application/services';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiDocsAuthentication } from '../swagger';
+import { ResetPasswordDto } from './reset-password.dto';
 
 @ApiTags('auth', 'password')
 @Controller('auth/password')
@@ -16,7 +16,7 @@ export class AuthenticationPasswordController {
   @ApiOperation({
     summary: ApiDocsAuthentication.operationsSummary.passwordReset,
   })
-  @Post('reset')
+  @Post('request-reset')
   async reqResetPassword(@Body() credential: ResetPasswordDto) {
     const result = await this.passwordService.requestResetPassword(credential);
     return result;
@@ -26,15 +26,19 @@ export class AuthenticationPasswordController {
   @ApiOperation({
     summary: ApiDocsAuthentication.operationsSummary.passwordVerify,
   })
-  @Post(':token/verify')
-  async verifyPassword(
-    @Body() input: PasswordForResetPasswordDto,
-    @Param('token') token: string
-  ) {
-    const result = await this.passwordService.verifyPasswordResetAttempt(
-      input,
-      token
-    );
+  @Post('/verify')
+  async verifyPassword() {
+    const result = await this.passwordService.verifyPasswordResetAttempt();
+    return result;
+  }
+
+  @ApiOkResponse()
+  @ApiOperation({
+    summary: ApiDocsAuthentication.operationsSummary.passwordVerify,
+  })
+  @Post('/reset')
+  async resetPassword() {
+    const result = await this.passwordService.verifyPasswordResetAttempt();
     return result;
   }
 }
