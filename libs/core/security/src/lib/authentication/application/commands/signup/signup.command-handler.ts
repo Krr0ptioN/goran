@@ -7,8 +7,8 @@ import {
 } from '../../services';
 import { UsersService } from '@goran/users';
 import { Ok, Result } from 'oxide.ts';
-import { UserAuthenticationCredentialsVO } from '../../../domain';
 import { ExceptionBase } from '@goran/common';
+import { AuthenticationCredentialDto } from '../../dtos';
 
 
 
@@ -21,7 +21,7 @@ export class SignupCommandHandler implements ICommandHandler<SignupCommand> {
     ) { }
     private readonly logger = new Logger(SignupCommand.name);
 
-    async execute(command: SignupCommand): Promise<Result<UserAuthenticationCredentialsVO, ExceptionBase>> {
+    async execute(command: SignupCommand): Promise<Result<AuthenticationCredentialDto, ExceptionBase>> {
         const hashedPassword = this.passwordService.hashPassword(command.password);
         const userResult = await this.usersService.create({
             ...command,
@@ -39,6 +39,6 @@ export class SignupCommandHandler implements ICommandHandler<SignupCommand> {
 
         this.logger.verbose(`User with ${userResult.email} email signed up`);
 
-        return Ok(new UserAuthenticationCredentialsVO({ user, tokens }));
+        return Ok(new AuthenticationCredentialDto({ user, tokens }));
     }
 }

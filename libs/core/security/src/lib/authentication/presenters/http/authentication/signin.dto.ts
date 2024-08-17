@@ -1,5 +1,5 @@
 import { IsEmail, IsOptional, IsDefined } from 'class-validator';
-import { IsPassword, IsUsername } from '../../../../application';
+import { IsPassword, IsUsername } from '../../../application';
 
 export class SignInDto {
   @IsPassword()
