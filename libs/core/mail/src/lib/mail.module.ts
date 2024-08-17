@@ -27,13 +27,12 @@ import { ResendMailProvider } from '../providers/resend.provider';
       provide: MailProviderToken,
       inject: [ConfigService, ResendMailProvider],
       useFactory: (config: ConfigService, resend: ResendMailProvider) => {
-        return (
-          config.get<string>(CONFIG_APP.MAIL_INFRASTRUCTURE) === 'RESEND' ??
-          resend
-        );
+        return config.get<string>(CONFIG_APP.MAIL_INFRASTRUCTURE) === 'RESEND'
+          ? resend
+          : null;
       },
     },
   ],
   exports: [MailService],
 })
-export class MailModule {}
+export class MailModule { }
