@@ -8,28 +8,28 @@
     "generate": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx drizzle-kit generate:pg --schema libs/data-acces/db-data-access/src/schema.ts --out libs/data-access/drizzle/src/drizzle"
+        "command": "npx drizzle-kit generate:pg --schema libs/data-acces/drizzle/src/schema.ts --out libs/data-access/drizzle/src/drizzle"
       }
     },
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["libs/data-acces/db-data-access/**/*.ts"]
+        "lintFilePatterns": ["libs/data-acces/drizzle/**/*.ts"]
       }
     },
     "seed": {
       "executor": "nx:run-commands",
       "configurations": {
         "seed": {
-          "commands": ["ts-node libs/data-acces/db-data-access/src/migrate.ts"]
+          "commands": ["npx tsx libs/data-access/drizzle/src/migrate.ts"]
         }
       }
     },
     "db-migrate": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["ts-node libs/data-acces/db-data-access/src/migrate.ts"]
+        "commands": ["npx tsx libs/data-access/drizzle/src/migrate.ts"]
       }
     }
   }

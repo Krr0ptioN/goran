@@ -1,3 +1,3 @@
-export * from './db-data-access.module';
+export * from './database.module';
+export * from './drizzle.service';
 export * from './schema';
-export * from './db-data-access.provider';

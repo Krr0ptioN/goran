@@ -1,15 +1,15 @@
 import {
   pgTable,
-  uuid,
   text,
   timestamp,
   uniqueIndex,
 } from 'drizzle-orm/pg-core';
+import { ulid } from "ulid";
 
 export const UsersDataPgTable = pgTable(
   'users',
   {
-    id: uuid('id').primaryKey(),
+    id: text('id').primaryKey().$defaultFn(() => ulid()),
     fullname: text('fullname'),
     username: text('name').notNull().unique(),
     password: text('password').notNull(),
@@ -23,3 +23,9 @@ export const UsersDataPgTable = pgTable(
     };
   }
 );
+
+const schema = {
+  UsersDataPgTable
+};
+
+export default schema;

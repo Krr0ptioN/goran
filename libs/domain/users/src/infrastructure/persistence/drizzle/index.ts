@@ -1,1 +1,1 @@
-export * from './neon-drizzle-users.repository';
+export * from './postgres-drizzle-users.repository';
