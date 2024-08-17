@@ -26,18 +26,8 @@
         "previewTargetName": "preview"
       }
     },
-    {
-      "plugin": "@nx/eslint/plugin",
-      "options": {
-        "targetName": "lint"
-      }
-    },
-    {
-      "plugin": "@nx/jest/plugin",
-      "options": {
-        "targetName": "test"
-      }
-    },
+    { "plugin": "@nx/eslint/plugin", "options": { "targetName": "lint" } },
+    { "plugin": "@nx/jest/plugin", "options": { "targetName": "test" } },
     {
       "plugin": "@nx/cypress/plugin",
       "options": {
@@ -66,13 +56,16 @@
         "linter": "eslint",
         "bundler": "vite"
       },
-      "component": {
-        "style": "tailwind"
-      },
-      "library": {
-        "style": "tailwind",
-        "linter": "eslint"
-      }
+      "component": { "style": "tailwind" },
+      "library": { "style": "tailwind", "linter": "eslint" }
     }
-  }
+  },
+  "targetDefaults": {
+    "@nx/js:swc": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
+    }
+  },
+  "nxCloudAccessToken": "YTRlMjE5ODUtMWI4YS00ZDM5LWFjZTEtOGJkMjU3MzU2Mzc0fHJlYWQtd3JpdGU="
 }
