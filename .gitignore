@@ -40,3 +40,7 @@ Thumbs.db
 
 .nx/cache
 .env.local.development
+.env.*
+.env
+.vercel
+infra/postgres
