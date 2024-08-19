@@ -12,7 +12,6 @@ permissions:
 
 jobs:
   lint:
-    environment: staging
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25,22 +24,8 @@ jobs:
       - run: yarn install --frozen-lockfile
       - run: yarn nx affected -t lint
 
-  test:
-    environment: staging
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 20
-          cache: 'yarn'
-      - run: yarn install --frozen-lockfile
-      - run: yarn nx affected -t test
-
   build:
-    environment: staging
+    needs: ["lint"]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -53,8 +38,22 @@ jobs:
       - run: yarn install --frozen-lockfile
       - run: yarn nx affected -t build
 
+  test:
+    needs: ["build"]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: 'yarn'
+      - run: yarn install --frozen-lockfile
+      - run: yarn nx affected -t test
+
   e2e:
-    environment: staging
+    needs: ["build","test"]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
