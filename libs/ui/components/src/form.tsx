@@ -13,7 +13,7 @@ import {
 } from "react-hook-form"
 
 import { cn } from "@goran/ui-common"
-import { Label } from "@goran/ui-components/ui/label"
+import { Label } from "./label"
 
 const Form = FormProvider
 
