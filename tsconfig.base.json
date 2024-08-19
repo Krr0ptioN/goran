@@ -22,6 +22,10 @@
       "@goran/mail": ["libs/core/mail/src/index.ts"],
       "@goran/security": ["libs/core/security/src/index.ts"],
       "@goran/types": ["libs/shared/types/src/index.ts"],
+      "@goran/ui-common": ["libs/ui/common/src/index.ts"],
+      "@goran/ui-common/*": ["libs/libs/ui-common/src/*"],
+      "@goran/ui-components": ["libs/ui/components/src/index.ts"],
+      "@goran/ui-components/*": ["libs/libs/ui-components/src/*"],
       "@goran/users": ["libs/domain/users/src/index.ts"],
       "@goran/utils": ["libs/shared/utils/src/index.ts"]
     }
