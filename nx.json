@@ -26,8 +26,18 @@
         "previewTargetName": "preview"
       }
     },
-    { "plugin": "@nx/eslint/plugin", "options": { "targetName": "lint" } },
-    { "plugin": "@nx/jest/plugin", "options": { "targetName": "test" } },
+    {
+      "plugin": "@nx/eslint/plugin",
+      "options": {
+        "targetName": "lint"
+      }
+    },
+    {
+      "plugin": "@nx/jest/plugin",
+      "options": {
+        "targetName": "test"
+      }
+    },
     {
       "plugin": "@nx/cypress/plugin",
       "options": {
@@ -46,6 +56,15 @@
         "serveTargetName": "serve",
         "serveStaticTargetName": "serve-static"
       }
+    },
+    {
+      "plugin": "@nx/next/plugin",
+      "options": {
+        "buildTargetName": "build",
+        "devTargetName": "dev",
+        "startTargetName": "start",
+        "serveStaticTargetName": "serve-static"
+      }
     }
   ],
   "generators": {
@@ -56,8 +75,19 @@
         "linter": "eslint",
         "bundler": "vite"
       },
-      "component": { "style": "tailwind" },
-      "library": { "style": "tailwind", "linter": "eslint" }
+      "component": {
+        "style": "tailwind"
+      },
+      "library": {
+        "style": "tailwind",
+        "linter": "eslint"
+      }
+    },
+    "@nx/next": {
+      "application": {
+        "style": "tailwind",
+        "linter": "eslint"
+      }
     }
   },
   "targetDefaults": {
