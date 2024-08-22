@@ -5,11 +5,11 @@ export enum CONFIG_APP {
     SERVER_PORT = 'SERVER_PORT',
     SERVER_ADDRESS = 'SERVER_ADDRES',
     // Database
-    DB_HOST = "DB_HOST",
-    DB_PORT = "DB_PORT",
-    DB_USER = "DB_USER",
-    DB_PASSWORD = "DB_PASSWORD",
-    DB_DATABASE = "DB_DATABASE",
+    DB_HOST = 'DB_HOST',
+    DB_PORT = 'DB_PORT',
+    DB_USER = 'DB_USER',
+    DB_PASSWORD = 'DB_PASSWORD',
+    DB_DATABASE = 'DB_DATABASE',
 
     // Security
     SECURITY_EXPIRES_IN = 'SECURITY_EXPIRES_IN',
@@ -38,7 +38,7 @@ export const configSchema = Joi.object({
     DB_PORT: Joi.number(),
     DB_USER: Joi.string(),
     DB_PASSWORD: Joi.string(),
-    DB_DATABASE: Joi.string().default("goran-db"),
+    DB_DATABASE: Joi.string().default('goran-db'),
 
     // Security
     SECURITY_EXPIRES_IN: Joi.number().required(),
