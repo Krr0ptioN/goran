@@ -1,34 +1,41 @@
 {
-  "compileOnSave": false,
-  "compilerOptions": {
-    "rootDir": ".",
-    "sourceMap": true,
-    "declaration": false,
-    "moduleResolution": "node",
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "strictPropertyInitialization": false,
-    "importHelpers": true,
-    "target": "es2015",
-    "module": "esnext",
-    "lib": ["es2020", "dom"],
-    "skipLibCheck": true,
-    "skipDefaultLibCheck": true,
-    "baseUrl": ".",
-    "paths": {
-      "@goran/common": ["libs/shared/common/src/index.ts"],
-      "@goran/config": ["libs/core/config/src/index.ts"],
-      "@goran/drizzle-data-access": ["libs/data-access/drizzle/src/index.ts"],
-      "@goran/mail": ["libs/core/mail/src/index.ts"],
-      "@goran/security": ["libs/core/security/src/index.ts"],
-      "@goran/types": ["libs/shared/types/src/index.ts"],
-      "@goran/ui-common": ["libs/ui/common/src/index.ts"],
-      "@goran/ui-common/*": ["libs/libs/ui-common/src/*"],
-      "@goran/ui-components": ["libs/ui/components/src/index.ts"],
-      "@goran/ui-components/*": ["libs/libs/ui-components/src/*"],
-      "@goran/users": ["libs/domain/users/src/index.ts"],
-      "@goran/utils": ["libs/shared/utils/src/index.ts"]
-    }
-  },
-  "exclude": ["node_modules", "tmp"]
+    "compileOnSave": false,
+    "compilerOptions": {
+        "rootDir": ".",
+        "sourceMap": true,
+        "declaration": false,
+        "moduleResolution": "node",
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "strictPropertyInitialization": false,
+        "importHelpers": true,
+        "target": "es2015",
+        "module": "esnext",
+        "lib": ["es2020", "dom"],
+        "skipLibCheck": true,
+        "skipDefaultLibCheck": true,
+        "baseUrl": ".",
+        "paths": {
+            "@goran/brand": ["libs/ui/brand/src/index.ts"],
+            "@goran/common": ["libs/shared/common/src/index.ts"],
+            "@goran/config": ["libs/core/config/src/index.ts"],
+            "@goran/drizzle-data-access": [
+                "libs/data-access/drizzle/src/index.ts"
+            ],
+            "@goran/mail": ["libs/core/mail/src/index.ts"],
+            "@goran/security": ["libs/core/security/src/index.ts"],
+            "@goran/types": ["libs/shared/types/src/index.ts"],
+            "@goran/ui-common": ["libs/ui/common/src/index.ts"],
+            "@goran/ui-common/*": ["libs/libs/ui-common/src/*"],
+            "@goran/ui-components": ["libs/ui/components/src/index.ts"],
+            "@goran/ui-components/*": ["libs/libs/ui-components/src/*"],
+            "@goran/ui-module-auth": ["libs/ui/modules/auth/src/index.ts"],
+            "@goran/ui-module-auth/server": [
+                "libs/ui/modules/auth/src/server.ts"
+            ],
+            "@goran/users": ["libs/domain/users/src/index.ts"],
+            "@goran/utils": ["libs/shared/utils/src/index.ts"]
+        }
+    },
+    "exclude": ["node_modules", "tmp"]
 }
