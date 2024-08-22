@@ -27,6 +27,9 @@ export enum CONFIG_APP {
     MAIL_EMAIL_PASSWORD = 'MAIL_EMAIL_PASSWORD',
 
     SERVER_PASSWORD_RESET_URL = 'SERVER_PASSWORD_RESET_URL',
+
+    // UI
+    API_BASE_URL = 'API_BASE_URL',
 }
 
 export const configSchema = Joi.object({
@@ -56,4 +59,6 @@ export const configSchema = Joi.object({
     MAIL_EMAIL_PASSWORD: Joi.string(),
 
     SERVER_PASSWORD_RESET_URL: Joi.string().required(),
+
+    API_BASE_URL: Joi.string().required(),
 });
