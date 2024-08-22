@@ -1,2 +1,2 @@
-export * from "./authentication-token";
+export * from "./authentication-token.service";
 export * from "./password";
