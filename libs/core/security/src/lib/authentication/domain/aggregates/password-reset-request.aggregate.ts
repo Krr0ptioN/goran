@@ -28,12 +28,12 @@ export interface RequestPasswordResetProps {
     passwordResetToken: PasswordResetTokenVO;
 }
 
-export class PasswordResetRequestEntity extends AggregateRoot<PasswordResetRequestProps> {
+export class PasswordResetRequestAggregate extends AggregateRoot<PasswordResetRequestProps> {
     protected readonly _id: AggregateID;
 
     static create(
         request: RequestPasswordResetProps
-    ): PasswordResetRequestEntity {
+    ): PasswordResetRequestAggregate {
         const id = ulid();
         const props: PasswordResetRequestProps = {
             ...request,
@@ -41,7 +41,7 @@ export class PasswordResetRequestEntity extends AggregateRoot<PasswordResetReque
             otpcode: OtpCodeVO.create(),
         };
 
-        return new PasswordResetRequestEntity({ id, props });
+        return new PasswordResetRequestAggregate({ id, props });
     }
 
     verify(otpcode: OtpCodeVO): Result<PasswordResetTokenVO, ExceptionBase> {

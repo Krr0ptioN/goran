@@ -3,7 +3,7 @@ import { RequestUserPassswordResetCommand } from './request-user-password-reset.
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { PasswordResetTokenFactory } from '../../factories';
 import { UsersService } from '@goran/users';
-import { PasswordResetRequestEntity } from '../../../domain';
+import { PasswordResetRequestAggregate } from '../../../domain';
 
 @CommandHandler(RequestUserPassswordResetCommand)
 export class RequestPasswordResetCommandHandler
@@ -21,7 +21,7 @@ export class RequestPasswordResetCommandHandler
         if (userResult.isErr())
             throw new ConflictException(userResult.unwrap());
         const token = this.tokenFactory.generate({ email: command.email });
-        const passwordResetRequest = PasswordResetRequestEntity.create({
+        const passwordResetRequest = PasswordResetRequestAggregate.create({
             user: userResult.unwrap(),
             passwordResetToken: token,
         });
