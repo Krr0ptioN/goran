@@ -4,8 +4,10 @@ import {
     WriteModelRepositoryPort,
 } from '@goran/common';
 import { Option } from 'oxide.ts';
-import { UserEntity, UserModel } from '@goran/users';
+import { UserModel } from '../models';
+import { UserEntity } from '../../domain/entities';
 
+// TODO: Simplifying repository by only providing save and delete methods for write.
 export interface FindUsersParams extends PaginatedQueryParams {
     readonly username?: string;
     readonly email?: string;
