@@ -45,6 +45,12 @@ export class UsersService {
         );
     }
 
+    async changePasswordByEntity(user: UserEntity, newHashedPassword: string) {
+        return await this.commandBus.execute(
+            new ChangeUserPasswordCommand({ user, newHashedPassword })
+        );
+    }
+
     async changeUsername(userDto: UserModel, newUsername: string) {
         const user = this.mapper.toDomain(userDto);
         return await this.commandBus.execute(
