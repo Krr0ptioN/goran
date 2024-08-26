@@ -1,29 +1,34 @@
-import { Module } from "@nestjs/common";
-import { JwtModule } from "@nestjs/jwt";
-import { UsersModule } from "@goran/users";
+import { Module } from '@nestjs/common';
+import { JwtModule } from '@nestjs/jwt';
+import { UsersModule } from '@goran/users';
 import {
     AuthenticationController,
     AuthenticationTokenController,
-    AuthenticationPasswordController,
-} from "./presenters/http";
+    PasswordResetController,
+} from './presenters/http';
 import {
     AuthenticationTokenService,
-    AuthenticationPasswordService,
-} from "./application/services";
+    PasswordService,
+} from './application/services';
 import {
     RequestPasswordResetCommandHandler,
     VerifyPasswordResetAttemptCommandHandler,
     ResetPasswordCommandHandler,
     SignupCommandHandler,
     SigninCommandHandler,
-} from "./application/commands";
-import { CacheModule } from "@nestjs/cache-manager";
-import { MailModule } from "@goran/mail";
-import { CqrsModule } from "@nestjs/cqrs";
-import { AuthenticationTokenFactory, PasswordResetTokenFactory } from "./application/factories";
+} from './application/commands';
+import { CacheModule } from '@nestjs/cache-manager';
+import { MailModule } from '@goran/mail';
+import { CqrsModule } from '@nestjs/cqrs';
+import {
+    AuthenticationTokenFactory,
+    PasswordResetTokenFactory,
+} from './application/factories';
+import { PasswordResetRequestMapper } from './application/mappers';
 
-const factories = [PasswordResetTokenFactory, AuthenticationTokenFactory]
-const services = [AuthenticationTokenService, AuthenticationPasswordService];
+const factories = [PasswordResetTokenFactory, AuthenticationTokenFactory];
+const services = [AuthenticationTokenService, PasswordService];
+const mappers = [PasswordResetRequestMapper];
 
 const commandHanlders = [
     SignupCommandHandler,
@@ -32,6 +37,13 @@ const commandHanlders = [
     ResetPasswordCommandHandler,
     VerifyPasswordResetAttemptCommandHandler,
 ];
+const controllers = [
+    AuthenticationController,
+    PasswordResetController,
+    AuthenticationTokenController,
+];
+
+const providers = [...mappers, ...commandHanlders, ...services, ...factories];
 
 @Module({
     imports: [
@@ -41,12 +53,8 @@ const commandHanlders = [
         CacheModule.register({ isGlobal: true }),
         MailModule,
     ],
+    providers,
     exports: [...services],
-    controllers: [
-        AuthenticationController,
-        AuthenticationPasswordController,
-        AuthenticationTokenController,
-    ],
-    providers: [...commandHanlders, ...services, ...factories],
+    controllers,
 })
-export class AuthenticationModule { }
+export class AuthenticationModule {}
