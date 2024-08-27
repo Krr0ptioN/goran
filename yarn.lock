@@ -2565,6 +2565,7 @@ __metadata:
     "@types/jest": "npm:^29.5.12"
     "@types/jsonwebtoken": "npm:^9.0.6"
     "@types/node": "npm:~18.16.20"
+    "@types/nodemailer": "npm:^6.4.15"
     "@types/passport-jwt": "npm:^4.0.1"
     "@types/pg": "npm:^8.11.6"
     "@types/react": "npm:18.2.33"
@@ -2588,8 +2589,9 @@ __metadata:
     cookie-parser: "npm:^1.4.6"
     cypress: "npm:^13.13.1"
     date-fns: "npm:^3.6.0"
-    drizzle-kit: "npm:^0.20.18"
-    drizzle-orm: "npm:^0.30.10"
+    drizzle-kit: "npm:^0.24.1"
+    drizzle-orm: "npm:^0.33.0"
+    ejs: "npm:^3.1.10"
     embla-carousel-react: "npm:^8.1.8"
     eslint: "npm:~8.57.0"
     eslint-config-next: "npm:14.0.4"
@@ -2614,6 +2616,7 @@ __metadata:
     nestjs-resend: "npm:^0.0.3"
     next: "npm:14.0.4"
     next-themes: "npm:^0.3.0"
+    nodemailer: "npm:^6.9.14"
     nx: "npm:18.2.4"
     oxide.ts: "npm:^1.1.0"
     passport-jwt: "npm:^4.0.1"
@@ -9852,6 +9855,15 @@ __metadata:
   version: 18.16.20
   resolution: "@types/node@npm:18.16.20"
   checksum: 10c0/329f7d4291b364d7831d8e253ae35514f02815b49bb83fea11877f687899a4899dc3c42fd9222e9286bb3ac9775c6b0858aac27fcb39e389415afd64e541f238
+  languageName: node
+  linkType: hard
+
+"@types/nodemailer@npm:^6.4.15":
+  version: 6.4.15
+  resolution: "@types/nodemailer@npm:6.4.15"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10c0/553e613fe08fd663bff1fb3647a8ebbcc4ca297a6249296a43f3c92499158acad5955689be2096ff3fe72f145e80d749c1fc66d5549fe665d7ceb6d0946f2a26
   languageName: node
   linkType: hard
 
@@ -19867,6 +19879,20 @@ __metadata:
   dependencies:
     "@babel/parser": "npm:^7.21.8"
   checksum: 10c0/199875bf108750693c55c30b13085ab2956059593c7a5c10c3a30ea3c16b7448e7514d63767dbd825c71ab40be76f66c4d98f17794e3232a645867a99a82fb19
+  languageName: node
+  linkType: hard
+
+"nodemailer@npm:6.9.13":
+  version: 6.9.13
+  resolution: "nodemailer@npm:6.9.13"
+  checksum: 10c0/4d6899f45abb7760a7d3b4d1046de7e08e80a471b84d1f09065a25941ded482e7f9877be248550e681e0270383cb9299f6caded507cbc0e917341bb137cc94a4
+  languageName: node
+  linkType: hard
+
+"nodemailer@npm:^6.9.13, nodemailer@npm:^6.9.14":
+  version: 6.9.14
+  resolution: "nodemailer@npm:6.9.14"
+  checksum: 10c0/2542986849bc6ec2bf12fb7b72226da0ce9c6a0946216dea020d9eedee3ac1a4eb2413f59772a3ddd4bb9188d5ce859167a030c065719473f71319e052a319dc
   languageName: node
   linkType: hard
 
