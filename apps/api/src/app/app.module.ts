@@ -7,6 +7,7 @@ import { ApplicationBootstrapOptions } from '../bootstrap';
 import { UsersModule } from '@goran/users';
 import { AuthenticationModule } from '@goran/security';
 import { DatabaseModule } from '@goran/drizzle-data-access';
+import { MailModule } from '@goran/mail';
 
 @Module({
     imports: [ConfigModule],
@@ -26,6 +27,7 @@ export class AppModule {
                 UsersModule,
                 AuthenticationModule,
                 DatabaseModule.forRoot(options.database),
+                MailModule.register(options.mail),
             ],
         };
     }
