@@ -5,11 +5,12 @@ import { AppModule } from './app/app.module';
 import { registerGlobals } from './globals';
 import { setupSwagger } from './swagger';
 import { goranBanner } from '@goran/utils';
+import config from './app/app.config';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  const logger = new Logger('BOOTSTRAP');
-  const port = process.env[CONFIG_APP.SERVER_PORT] || 3000;
+    const app = await NestFactory.create(AppModule.register(config()));
+    const logger = new Logger('BOOTSTRAP');
+    const port = process.env[CONFIG_APP.SERVER_PORT] || 3000;
 
   const { globalPrefix } = await registerGlobals(app);
   setupSwagger(app);
