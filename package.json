@@ -5,6 +5,7 @@
   "private": true,
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
+    "@nestjs-modules/mailer": "^2.0.2",
     "@nestjs/cache-manager": "^2.2.2",
     "@nestjs/common": "^10.3.10",
     "@nestjs/config": "^3.2.3",
@@ -69,6 +70,7 @@
     "next-themes": "^0.3.0",
     "nodemailer": "^6.9.14",
     "oxide.ts": "^1.1.0",
+    "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "pg": "^8.12.0",
     "pg-mem": "^2.8.1",
@@ -88,6 +90,7 @@
     "tailwindcss-animate": "^1.0.7",
     "tslib": "^2.6.3",
     "tsx": "^4.16.2",
+    "type-fest": "^4.25.0",
     "ulid": "^2.3.0",
     "vaul": "^0.9.1",
     "zod": "^3.23.8"
