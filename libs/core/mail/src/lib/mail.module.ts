@@ -1,17 +1,19 @@
-import { Module, Type, DynamicModule } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { Module } from '@nestjs/common';
 import { MailService } from './application/services';
+import { MailOptions, configMailProviderModule } from './infrastructure';
 
 @Module({
-    imports: [ConfigModule],
     providers: [MailService],
     exports: [MailService],
 })
 export class MailModule {
-    static withInfra(infraModule: Type | DynamicModule) {
+    static register(mailOptions: MailOptions) {
+        const mailProviderModule = configMailProviderModule(mailOptions);
         return {
             module: MailModule,
-            imports: [infraModule],
+            imports: [mailProviderModule],
+            providers: [MailService],
+            exports: [MailService],
         };
     }
 }
