@@ -2,10 +2,6 @@ import { Module } from '@nestjs/common';
 import { MailService } from './application/services';
 import { MailOptions, configMailProviderModule } from './infrastructure';
 
-@Module({
-    providers: [MailService],
-    exports: [MailService],
-})
 export class MailModule {
     static register(mailOptions: MailOptions) {
         const mailProviderModule = configMailProviderModule(mailOptions);
