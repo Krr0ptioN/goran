@@ -1,2 +1,3 @@
 export * from './lib/mail.module';
-export * from './services';
+export * from './lib/application';
+export * from './lib/infrastructure';

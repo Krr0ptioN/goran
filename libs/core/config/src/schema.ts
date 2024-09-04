@@ -21,10 +21,14 @@ export enum CONFIG_APP {
     JWT_ACCESS_SECRET = 'JWT_ACCESS_SECRET',
 
     // Mail
-    MAIL_INFRASTRUCTURE = 'MAIL_INFRASTRUCTURE',
+    MAIL_INFRA = 'MAIL_INFRA',
     RESEND_GORAN_API = 'RESEND_GORAN_API',
-    MAIL_EMAIL_ADDRESS = 'MAIL_EMAIL_ADDRESS',
-    MAIL_EMAIL_PASSWORD = 'MAIL_EMAIL_PASSWORD',
+    MAIL_HOST = 'MAIL_HOST',
+    MAIL_PORT = 'MAIL_PORT',
+    MAIL_SECURE = 'MAIL_SECURE',
+    MAIL_USER = 'MAIL_USER',
+    MAIL_PASSWORD = 'MAIL_PASSWORD',
+    MAIL_FROM = 'MAIL_FROM',
 
     SERVER_PASSWORD_RESET_URL = 'SERVER_PASSWORD_RESET_URL',
 }
@@ -48,12 +52,14 @@ export const configSchema = Joi.object({
     SECURITY_REFRESH_IN: Joi.string().required(),
 
     // Mail
-    MAIL_INFRASTRUCTURE: Joi.string()
-        .valid('RESEND', 'NODEMAILER')
-        .default('NODEMAILER'),
+    MAIL_INFRA: Joi.string().valid('resend', 'mailer').default('mailer'),
     RESEND_GORAN_API: Joi.string(),
-    MAIL_EMAIL_ADDRESS: Joi.string().email(),
-    MAIL_EMAIL_PASSWORD: Joi.string(),
+    MAIL_HOST_ADDRESS: Joi.string().email(),
+    MAIL_PORT: Joi.number().port(),
+    MAIL_SECURE: Joi.boolean(),
+    MAIL_USER: Joi.string(),
+    MAIL_PASSWORD: Joi.string(),
+    MAIL_FROM: Joi.string(),
 
     SERVER_PASSWORD_RESET_URL: Joi.string().required(),
 });
