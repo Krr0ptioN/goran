@@ -1,12 +1,12 @@
 import { CONFIG_APP } from '@goran/config';
-import type { MailInfraProvider, MailInfraProviderConfig } from '@goran/mail';
+import type { MailInfraProvider, MailInfraProviderOptions } from '@goran/mail';
 import { ApplicationBootstrapOptions } from '../bootstrap';
 import 'dotenv/config';
 
 export default (): ApplicationBootstrapOptions => ({
     mail: {
         provider: process.env[CONFIG_APP.MAIL_INFRA] as MailInfraProvider,
-        config: {
+        options: {
             host: process.env[CONFIG_APP.MAIL_HOST],
             port: process.env[CONFIG_APP.MAIL_PORT],
             secure: process.env[CONFIG_APP.MAIL_SECURE],
@@ -16,7 +16,7 @@ export default (): ApplicationBootstrapOptions => ({
             },
             from: process.env[CONFIG_APP.MAIL_FROM],
             apiKey: process.env[CONFIG_APP.RESEND_GORAN_API],
-        } as MailInfraProviderConfig,
+        } as MailInfraProviderOptions,
     },
     database: {
         host: process.env[CONFIG_APP.DB_HOST],

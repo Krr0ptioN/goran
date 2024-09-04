@@ -12,5 +12,5 @@ export type MailInfraProviderOptions = Simplify<
 
 export interface MailOptions {
     provider: MailInfraProvider;
-    config: MailInfraProviderOptions;
+    options: MailInfraProviderOptions;
 }
