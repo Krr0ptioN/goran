@@ -1,6 +1,10 @@
 # mail
 
-This library was generated with [Nx](https://nx.dev).
+Mail Service provider for core module.
+
+Supported Mail providers:
+- SMTP server using nodemailer
+- resend.com integration
 
 ## Running unit tests
 

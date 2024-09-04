@@ -48,3 +48,4 @@ infra/postgres
 # Next.js
 .next
 out
+.yarn/install-state.gz

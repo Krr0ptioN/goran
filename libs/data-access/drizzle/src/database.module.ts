@@ -1,4 +1,3 @@
-
 import { Global, Module } from '@nestjs/common';
 import {
     ConfigurableDatabaseModule,
@@ -17,13 +16,13 @@ import { DrizzleService } from './drizzle.service';
         {
             provide: CONNECTION_POOL,
             inject: [DATABASE_OPTIONS],
-            useFactory: (databaseOptions: DatabaseOptions) => {
+            useFactory: (options: DatabaseOptions) => {
                 return new Pool({
-                    host: databaseOptions.host,
-                    port: databaseOptions.port,
-                    user: databaseOptions.user,
-                    password: databaseOptions.password,
-                    database: databaseOptions.database,
+                    host: options.host,
+                    port: options.port,
+                    user: options.user,
+                    password: options.password,
+                    database: options.database,
                 });
             },
         },
