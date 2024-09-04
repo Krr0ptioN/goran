@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { configSchema } from '@goran/config';
 import { ApplicationBootstrapOptions } from '../bootstrap';
 import { UsersModule } from '@goran/users';
+import { AuthenticationModule } from '@goran/security';
 import { DatabaseModule } from '@goran/drizzle-data-access';
 import { MailModule } from '@goran/mail';
 
@@ -24,6 +25,7 @@ export class AppModule {
                     validationSchema: configSchema,
                 }),
                 UsersModule,
+                AuthenticationModule,
                 DatabaseModule.forRoot(options.database),
                 MailModule.register(options.mail),
             ],

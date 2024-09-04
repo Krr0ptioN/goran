@@ -1,4 +1,3 @@
-import { Module } from '@nestjs/common';
 import { MailService } from './application/services';
 import { MailOptions, configMailProviderModule } from './infrastructure';
 
@@ -7,6 +6,7 @@ export class MailModule {
         const mailProviderModule = configMailProviderModule(mailOptions);
         return {
             module: MailModule,
+            global: true,
             imports: [mailProviderModule],
             providers: [MailService],
             exports: [MailService],
