@@ -1,27 +1,30 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IdResponse } from './id.response.dto';
-
-export interface BaseResponseProps {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
+export interface BaseResponseProps<TData> {
+    message: string;
+    code: string;
+    success: boolean;
+    data?: TData;
+    errors?: string[];
 }
 
 /**
- * Most of our response objects will have properties like
- * id, createdAt and updatedAt so we can move them to a
- * separate class and extend it to avoid duplication.
+ * ResponseBase
+ *
+ * @property message - Message of response
+ * @property code - Unique response code which can used for internationalization
+ * @property data - Response data
+ * @property errors - Response data
  */
-export class ResponseBase extends IdResponse {
-  constructor(props: BaseResponseProps) {
-    super(props.id);
-    this.createdAt = new Date(props.createdAt).toISOString();
-    this.updatedAt = new Date(props.updatedAt).toISOString();
-  }
+export class ResponseBase<TData> implements BaseResponseProps<TData> {
+    constructor(props: BaseResponseProps<TData>) {
+        this.message = props.message;
+        this.code = props.code;
+        this.data = props.data;
+        this.errors = props.errors;
+    }
 
-  @ApiProperty({ example: '2020-11-24T17:43:15.970Z' })
-  readonly createdAt: string;
-
-  @ApiProperty({ example: '2020-11-24T17:43:15.970Z' })
-  readonly updatedAt: string;
+    readonly message: string;
+    readonly success: boolean;
+    readonly code: string;
+    readonly data?: TData;
+    readonly errors?: string[];
 }
