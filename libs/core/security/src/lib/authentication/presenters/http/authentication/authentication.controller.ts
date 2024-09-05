@@ -1,5 +1,6 @@
 import {
     Body,
+    Res,
     ClassSerializerInterceptor,
     ConflictException as ConflictHttpException,
     Controller,
@@ -11,10 +12,17 @@ import { SignUpDto } from './signup.dto';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiDocsAuthentication } from '../swagger';
 import { CommandBus } from '@nestjs/cqrs';
-import { AuthenticationCredentialDto, SigninCommand, SignupCommand } from '../../../application';
+import {
+    AuthenticationCredentialDto,
+    SigninCommand,
+    SignupCommand,
+} from '../../../application';
 import { UserAlreadyExistsError } from '@goran/users';
 import { Result, match } from 'oxide.ts';
 import { ExceptionBase } from '@goran/common';
+import { Response } from 'express';
+import { SignInSuccessResponse } from './signin.response';
+import { SignUpSuccessResponse } from './signup.resonse';
 
 @ApiTags('auth')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -22,36 +30,57 @@ import { ExceptionBase } from '@goran/common';
 export class AuthenticationController {
     constructor(private readonly commandBus: CommandBus) { }
 
-    @ApiOkResponse({ type: AuthenticationCredentialDto })
+    @ApiOkResponse({ type: SignUpSuccessResponse })
     @ApiOperation({ summary: ApiDocsAuthentication.operationsSummary.signup })
     @Post('signup')
-    async signUp(@Body() body: SignUpDto) {
+    async signUp(@Body() body: SignUpDto, @Res() res: Response) {
         const result: Result<AuthenticationCredentialDto, ExceptionBase> =
             await this.commandBus.execute(new SignupCommand(body));
+
         return match(result, {
-            Ok: (credential: AuthenticationCredentialDto) =>
-                credential,
+            Ok: (credential: AuthenticationCredentialDto) => {
+                res.cookie('refreshToken', credential.tokens.refreshToken, {
+                    httpOnly: true,
+                    secure: true,
+                    sameSite: 'none',
+                });
+
+                return new SignUpSuccessResponse({
+                    accessToken: credential.tokens.accessToken,
+                    userId: credential.userId,
+                });
+            },
             Err: (error: Error) => {
                 if (error instanceof UserAlreadyExistsError)
-                    throw new ConflictHttpException(error.message);
+                    throw new ConflictHttpException(error);
                 throw error;
             },
         });
     }
 
-    @ApiOkResponse({ type: AuthenticationCredentialDto })
+    @ApiOkResponse({ type: SignInSuccessResponse })
     @ApiOperation({ summary: ApiDocsAuthentication.operationsSummary.signin })
     @Post('signin')
-    async signIn(@Body() body: SignInDto) {
+    async signIn(@Body() body: SignInDto, @Res() res: Response) {
         const result: Result<AuthenticationCredentialDto, ExceptionBase> =
             await this.commandBus.execute(new SigninCommand(body));
 
         return match(result, {
-            Ok: (credential: AuthenticationCredentialDto) =>
-                credential,
+            Ok: (credential: AuthenticationCredentialDto) => {
+                res.cookie('refresh_token', credential.tokens.refreshToken, {
+                    httpOnly: true,
+                    secure: true,
+                    sameSite: 'none',
+                });
+
+                return new SignInSuccessResponse({
+                    accessToken: credential.tokens.accessToken,
+                    userId: credential.userId,
+                });
+            },
             Err: (error: Error) => {
                 if (error instanceof ExceptionBase)
-                    throw new ConflictHttpException(error.message);
+                    throw new ConflictHttpException(error);
                 throw error;
             },
         });
