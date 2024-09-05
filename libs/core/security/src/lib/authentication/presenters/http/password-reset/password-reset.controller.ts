@@ -1,14 +1,24 @@
 import { Controller, Body, Post } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiDocsAuthentication } from '../swagger';
-import { ResetPasswordDto } from './reset-password.dto';
 import { CommandBus } from '@nestjs/cqrs';
 import {
     RequestUserPassswordResetCommand,
     ResetPasswordCommand,
     VerifyPasswordResetAttemptCommand,
 } from '../../../application';
-import { VerifyPasswordResetRequestDto } from './verify-password-reset-request.dto';
+import {
+    VerifyPasswordResetRequestDto,
+    RequestPasswordResetDto,
+    ResetPasswordDto,
+} from './dtos';
+import {
+    VerifyPasswordResetRequestResponse,
+    RequestPasswordResetResponse,
+    ResetPasswordResponse,
+} from './responses';
+import { Result, match } from 'oxide.ts';
+import { ExceptionBase } from '@goran/common';
 
 @ApiTags('auth', 'password-reset')
 @Controller('auth/password-reset')
