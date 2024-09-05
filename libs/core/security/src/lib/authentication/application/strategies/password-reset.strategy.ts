@@ -5,7 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { UsersService } from '@goran/users';
 import { UserEntity } from '@goran/users';
 import { CONFIG_APP } from '@goran/config';
-import { JwtPasswordResetPayload } from './jwt-password-reset-payload.interface';
+import { JwtPasswordResetPayload } from '../jwt-payloads';
 
 @Injectable()
 export class PasswordResetAuthStrategy extends PassportStrategy(Strategy) {
@@ -22,10 +22,10 @@ export class PasswordResetAuthStrategy extends PassportStrategy(Strategy) {
     }
 
     async validate(payload: JwtPasswordResetPayload): Promise<UserEntity> {
-        const user = await this.userService.findOneByEmail(payload.email);
-        if (!user.isErr()) {
+        const userResult = await this.userService.findOneByEmail(payload.email);
+        if (!userResult.isSome()) {
             throw new UnauthorizedException();
         }
-        return user;
+        return userResult.unwrap();
     }
 }

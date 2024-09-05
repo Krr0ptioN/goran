@@ -27,9 +27,9 @@ export class AuthenticationTokenService {
         CONFIG_APP.SECURITY_REFRESH_IN
     );
 
-    getUserFromToken(token: string) {
+    async getUserFromToken(token: string) {
         const id = this.jwtService.decode(token)['userId'];
-        const user = this.usersService.findOneById(id);
+        const user = await this.usersService.findOneById(id);
         return user;
     }
 

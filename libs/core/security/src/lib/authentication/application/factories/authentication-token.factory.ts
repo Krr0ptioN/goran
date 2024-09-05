@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { TokenValueObject } from '../../domain';
 import { CONFIG_APP } from '@goran/config';
-import { JwtPayloadSign } from '../../domain/strategy/jwt-payload.interface';
+import { JwtPayloadSign } from '../jwt-payloads';
 
 @Injectable()
 export class AuthenticationTokenFactory {
