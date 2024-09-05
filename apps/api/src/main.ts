@@ -7,14 +7,16 @@ import { goranBanner } from '@goran/utils';
 import config from './app/app.config';
 
 async function bootstrap() {
-    const app = await NestFactory.create(AppModule.register(config()));
     const logger = new Logger('BOOTSTRAP');
-    const port = process.env[CONFIG_APP.SERVER_PORT] || 3000;
-
-    const { globalPrefix } = await registerGlobals(app);
-    setupSwagger(app);
 
     logger.log(goranBanner);
+
+    const app = await NestFactory.create(AppModule.register(config()));
+    const port = process.env[CONFIG_APP.SERVER_PORT] || 3000;
+    const { globalPrefix } = await registerGlobals(app);
+
+    setupSwagger(app);
+
     logger.log(
         `  Application is running on: http://localhost:${port}/${globalPrefix}`
     );
