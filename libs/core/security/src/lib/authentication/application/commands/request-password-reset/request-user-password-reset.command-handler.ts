@@ -9,6 +9,7 @@ import { PasswordResetTokenFactory } from '../../factories';
 import { UsersService } from '@goran/users';
 import { PasswordResetRequestAggregate } from '../../../domain';
 import { PasswordResetRequestRepository } from '../../ports';
+import { MailService } from '@goran/mail';
 
 @CommandHandler(RequestUserPassswordResetCommand)
 export class RequestPasswordResetCommandHandler
@@ -19,7 +20,8 @@ export class RequestPasswordResetCommandHandler
     constructor(
         private readonly tokenFactory: PasswordResetTokenFactory,
         private readonly userService: UsersService,
-        private readonly passwordResetReqRepo: PasswordResetRequestRepository
+        private readonly passwordResetReqRepo: PasswordResetRequestRepository,
+        private readonly mailService: MailService
     ) {}
 
     async execute(command: RequestUserPassswordResetCommand) {
@@ -43,9 +45,15 @@ export class RequestPasswordResetCommandHandler
                 'Unable to proceed this action'
             );
 
-        // TODO: Email the otpcode to user
-
         const props = passwordResetRequest.getProps();
+
+        this.mailService.send({
+            to: command.email,
+            subject: '[GORAN] Password Reset Verification',
+            from: 'info@goran.com',
+            text: props.otpcode.unpack(),
+        });
+
         return {
             token: props.passwordResetToken.resetToken,
             email: props.user.getProps().email,
