@@ -1,18 +1,18 @@
 import { Command, CommandProps } from '@goran/common';
 
 /**
- * Verify Password Reset Attempt command
+ * Changing the password to new password
  *
- * @param newPassword New password
- * @param passwordResetAttemptToken Token to identify which whom pasword is reseting
+ * @param password New password
+ * @param token Token to identify which whom pasword is reseting
  */
 export class ResetPasswordCommand extends Command {
-    readonly passwordResetAttemptToken: string;
-    readonly newPassword: string;
+    readonly token: string;
+    readonly password: string;
 
     constructor(props: CommandProps<ResetPasswordCommand>) {
         super(props);
-        this.passwordResetAttemptToken = props.passwordResetAttemptToken;
-        this.newPassword = props.newPassword;
+        this.token = props.token;
+        this.password = props.password;
     }
 }

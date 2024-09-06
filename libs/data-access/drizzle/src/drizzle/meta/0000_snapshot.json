@@ -1,10 +1,8 @@
 {
-  "id": "993c9aa1-69a6-40e5-baaa-c0982a577136",
-  "prevId": "00000000-0000-0000-0000-000000000000",
-  "version": "5",
-  "dialect": "pg",
+  "version": "7",
+  "dialect": "postgresql",
   "tables": {
-    "users": {
+    "public.users": {
       "name": "users",
       "schema": "",
       "columns": {
@@ -55,11 +53,19 @@
       },
       "indexes": {
         "unique_idx": {
-          "name": "unique_idx",
           "columns": [
-            "email"
+            {
+              "expression": "email",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
           ],
-          "isUnique": true
+          "with": {},
+          "name": "unique_idx",
+          "isUnique": true,
+          "method": "btree",
+          "concurrently": false
         }
       },
       "foreignKeys": {},
@@ -67,17 +73,17 @@
       "uniqueConstraints": {
         "users_name_unique": {
           "name": "users_name_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "name"
-          ]
+          ],
+          "nullsNotDistinct": false
         },
         "users_email_unique": {
           "name": "users_email_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "email"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       }
     }
@@ -85,8 +91,11 @@
   "enums": {},
   "schemas": {},
   "_meta": {
-    "columns": {},
     "schemas": {},
-    "tables": {}
-  }
+    "tables": {},
+    "columns": {}
+  },
+  "id": "993c9aa1-69a6-40e5-baaa-c0982a577136",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "sequences": {}
 }
