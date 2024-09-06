@@ -29,17 +29,17 @@ export class UsersService {
         private readonly commandBus: CommandBus,
         private readonly queryBus: QueryBus,
         private readonly mapper: UserMapper
-    ) { }
+    ) {}
 
     async changeEmail(userDto: UserModel, newEmail: string) {
-        const user = this.mapper.toDomain(userDto);
+        const user = await this.mapper.toDomain(userDto);
         return await this.commandBus.execute(
             new ChangeUserEmailCommand({ user, newEmail })
         );
     }
 
     async changePassword(userDto: UserModel, newHashedPassword: string) {
-        const user = this.mapper.toDomain(userDto);
+        const user = await this.mapper.toDomain(userDto);
         return await this.commandBus.execute(
             new ChangeUserPasswordCommand({ user, newHashedPassword })
         );
@@ -52,7 +52,7 @@ export class UsersService {
     }
 
     async changeUsername(userDto: UserModel, newUsername: string) {
-        const user = this.mapper.toDomain(userDto);
+        const user = await this.mapper.toDomain(userDto);
         return await this.commandBus.execute(
             new ChangeUserUsernameCommand({ user, newUsername })
         );
