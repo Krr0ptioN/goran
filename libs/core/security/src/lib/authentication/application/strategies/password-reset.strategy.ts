@@ -2,7 +2,7 @@ import { Strategy, ExtractJwt } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { UsersService } from '@goran/users';
+import { UserMapper, UsersService } from '@goran/users';
 import { UserEntity } from '@goran/users';
 import { CONFIG_APP } from '@goran/config';
 import { JwtPasswordResetPayload } from '../jwt-payloads';
@@ -11,7 +11,8 @@ import { JwtPasswordResetPayload } from '../jwt-payloads';
 export class PasswordResetAuthStrategy extends PassportStrategy(Strategy) {
     constructor(
         private readonly userService: UsersService,
-        readonly configService: ConfigService
+        private readonly mapper: UserMapper,
+        readonly configService: ConfigService,
     ) {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -23,9 +24,9 @@ export class PasswordResetAuthStrategy extends PassportStrategy(Strategy) {
 
     async validate(payload: JwtPasswordResetPayload): Promise<UserEntity> {
         const userResult = await this.userService.findOneByEmail(payload.email);
-        if (userResult.isNone()) {
+        if (userResult.isErr()) {
             throw new UnauthorizedException();
         }
-        return userResult.unwrap();
+        return await this.mapper.toDomain(userResult.unwrap());
     }
 }

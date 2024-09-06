@@ -6,12 +6,15 @@ import {
     PasswordResetTokenVO,
 } from '../../domain';
 import { PasswordResetRequestModel } from '../models/password-reset-request.model';
-import { UsersService } from '@goran/users';
+import { UserMapper, UsersService } from '@goran/users';
 
 @Injectable()
 export class PasswordResetRequestMapper
     implements Mapper<PasswordResetRequestAggregate, PasswordResetRequestModel> {
-    constructor(private readonly usersService: UsersService) { }
+    constructor(
+        private readonly usersService: UsersService,
+        private readonly userMapper: UserMapper,
+    ) { }
     toPersistence(
         entity: PasswordResetRequestAggregate
     ): PasswordResetRequestModel {
@@ -31,12 +34,13 @@ export class PasswordResetRequestMapper
         record: PasswordResetRequestModel
     ): Promise<PasswordResetRequestAggregate> {
         const userSome = await this.usersService.findOneById(record.userId);
+        const user = await this.userMapper.toDomain(userSome.unwrap())
         const entity = new PasswordResetRequestAggregate({
             id: record.id,
             createdAt: new Date(record.createdAt),
             updatedAt: new Date(record.updatedAt),
             props: {
-                user: userSome.unwrap(),
+                user,
                 status: record.status,
                 passwordResetToken: new PasswordResetTokenVO({
                     resetToken: record.token,

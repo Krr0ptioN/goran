@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { SignupCommand } from './signup.command';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { PasswordService, AuthenticationTokenService } from '../../services';
+import { PasswordService } from '../../services';
 import { UsersService } from '@goran/users';
 import { Ok, Result } from 'oxide.ts';
 import { ExceptionBase } from '@goran/common';
@@ -14,7 +14,7 @@ export class SignupCommandHandler implements ICommandHandler<SignupCommand> {
         private tokenFactory: AuthenticationTokenFactory,
         private passwordService: PasswordService,
         private usersService: UsersService
-    ) {}
+    ) { }
     private readonly logger = new Logger(SignupCommand.name);
 
     async execute(
@@ -39,6 +39,6 @@ export class SignupCommandHandler implements ICommandHandler<SignupCommand> {
 
         this.logger.verbose(`User with ${user.email} email signed up`);
 
-        return Ok(new AuthenticationCredentialDto({ user, tokens }));
+        return Ok(new AuthenticationCredentialDto({ userId: user.id, tokens }));
     }
 }

@@ -7,16 +7,17 @@ import { PasswordResetRequestMapper } from '../mappers';
 export class PasswordResetSessionService {
     constructor(
         private readonly mapper: PasswordResetRequestMapper,
-        private readonly repository: PasswordResetRequestRepository
-    ) {}
+        private readonly repository: PasswordResetRequestRepository) { }
 
     async getAggByToken(token: string) {
-        const requestResult = await this.repository.findOneByToken(token);
+        const requestResult = await this.repository.findOneByToken(
+            token
+        );
 
         if (requestResult.isNone())
             throw new BadRequestException(
                 new InvalidAuthenticationCredentials(
-                    Error('Provided crednetials are invalid')
+                    Error('Provided credenetials are invalid')
                 )
             );
 

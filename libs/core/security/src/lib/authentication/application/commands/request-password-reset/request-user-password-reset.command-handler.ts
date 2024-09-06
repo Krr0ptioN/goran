@@ -6,7 +6,7 @@ import {
 import { RequestUserPassswordResetCommand } from './request-user-password-reset.command';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { PasswordResetTokenFactory } from '../../factories';
-import { UsersService } from '@goran/users';
+import { UserMapper, UsersService } from '@goran/users';
 import { PasswordResetRequestAggregate } from '../../../domain';
 import { PasswordResetRequestRepository } from '../../ports';
 import { MailService } from '@goran/mail';
@@ -14,26 +14,26 @@ import { Err, Ok } from 'oxide.ts';
 
 @CommandHandler(RequestUserPassswordResetCommand)
 export class RequestPasswordResetCommandHandler
-    implements ICommandHandler<RequestUserPassswordResetCommand>
-{
+    implements ICommandHandler<RequestUserPassswordResetCommand> {
     private readonly logger = new Logger(RequestUserPassswordResetCommand.name);
 
     constructor(
         private readonly tokenFactory: PasswordResetTokenFactory,
         private readonly userService: UsersService,
         private readonly passwordResetReqRepo: PasswordResetRequestRepository,
-        private readonly mailService: MailService
-    ) {}
+        private readonly mailService: MailService,
+        private readonly mapper: UserMapper
+    ) { }
 
     async execute(command: RequestUserPassswordResetCommand) {
         const userResult = await this.userService.findOneByEmail(command.email);
 
-        if (userResult.isNone())
-            return Err(new ConflictException(userResult.unwrap()));
+        if (userResult.isErr())
+            throw new ConflictException(userResult.unwrap());
 
         const token = this.tokenFactory.generate({ email: command.email });
         const passwordResetRequest = PasswordResetRequestAggregate.create({
-            user: userResult.unwrap(),
+            user: await this.mapper.toDomain(userResult.unwrap()),
             passwordResetToken: token,
         });
 

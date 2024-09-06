@@ -30,7 +30,7 @@ export class VerifyPasswordResetAttemptCommandHandler
         if (verifyResult.isErr())
             throw new BadRequestException(verifyResult.unwrap());
 
-        this.repository.save(requestAgg);
-        return verifyResult.unwrap().resetToken;
+        const saveResult = await this.repository.save(requestAgg);
+        return saveResult;
     }
 }

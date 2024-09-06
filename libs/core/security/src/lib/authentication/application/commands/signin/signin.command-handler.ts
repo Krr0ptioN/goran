@@ -34,7 +34,7 @@ export class SigninCommandHandler implements ICommandHandler<SigninCommand> {
         const user = userResult.unwrap();
         const passwordIsValid = await this.passwordService.validatePassword(
             password,
-            user.getProps().password
+            user.password
         );
 
         if (!passwordIsValid) {
@@ -42,13 +42,11 @@ export class SigninCommandHandler implements ICommandHandler<SigninCommand> {
         }
 
         const tokens = this.tokenFactory.generateTokens({
-            userId: userResult.unwrap().getProps().id,
+            userId: user.id,
         });
 
-        this.logger.verbose(
-            `User with ${user.getProps().email} email is authenticated`
-        );
+        this.logger.verbose(`User with ${user.email} email is authenticated`);
 
-        return Ok(new AuthenticationCredentialDto({ user, tokens }));
+        return Ok(new AuthenticationCredentialDto({ userId: user.id, tokens }));
     }
 }

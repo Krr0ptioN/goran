@@ -16,5 +16,6 @@ export class VerifyPasswordResetAttemptCommand extends Command {
         super(props);
         this.otpcode = props.otpcode;
         this.email = props.email;
+        this.token = props.token;
     }
 }
