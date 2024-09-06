@@ -10,6 +10,7 @@ import { UsersService } from '@goran/users';
 import { PasswordResetRequestAggregate } from '../../../domain';
 import { PasswordResetRequestRepository } from '../../ports';
 import { MailService } from '@goran/mail';
+import { Err, Ok } from 'oxide.ts';
 
 @CommandHandler(RequestUserPassswordResetCommand)
 export class RequestPasswordResetCommandHandler
@@ -28,7 +29,7 @@ export class RequestPasswordResetCommandHandler
         const userResult = await this.userService.findOneByEmail(command.email);
 
         if (userResult.isNone())
-            throw new ConflictException(userResult.unwrap());
+            return Err(new ConflictException(userResult.unwrap()));
 
         const token = this.tokenFactory.generate({ email: command.email });
         const passwordResetRequest = PasswordResetRequestAggregate.create({
@@ -41,8 +42,10 @@ export class RequestPasswordResetCommandHandler
         );
 
         if (savingRequestResult.isErr())
-            throw new InternalServerErrorException(
-                'Unable to proceed this action'
+            return Err(
+                new InternalServerErrorException(
+                    'Unable to proceed this action'
+                )
             );
 
         const props = passwordResetRequest.getProps();
@@ -54,9 +57,8 @@ export class RequestPasswordResetCommandHandler
             text: props.otpcode.unpack(),
         });
 
-        return {
-            token: props.passwordResetToken.resetToken,
-            email: props.user.getProps().email,
-        };
+        return Ok({
+            resetToken: props.passwordResetToken.resetToken,
+        });
     }
 }

@@ -21,6 +21,7 @@ import {
     VerifyPasswordResetRequestResponse,
     RequestPasswordResetResponse,
     ResetPasswordResponse,
+    RequestPasswordResetResponseProps,
 } from './responses';
 import { Result, match } from 'oxide.ts';
 import { ExceptionBase } from '@goran/common';
@@ -36,13 +37,14 @@ export class PasswordResetController {
     })
     @Post('request')
     async reqResetPassword(@Body() credential: RequestPasswordResetDto) {
-        const result: Result<boolean, ExceptionBase> =
+        const result: Result<RequestPasswordResetResponseProps, ExceptionBase> =
             await this.commandBus.execute(
                 new RequestUserPassswordResetCommand(credential)
             );
 
         return match(result, {
-            Ok: () => new RequestPasswordResetResponse(),
+            Ok: ({ resetToken }) =>
+                new RequestPasswordResetResponse({ resetToken }),
             Err: (error: Error) => {
                 throw error;
             },
