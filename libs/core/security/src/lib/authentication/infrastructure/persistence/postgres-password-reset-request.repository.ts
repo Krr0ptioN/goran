@@ -14,23 +14,23 @@ import { UnableSaveRequestError } from './unable-save-request.error';
 
 @Injectable()
 export class PostgreSqlDrizzlePasswordResetRequestRepository
-    implements PasswordResetRequestRepository
-{
+    implements PasswordResetRequestRepository {
     constructor(
         private readonly drizzleService: DrizzleService,
         private readonly mapper: PasswordResetRequestMapper
-    ) {}
+    ) { }
 
     async findOneByToken(
         token: string
     ): Promise<Option<PasswordResetRequestModel>> {
-        return await this.drizzleService.db
+        const requests = await this.drizzleService.db
             .select()
             .from(Table)
             .where(eq(Table.token, token))
-            .then((result: PasswordResetRequestModel[]) => {
-                return result && result.length > 0 ? Some(result[0]) : None;
-            });
+        if (requests.length !== 1)
+            return None;
+        return Some(requests[0]);
+
     }
 
     async findOneById(id: string): Promise<Option<PasswordResetRequestModel>> {
@@ -53,22 +53,22 @@ export class PostgreSqlDrizzlePasswordResetRequestRepository
 
         return foundedRequest.isSome()
             ? await this.drizzleService.db
-                  .update(Table)
-                  .set({ ...model })
-                  .where(eq(Table.id, request.id))
-                  .returning()
-                  .then(async (result: PasswordResetRequestModel[]) =>
-                      Ok(await this.mapper.toDomain(result[0]))
-                  )
-                  .catch(err)
+                .update(Table)
+                .set({ ...model })
+                .where(eq(Table.id, request.id))
+                .returning()
+                .then(async (result: PasswordResetRequestModel[]) =>
+                    Ok(await this.mapper.toDomain(result[0]))
+                )
+                .catch(err)
             : await this.drizzleService.db
-                  .insert(Table)
-                  .values({ ...model })
-                  .returning()
-                  .then(async (result: PasswordResetRequestModel[]) =>
-                      Ok(await this.mapper.toDomain(result[0]))
-                  )
-                  .catch(err);
+                .insert(Table)
+                .values({ ...model })
+                .returning()
+                .then(async (result: PasswordResetRequestModel[]) =>
+                    Ok(await this.mapper.toDomain(result[0]))
+                )
+                .catch(err);
     }
 
     async delete(
