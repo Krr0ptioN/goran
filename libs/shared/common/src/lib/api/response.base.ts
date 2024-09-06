@@ -14,7 +14,7 @@ export interface BaseResponseProps<TData> {
  * @property data - Response data
  * @property errors - Response data
  */
-export class ResponseBase<TData> implements BaseResponseProps<TData> {
+export class ResponseBase<TData = undefined> implements BaseResponseProps<TData> {
     constructor(props: BaseResponseProps<TData>) {
         this.message = props.message;
         this.code = props.code;
