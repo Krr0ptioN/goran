@@ -1,15 +1,9 @@
 import { ValueObject } from '@goran/common';
+import otp from "otp-generator";
 
 export class OtpCodeVO extends ValueObject<string> {
-    public static digits = '0123456789abcdefghijklmnopqrstuvwxyz';
-
     static create() {
-        let otpcode = '';
-        const len = OtpCodeVO.digits.length;
-        for (let i = 0; i < 6; i++) {
-            otpcode += OtpCodeVO.digits[Math.floor(Math.random() * len)];
-        }
-        return new OtpCodeVO({ value: otpcode });
+        return new OtpCodeVO({ value: otp.generator(6, { upperCaseAlphabets: false, specialChars: false }) });
     }
 
     protected validate({ value }: { value: string }): void {
