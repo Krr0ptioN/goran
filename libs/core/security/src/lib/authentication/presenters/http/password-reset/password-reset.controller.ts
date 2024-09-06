@@ -1,4 +1,12 @@
-import { Controller, Body, Post, UseGuards, Req } from '@nestjs/common';
+import {
+    Controller,
+    Body,
+    Post,
+    UseGuards,
+    Req,
+    Logger,
+    BadRequestException,
+} from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiDocsAuthentication } from '../swagger';
 import { CommandBus } from '@nestjs/cqrs';
@@ -23,6 +31,7 @@ import {
 import { Result, match } from 'oxide.ts';
 import { ExceptionBase } from '@goran/common';
 import { Request } from 'express';
+import { PasswordResetRequestAggregate } from '../../../domain';
 
 @ApiTags('auth', 'password-reset')
 @Controller('auth/password-reset')
@@ -31,6 +40,9 @@ export class PasswordResetController {
         private readonly commandBus: CommandBus,
         private readonly tokenService: AuthenticationTokenService
     ) {}
+    private readonly logger = new Logger(
+        VerifyPasswordResetAttemptCommand.name
+    );
 
     @ApiOkResponse()
     @ApiOperation({
@@ -63,15 +75,21 @@ export class PasswordResetController {
         @Body() credential: VerifyPasswordResetRequestDto
     ) {
         const token = this.tokenService.extractTokenFromRequest(req);
-        const result: Result<any, ExceptionBase> =
+        const result: Result<PasswordResetRequestAggregate, ExceptionBase> =
             await this.commandBus.execute(
-                new VerifyPasswordResetAttemptCommand({ ...credential, token })
+                new VerifyPasswordResetAttemptCommand({
+                    token,
+                    email: credential.email,
+                    otpcode: credential.otpcode,
+                })
             );
 
         return match(result, {
-            Ok: () => new VerifyPasswordResetRequestResponse(),
-            Err: (error: Error) => {
-                throw error;
+            Ok: (agg) => {
+                return new VerifyPasswordResetRequestResponse();
+            },
+            Err: (error: ExceptionBase) => {
+                throw new BadRequestException(error);
             },
         });
     }
