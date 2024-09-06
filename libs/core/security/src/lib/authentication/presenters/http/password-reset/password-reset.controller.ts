@@ -55,10 +55,18 @@ export class PasswordResetController {
     })
     @Post('verify')
     async verifyPassword(@Body() credential: VerifyPasswordResetRequestDto) {
-        const result = await this.commandBus.execute(
-            new VerifyPasswordResetAttemptCommand(credential)
-        );
-        return result;
+        // TODO: Get the token from the header
+        const result: Result<any, ExceptionBase> =
+            await this.commandBus.execute(
+                new VerifyPasswordResetAttemptCommand(credential)
+            );
+
+        return match(result, {
+            Ok: () => new VerifyPasswordResetRequestResponse(),
+            Err: (error: Error) => {
+                throw error;
+            },
+        });
     }
 
     @ApiOkResponse()
