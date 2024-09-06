@@ -22,7 +22,7 @@ async function bootstrap() {
         `  Application is running on: http://localhost:${config.port}/${globalPrefix}`
     );
     logger.log(
-        `  Documentation is running on: http://localhost:${config.port}/${globalPrefix}/docs`
+        `  Documentation is running on: http://localhost:${config.port}/docs`
     );
 
     await app.listen(port);
