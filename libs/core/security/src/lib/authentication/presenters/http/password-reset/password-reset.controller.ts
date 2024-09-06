@@ -1,13 +1,10 @@
-import {
-    Controller,
-    Body,
-    Post,
-    ConflictException as ConflictHttpException,
-} from '@nestjs/common';
+import { Controller, Body, Post, UseGuards, Req } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiDocsAuthentication } from '../swagger';
 import { CommandBus } from '@nestjs/cqrs';
 import {
+    AuthenticationTokenService,
+    JwtPasswordResetSessionGuard,
     RequestUserPassswordResetCommand,
     ResetPasswordCommand,
     VerifyPasswordResetAttemptCommand,
@@ -25,11 +22,15 @@ import {
 } from './responses';
 import { Result, match } from 'oxide.ts';
 import { ExceptionBase } from '@goran/common';
+import { Request } from 'express';
 
 @ApiTags('auth', 'password-reset')
 @Controller('auth/password-reset')
 export class PasswordResetController {
-    constructor(private readonly commandBus: CommandBus) { }
+    constructor(
+        private readonly commandBus: CommandBus,
+        private readonly tokenService: AuthenticationTokenService
+    ) {}
 
     @ApiOkResponse()
     @ApiOperation({
@@ -55,12 +56,16 @@ export class PasswordResetController {
     @ApiOperation({
         summary: ApiDocsAuthentication.operationsSummary.passwordVerify,
     })
+    @UseGuards(JwtPasswordResetSessionGuard)
     @Post('verify')
-    async verifyPassword(@Body() credential: VerifyPasswordResetRequestDto) {
-        // TODO: Get the token from the header
+    async verifyPassword(
+        @Req() req: Request,
+        @Body() credential: VerifyPasswordResetRequestDto
+    ) {
+        const token = this.tokenService.extractTokenFromRequest(req);
         const result: Result<any, ExceptionBase> =
             await this.commandBus.execute(
-                new VerifyPasswordResetAttemptCommand(credential)
+                new VerifyPasswordResetAttemptCommand({ ...credential, token })
             );
 
         return match(result, {
@@ -75,11 +80,23 @@ export class PasswordResetController {
     @ApiOperation({
         summary: ApiDocsAuthentication.operationsSummary.passwordVerify,
     })
-    @Post('change')
-    async resetPassword(@Body() credential: ResetPasswordDto) {
-        const result = await this.commandBus.execute(
-            new ResetPasswordCommand(credential)
-        );
-        return result;
+    @UseGuards(JwtPasswordResetSessionGuard)
+    @Post('reset')
+    async resetPassword(
+        @Req() req: Request,
+        @Body() credential: ResetPasswordDto
+    ) {
+        const token = this.tokenService.extractTokenFromRequest(req);
+        const result: Result<any, ExceptionBase> =
+            await this.commandBus.execute(
+                new ResetPasswordCommand({ ...credential, token })
+            );
+
+        return match(result, {
+            Ok: () => new ResetPasswordResponse(),
+            Err: (error: Error) => {
+                throw error;
+            },
+        });
     }
 }

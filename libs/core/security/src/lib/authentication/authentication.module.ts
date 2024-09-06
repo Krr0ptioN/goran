@@ -9,6 +9,7 @@ import {
 import {
     AuthenticationTokenService,
     PasswordService,
+    PasswordResetSessionService,
 } from './application/services';
 import {
     RequestPasswordResetCommandHandler,
@@ -25,10 +26,21 @@ import {
     PasswordResetTokenFactory,
 } from './application/factories';
 import { PasswordResetRequestMapper } from './application/mappers';
+import { PasswordResetRequestRepository } from './application/ports';
+import { PostgreSqlDrizzlePasswordResetRequestRepository } from './infrastructure/persistence/postgres-password-reset-request.repository';
 
 const factories = [PasswordResetTokenFactory, AuthenticationTokenFactory];
-const services = [AuthenticationTokenService, PasswordService];
+const services = [
+    AuthenticationTokenService,
+    PasswordService,
+    PasswordResetSessionService,
+];
 const mappers = [PasswordResetRequestMapper];
+
+const repo = {
+    provide: PasswordResetRequestRepository,
+    useClass: PostgreSqlDrizzlePasswordResetRequestRepository,
+};
 
 const commandHanlders = [
     SignupCommandHandler,
@@ -43,7 +55,13 @@ const controllers = [
     AuthenticationTokenController,
 ];
 
-const providers = [...mappers, ...commandHanlders, ...services, ...factories];
+const providers = [
+    ...mappers,
+    ...commandHanlders,
+    ...services,
+    ...factories,
+    repo,
+];
 
 @Module({
     imports: [
@@ -57,4 +75,4 @@ const providers = [...mappers, ...commandHanlders, ...services, ...factories];
     exports: [...services],
     controllers,
 })
-export class AuthenticationModule {}
+export class AuthenticationModule { }
