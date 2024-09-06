@@ -23,7 +23,7 @@ export class PasswordResetAuthStrategy extends PassportStrategy(Strategy) {
 
     async validate(payload: JwtPasswordResetPayload): Promise<UserEntity> {
         const userResult = await this.userService.findOneByEmail(payload.email);
-        if (!userResult.isSome()) {
+        if (userResult.isNone()) {
             throw new UnauthorizedException();
         }
         return userResult.unwrap();
