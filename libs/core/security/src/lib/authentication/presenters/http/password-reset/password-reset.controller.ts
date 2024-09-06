@@ -54,7 +54,7 @@ export class PasswordResetController {
         summary: ApiDocsAuthentication.operationsSummary.passwordVerify,
     })
     @Post('verify')
-    async verifyPassword(@Body credential: VerifyPasswordResetRequestDto) {
+    async verifyPassword(@Body() credential: VerifyPasswordResetRequestDto) {
         const result = await this.commandBus.execute(
             new VerifyPasswordResetAttemptCommand(credential)
         );
@@ -66,7 +66,7 @@ export class PasswordResetController {
         summary: ApiDocsAuthentication.operationsSummary.passwordVerify,
     })
     @Post('change')
-    async resetPassword() {
+    async resetPassword(@Body() credential: ResetPasswordDto) {
         const result = await this.commandBus.execute(
             new ResetPasswordCommand(credential)
         );
