@@ -1,14 +1,14 @@
 import { Logger } from '@nestjs/common';
 import { ChangeUserUsernameCommand } from './change-user-username.command';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { UsersRepository } from '@goran/users';
+import { WriteModelUsersRepository } from '../../ports';
 
 @CommandHandler(ChangeUserUsernameCommand)
 export class ChangeUserUsernameCommandHandler
     implements ICommandHandler<ChangeUserUsernameCommand> {
     private readonly logger = new Logger(ChangeUserUsernameCommandHandler.name);
 
-    constructor(private readonly userRepo: UsersRepository) { }
+    constructor(private readonly userRepo: WriteModelUsersRepository) { }
 
     async execute(command: ChangeUserUsernameCommand) {
         this.logger.verbose(

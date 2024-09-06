@@ -1,17 +1,36 @@
-import { Logger } from '@nestjs/common';
+import { BadRequestException, Logger } from '@nestjs/common';
 import { VerifyPasswordResetAttemptCommand } from './verify-password-reset-attempt.command';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { PasswordResetRequestRepository } from '../../ports';
+import { OtpCodeVO } from '../../../domain';
+import { PasswordResetSessionService } from '../../services/password-reset-session.service';
 
 @CommandHandler(VerifyPasswordResetAttemptCommand)
 export class VerifyPasswordResetAttemptCommandHandler
-    implements ICommandHandler<VerifyPasswordResetAttemptCommand> {
-    private readonly logger = new Logger(VerifyPasswordResetAttemptCommand.name);
+    implements ICommandHandler<VerifyPasswordResetAttemptCommand>
+{
+    private readonly logger = new Logger(
+        VerifyPasswordResetAttemptCommand.name
+    );
 
-    // TODO: It should generate a password reset attempt token and return it to the user
+    constructor(
+        private readonly repository: PasswordResetRequestRepository,
+        private readonly sessionService: PasswordResetSessionService
+    ) {}
+
     async execute(command: VerifyPasswordResetAttemptCommand) {
-        this.logger.log(
-            'Verify Password reset attempt requested for ' + command.email,
-            command.otpcode
+        const requestAgg = await this.sessionService.getAggByToken(
+            command.token
         );
+
+        const verifyResult = requestAgg.verify(
+            new OtpCodeVO({ value: command.otpcode })
+        );
+
+        if (verifyResult.isErr())
+            throw new BadRequestException(verifyResult.unwrap());
+
+        const saveResult = await this.repository.save(requestAgg);
+        return saveResult;
     }
 }
