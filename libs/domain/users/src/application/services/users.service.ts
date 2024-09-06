@@ -14,13 +14,9 @@ import {
     CreateUserCommand,
     DeleteUserCommand,
 } from '../commands';
-import {
-    UserNotFoundError,
-    ProvideUsernameOrEmailError,
-    UserEntity,
-} from '../../domain';
+import { ProvideUsernameOrEmailError, UserEntity } from '../../domain';
 import { ExceptionBase } from '@goran/common';
-import { Err, Ok, Option, Result } from 'oxide.ts';
+import { Err, Option, Result } from 'oxide.ts';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 
 @Injectable()
@@ -29,7 +25,7 @@ export class UsersService {
         private readonly commandBus: CommandBus,
         private readonly queryBus: QueryBus,
         private readonly mapper: UserMapper
-    ) {}
+    ) { }
 
     async changeEmail(userDto: UserModel, newEmail: string) {
         const user = await this.mapper.toDomain(userDto);
@@ -66,11 +62,15 @@ export class UsersService {
         return await this.queryBus.execute(query);
     }
 
-    async findOneByEmail(email: string): Promise<Option<UserEntity>> {
+    async findOneByEmail(
+        email: string
+    ): Promise<Result<UserModel, ExceptionBase>> {
         return await this.queryBus.execute(new FindOneUserByEmailQuery(email));
     }
 
-    async findOneByUsername(username: string): Promise<Option<UserEntity>> {
+    async findOneByUsername(
+        username: string
+    ): Promise<Result<UserModel, ExceptionBase>> {
         return await this.queryBus.execute(
             new FindOneUserByUsernameQuery(username)
         );
@@ -82,24 +82,17 @@ export class UsersService {
     }: {
         username?: string;
         email?: string;
-    }): Promise<Result<UserEntity, ExceptionBase>> {
-        let foundedUser: Option<UserEntity>;
+    }): Promise<Result<UserModel, ExceptionBase>> {
         if (email) {
-            foundedUser = await this.findOneByEmail(email);
+            return await this.findOneByEmail(email);
         } else if (username) {
-            foundedUser = await this.findOneByUsername(username);
+            return await this.findOneByUsername(username);
         } else {
             return Err(new ProvideUsernameOrEmailError());
         }
-
-        if (foundedUser.isSome()) {
-            return Ok(foundedUser.unwrap());
-        } else {
-            return Err(new UserNotFoundError());
-        }
     }
 
-    async findOneById(id: string): Promise<Option<UserEntity>> {
+    async findOneById(id: string): Promise<Option<UserModel>> {
         return await this.queryBus.execute(new FindOneUserByIdQuery(id));
     }
 

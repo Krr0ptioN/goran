@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { eq } from 'drizzle-orm/expressions';
 import { DrizzleService, UsersDataPgTable } from '@goran/drizzle-data-access';
-import { UsersRepository, UserMapper, UserModel } from '../../../application';
+import { UserMapper, UserModel, WriteModelUsersRepository, ReadModelUsersRepository } from '../../../application';
 import {
     UserAlreadyExistsError,
     UserNotFoundError,
@@ -14,12 +14,11 @@ import { ExceptionBase, Paginated, PaginatedQueryParams } from '@goran/common';
 
 @Injectable()
 export class PostgreSqlDrizzleUsersRepository
-    implements Partial<UsersRepository>
-{
+    implements Partial<ReadModelUsersRepository>, Partial<WriteModelUsersRepository> {
     constructor(
         private readonly drizzleService: DrizzleService,
         private readonly mapper: UserMapper
-    ) {}
+    ) { }
 
     async findAllPaginated(
         params: PaginatedQueryParams

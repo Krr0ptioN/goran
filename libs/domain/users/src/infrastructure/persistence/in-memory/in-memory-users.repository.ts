@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { UsersRepository, UserMapper, UserModel } from '../../../application';
+import { UserMapper, UserModel, WriteModelUsersRepository, ReadModelUsersRepository } from '../../../application';
 import {
     EmailAlreadyRegisteredError,
     UserEntity,
@@ -13,7 +13,9 @@ import { paginateArray } from '@goran/utils';
 import { Err, None, Ok, Option, Result, Some } from 'oxide.ts';
 
 @Injectable()
-export class InMemoryUsersRepository implements UsersRepository {
+export class InMemoryUsersRepository
+    implements Partial<ReadModelUsersRepository>, Partial<WriteModelUsersRepository> {
+
     constructor(private readonly mapper: UserMapper) {
         this.users = [];
     }
