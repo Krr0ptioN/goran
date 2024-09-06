@@ -4,6 +4,7 @@ import { ApplicationBootstrapOptions } from '../bootstrap';
 import 'dotenv/config';
 
 export default (): ApplicationBootstrapOptions => ({
+    port: parseInt(process.env[CONFIG_APP.SERVER_PORT]) || 3000,
     mail: {
         provider: process.env[CONFIG_APP.MAIL_INFRA] as MailInfraProvider,
         options: {
