@@ -37,7 +37,7 @@ export class AuthenticationController {
         const result: Result<AuthenticationCredentialDto, ExceptionBase> =
             await this.commandBus.execute(new SignupCommand(body));
 
-        return match(result, {
+        match(result, {
             Ok: (credential: AuthenticationCredentialDto) => {
                 res.cookie('refreshToken', credential.tokens.refreshToken, {
                     httpOnly: true,
@@ -45,10 +45,12 @@ export class AuthenticationController {
                     sameSite: 'none',
                 });
 
-                return new SignUpSuccessResponse({
-                    accessToken: credential.tokens.accessToken,
-                    userId: credential.userId,
-                });
+                res.send(
+                    new SignUpSuccessResponse({
+                        accessToken: credential.tokens.accessToken,
+                        userId: credential.userId,
+                    })
+                );
             },
             Err: (error: Error) => {
                 if (error instanceof UserAlreadyExistsError)
@@ -65,7 +67,7 @@ export class AuthenticationController {
         const result: Result<AuthenticationCredentialDto, ExceptionBase> =
             await this.commandBus.execute(new SigninCommand(body));
 
-        return match(result, {
+        match(result, {
             Ok: (credential: AuthenticationCredentialDto) => {
                 res.cookie('refresh_token', credential.tokens.refreshToken, {
                     httpOnly: true,
@@ -73,10 +75,12 @@ export class AuthenticationController {
                     sameSite: 'none',
                 });
 
-                return new SignInSuccessResponse({
-                    accessToken: credential.tokens.accessToken,
-                    userId: credential.userId,
-                });
+                res.send(
+                    new SignInSuccessResponse({
+                        accessToken: credential.tokens.accessToken,
+                        userId: credential.userId,
+                    })
+                );
             },
             Err: (error: Error) => {
                 if (error instanceof ExceptionBase)
