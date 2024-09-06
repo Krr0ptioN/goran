@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InvalidTokenError, TokenValueObject } from '../../domain';
@@ -8,6 +8,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { AggregateID } from '@goran/common';
 import { AuthenticationTokenFactory } from '../factories';
+import { Request } from 'express';
 
 enum TokenState {
     REVOKED = 'REVOKED',
@@ -69,5 +70,13 @@ export class AuthenticationTokenService {
 
     async revokeToken(token: string) {
         await this.cacheManager.set(token, TokenState.REVOKED, this.refreshIn);
+    }
+
+    extractTokenFromRequest(req: Request) {
+        const token = req.headers?.authorization?.split(' ')[1];
+        if (!token) {
+            throw new UnauthorizedException('Token must be provided');
+        }
+        return token;
     }
 }
