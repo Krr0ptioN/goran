@@ -17,26 +17,26 @@ export class Paginated<T> {
 
 export type OrderBy = { field: string | true; param: 'asc' | 'desc' };
 
-export type PaginatedQueryParams = {
+export interface PaginatedQueryParams {
     limit: number;
     page: number;
     offset: number;
     orderBy: OrderBy;
-};
-
-export interface WriteManyModelRepositoryPort<Entity> {
-    insert(entities: Entity[]): Promise<Result<Entity[], ExceptionBase>>;
 }
 
-export interface WriteModelRepositoryPort<Entity> {
-    insertOne(entity: Entity): Promise<Result<Entity, ExceptionBase>>;
-    delete(entity: Entity): Promise<Result<boolean, ExceptionBase>>;
+export abstract class WriteManyModelRepositoryPort<Entity> {
+    abstract insert(entities: Entity[]): Promise<Result<Entity[], ExceptionBase>>;
 }
 
-export interface ReadModelRepositoryPort<EntityModel> {
-    findOneById(id: string): Promise<Option<EntityModel>>;
-    findAll(): Promise<EntityModel[]>;
-    findAllPaginated(
+export abstract class WriteModelRepositoryPort<Entity> {
+    abstract insertOne(entity: Entity): Promise<Result<Entity, ExceptionBase>>;
+    abstract delete(entity: Entity): Promise<Result<boolean, ExceptionBase>>;
+}
+
+export abstract class ReadModelRepositoryPort<EntityModel> {
+    abstract findOneById(id: string): Promise<Option<EntityModel>>;
+    abstract findAll(): Promise<EntityModel[]>;
+    abstract findAllPaginated(
         params: PaginatedQueryParams
     ): Promise<Paginated<EntityModel>>;
 }
