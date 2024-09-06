@@ -1,12 +1,14 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { FindOneUserByEmailQuery } from './findone-user-by-email.query';
 import { Err, Ok, Result } from 'oxide.ts';
-import { UsersRepository, UserNotFoundError, UserModel } from '@goran/users';
+import { UserNotFoundError } from '../../../domain';
+import { UserModel } from '../../models';
+import { ReadModelUsersRepository } from '../../ports';
 import { ExceptionBase } from '@goran/common';
 
 @QueryHandler(FindOneUserByEmailQuery)
 export class FindOneUserByEmailQueryHandler implements IQueryHandler {
-    constructor(private readonly userRepo: UsersRepository) { }
+    constructor(private readonly userRepo: ReadModelUsersRepository) { }
 
     async execute(
         query: FindOneUserByEmailQuery

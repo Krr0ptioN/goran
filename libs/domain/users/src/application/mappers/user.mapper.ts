@@ -18,7 +18,7 @@ export class UserMapper implements Mapper<UserEntity, UserModel> {
         };
     }
 
-    toDomain(record: UserModel): UserEntity {
+    async toDomain(record: UserModel): Promise<UserEntity> {
         const entity = new UserEntity({
             id: record.id,
             createdAt: new Date(record.createdAt),
