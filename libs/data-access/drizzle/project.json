@@ -1,36 +1,44 @@
 {
-  "name": "drizzle-data-access",
-  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/data-access/drizzle/src",
-  "projectType": "library",
-  "tags": [],
-  "targets": {
-    "generate": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npx drizzle-kit generate:pg --schema libs/data-acces/drizzle/src/schema.ts --out libs/data-access/drizzle/src/drizzle"
-      }
-    },
-    "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": ["libs/data-acces/drizzle/**/*.ts"]
-      }
-    },
-    "seed": {
-      "executor": "nx:run-commands",
-      "configurations": {
+    "name": "drizzle-data-access",
+    "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "libs/data-access/drizzle/src",
+    "projectType": "library",
+    "tags": [],
+    "targets": {
+        "generate": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "npx drizzle-kit generate --config=libs/data-access/drizzle/src/config.ts"
+            }
+        },
+        "lint": {
+            "executor": "@nx/linter:eslint",
+            "outputs": [
+                "{options.outputFile}"
+            ],
+            "options": {
+                "lintFilePatterns": [
+                    "libs/data-acces/drizzle/**/*.ts"
+                ]
+            }
+        },
         "seed": {
-          "commands": ["npx tsx libs/data-access/drizzle/src/migrate.ts"]
+            "executor": "nx:run-commands",
+            "configurations": {
+                "seed": {
+                    "commands": [
+                        "npx tsx libs/data-access/drizzle/src/migrate.ts"
+                    ]
+                }
+            }
+        },
+        "db-migrate": {
+            "executor": "nx:run-commands",
+            "options": {
+                "commands": [
+                    "npx tsx libs/data-access/drizzle/src/migrate.ts"
+                ]
+            }
         }
-      }
-    },
-    "db-migrate": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": ["npx tsx libs/data-access/drizzle/src/migrate.ts"]
-      }
     }
-  }
 }
