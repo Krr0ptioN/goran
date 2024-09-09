@@ -2863,7 +2863,7 @@ __metadata:
     react-resizable-panels: "npm:^2.1.2"
     recharts: "npm:^2.12.7"
     reflect-metadata: "npm:^0.1.14"
-    resend: "npm:^3.5.0"
+    resend: "npm:^4.0.0"
     rxjs: "npm:^7.8.1"
     sonner: "npm:^1.5.0"
     supertest: "npm:^6.3.4"
@@ -8136,9 +8136,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-email/render@npm:0.0.16":
-  version: 0.0.16
-  resolution: "@react-email/render@npm:0.0.16"
+"@react-email/render@npm:0.0.17":
+  version: 0.0.17
+  resolution: "@react-email/render@npm:0.0.17"
   dependencies:
     html-to-text: "npm:9.0.5"
     js-beautify: "npm:^1.14.11"
@@ -8146,7 +8146,7 @@ __metadata:
   peerDependencies:
     react: ^18.2.0
     react-dom: ^18.2.0
-  checksum: 10c0/1cc3479f674f070f8564b8944dcb86081b7f52b67742d0c255d79b6cea989be0e2207d2adcd5a920ff4b41fbe360d655ac97a71f8ebd5e6d78441cafcfc668dc
+  checksum: 10c0/34a1c5a55586d7cd723638d8cd5328fddf30015e5065a2e9d5204772e0532e84d63af1b2b1b8ec02cef52a8f57d34871200c0075a9ed7b2861362d8138d3db5e
   languageName: node
   linkType: hard
 
@@ -24043,12 +24043,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resend@npm:^3.5.0":
-  version: 3.5.0
-  resolution: "resend@npm:3.5.0"
+"resend@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "resend@npm:4.0.0"
   dependencies:
-    "@react-email/render": "npm:0.0.16"
-  checksum: 10c0/9920a456b926ef7be165a550c1c02355a8390fb215f05778118e3758a636411d49e4fa1ce3c648f42499e5928e7e159e2ebcce89b991c5708ae8b3393a84c242
+    "@react-email/render": "npm:0.0.17"
+  checksum: 10c0/45934a4a044ead8afe17e9d9982f468f66979b4078b15d512b440354467bc50946a856e1eb8e7fe5af9113cf32e0495995ab00a039692d7e2778022041f50105
   languageName: node
   linkType: hard
 
