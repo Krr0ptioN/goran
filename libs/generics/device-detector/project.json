@@ -1,0 +1,9 @@
+{
+    "name": "device-detector",
+    "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "libs/generics/device-detector/src",
+    "projectType": "library",
+    "tags": [],
+    "// targets": "to see all targets run: nx show project device-detector --web",
+    "targets": {}
+}
