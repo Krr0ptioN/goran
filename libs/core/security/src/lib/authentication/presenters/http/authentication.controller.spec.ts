@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthenticationController } from './authentication.controller';
 import {
   AuthenticationPasswordService,
-  AuthenticationService,
   AuthenticationTokenService,
 } from '../services';
 import { UsersModule } from '@goran/users';
@@ -22,7 +21,6 @@ describe('AuthenticationController', () => {
         CacheModule.register({ isGlobal: true }),
       ],
       providers: [
-        AuthenticationService,
         AuthenticationTokenService,
         AuthenticationPasswordService,
       ],

@@ -5,15 +5,14 @@ import {
     Logger,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { AuthenticationTokenService } from '../services';
 import { Request } from 'express';
 import { UnauthorizedException } from '@nestjs/common';
-import { InvalidTokenError } from '../../domain/errors';
+import {InvalidTokenError, TokensService } from '../../../tokens';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('local') implements CanActivate {
     logger = new Logger(JwtAuthGuard.name);
-    constructor(private readonly tokenService: AuthenticationTokenService) {
+    constructor(private readonly tokenService: TokensService) {
         super();
     }
 

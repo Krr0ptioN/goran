@@ -15,8 +15,8 @@ import {
     DeleteUserCommand,
 } from '../commands';
 import { ProvideUsernameOrEmailError, UserEntity } from '../../domain';
-import { ExceptionBase } from '@goran/common';
-import { Err, Option, Result } from 'oxide.ts';
+import { ExceptionBase, Optional } from '@goran/common';
+import { Err, None, Option, Result, Some } from 'oxide.ts';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 
 @Injectable()
@@ -80,8 +80,8 @@ export class UsersService {
         username,
         email,
     }: {
-        username?: string;
-        email?: string;
+        username: Optional<string>;
+        email: Optional<string>;
     }): Promise<Result<UserModel, ExceptionBase>> {
         if (email) {
             return await this.findOneByEmail(email);
@@ -94,6 +94,20 @@ export class UsersService {
 
     async findOneById(id: string): Promise<Option<UserModel>> {
         return await this.queryBus.execute(new FindOneUserByIdQuery(id));
+    }
+
+    /**
+     * @param id - User id
+     * @description Functions just like {findOneById} instead provide domain type instead of model.
+     * @returns User domain entity
+     */
+    async findOneByIdDomain(id: string): Promise<Option<UserEntity>> {
+        const userModelOption = await this.queryBus.execute(
+            new FindOneUserByIdQuery(id)
+        );
+        return userModelOption.isSome()
+            ? Some(await this.mapper.toDomain(userModelOption.unwrap()))
+            : None;
     }
 
     async delete(command: DeleteUserCommand) {

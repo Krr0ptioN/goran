@@ -1,26 +1,29 @@
 import { Logger } from '@nestjs/common';
 import { SignupCommand } from './signup.command';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { PasswordService } from '../../services';
 import { UsersService } from '@goran/users';
 import { Ok, Result } from 'oxide.ts';
-import { ExceptionBase } from '@goran/common';
+import { ExceptionBase, Guard } from '@goran/common';
 import { AuthenticationCredentialDto } from '../../dtos';
-import { AuthenticationTokenFactory } from '../../factories';
+import { PasswordService, SessionsService } from '@goran/security';
+import { IpLocatorService } from '@goran/ip-locator';
+import { DeviceDetectorService } from '@goran/device-detector';
 
 @CommandHandler(SignupCommand)
 export class SignupCommandHandler implements ICommandHandler<SignupCommand> {
     constructor(
-        private tokenFactory: AuthenticationTokenFactory,
-        private passwordService: PasswordService,
-        private usersService: UsersService
-    ) { }
+        private readonly sessionsService: SessionsService,
+        private readonly passwordService: PasswordService,
+        private readonly usersService: UsersService,
+        private readonly ipLocator: IpLocatorService,
+        private readonly deviceDetector: DeviceDetectorService
+    ) {}
     private readonly logger = new Logger(SignupCommand.name);
 
     async execute(
         command: SignupCommand
     ): Promise<Result<AuthenticationCredentialDto, ExceptionBase>> {
-        const hashedPassword = this.passwordService.hashPassword(
+        const hashedPassword = await this.passwordService.hashPassword(
             command.password
         );
         const userResult = await this.usersService.create({
@@ -33,11 +36,19 @@ export class SignupCommandHandler implements ICommandHandler<SignupCommand> {
         }
 
         const user = userResult.unwrap();
-        const tokens = this.tokenFactory.generateTokens({
-            userId: user.getProps().id,
-        });
 
         this.logger.verbose(`User with ${user.email} email signed up`);
+
+        const sessionCreationResult = await this.sessionsService.createSession(
+            user,
+            command.clientInfo.ip ?? '',
+            await this.ipLocator.getLocation(command.clientInfo.ip ?? ''),
+            !Guard.isEmpty(command.clientInfo.userAgent)
+                ? this.deviceDetector.getDevice(command.clientInfo.userAgent ?? '')
+                : undefined
+        );
+
+        const [tokens, session] = sessionCreationResult.unwrap();
 
         return Ok(new AuthenticationCredentialDto({ userId: user.id, tokens }));
     }

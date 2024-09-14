@@ -1,21 +1,25 @@
 import { Logger } from '@nestjs/common';
 import { SigninCommand } from './signin.command';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { PasswordService } from '../../services';
-import { UsersService } from '@goran/users';
+import { PasswordService, SessionsService } from '@goran/security';
+import { UserMapper, UsersService } from '@goran/users';
 import { Result, Err, Ok } from 'oxide.ts';
 import { InvalidAuthenticationCredentials } from '../../../domain';
 import { AuthenticationCredentialDto } from '../../dtos';
-import { ExceptionBase } from '@goran/common';
-import { AuthenticationTokenFactory } from '../../factories';
+import { ExceptionBase, Guard } from '@goran/common';
+import { IpLocatorService } from '@goran/ip-locator';
+import { DeviceDetectorService } from '@goran/device-detector';
 
 @CommandHandler(SigninCommand)
 export class SigninCommandHandler implements ICommandHandler<SigninCommand> {
     private readonly logger = new Logger(SigninCommand.name);
 
     constructor(
-        private tokenFactory: AuthenticationTokenFactory,
-        private passwordService: PasswordService,
+        private readonly passwordService: PasswordService,
+        private readonly ipLocator: IpLocatorService,
+        private readonly sessionsService: SessionsService,
+        private readonly deviceDetector: DeviceDetectorService,
+        private readonly userMapper: UserMapper,
         private usersService: UsersService
     ) {}
 
@@ -31,21 +35,32 @@ export class SigninCommandHandler implements ICommandHandler<SigninCommand> {
         if (userResult.isErr()) {
             return Err(new InvalidAuthenticationCredentials());
         }
-        const user = userResult.unwrap();
-        const passwordIsValid = await this.passwordService.validatePassword(
+        const userDto = userResult.unwrap();
+        const passwordIsValid = await this.passwordService.comparePassword(
             password,
-            user.password
+            userDto.password
         );
-
+        const user = await this.userMapper.toDomain(userDto);
         if (!passwordIsValid) {
             return Err(new InvalidAuthenticationCredentials());
         }
 
-        const tokens = this.tokenFactory.generateTokens({
-            userId: user.id,
-        });
+        const sessionCreationResult = await this.sessionsService.createSession(
+            user,
+            command.clientInfo.ip ?? '',
+            await this.ipLocator.getLocation(command.clientInfo.ip ?? ''),
+            !Guard.isEmpty(command.clientInfo.userAgent)
+                ? this.deviceDetector.getDevice(
+                      command.clientInfo.userAgent ?? ''
+                  )
+                : undefined
+        );
 
-        this.logger.verbose(`User with ${user.email} email is authenticated`);
+        const [tokens, session] = sessionCreationResult.unwrap();
+
+        this.logger.verbose(
+            `User with ${userDto.email} email is authenticated`
+        );
 
         return Ok(new AuthenticationCredentialDto({ userId: user.id, tokens }));
     }

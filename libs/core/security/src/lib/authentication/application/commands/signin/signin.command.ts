@@ -1,4 +1,5 @@
-import { Command, CommandProps } from '@goran/common';
+import { Command, CommandProps, Optional } from '@goran/common';
+import { ClientInfoDto } from '../../dtos';
 
 /**
  * Signup - User Registration
@@ -9,14 +10,15 @@ import { Command, CommandProps } from '@goran/common';
  * @param email
  */
 export class SigninCommand extends Command {
-  readonly email?: string;
-  readonly username?: string;
-  readonly password: string;
+    readonly email: Optional<string>;
+    readonly username: Optional<string>;
+    readonly password: string;
+    readonly clientInfo: ClientInfoDto;
 
-  constructor(props: CommandProps<SigninCommand>) {
-    super(props);
-    this.username = props.username;
-    this.email = props.email;
-    this.password = props.password;
-  }
+    constructor(props: CommandProps<SigninCommand>) {
+        super(props);
+        this.username = props.username;
+        this.email = props.email;
+        this.password = props.password;
+    }
 }

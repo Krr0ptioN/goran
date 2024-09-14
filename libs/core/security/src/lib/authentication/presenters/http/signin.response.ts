@@ -2,6 +2,7 @@ import { ResponseBase } from '@goran/common';
 
 interface SignInResponseProps {
     accessToken: string;
+    refreshToken: string;
     userId: string;
 }
 
