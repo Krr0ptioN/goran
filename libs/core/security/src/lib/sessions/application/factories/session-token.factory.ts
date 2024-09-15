@@ -21,10 +21,17 @@ export class SessionTokenFactory {
         CONFIG_APP.SECURITY_REFRESH_IN
     );
 
+    generateAccessTokenForRefreshToken(
+        refreshToken: string,
+        payload: JwtPayloadSign
+    ): TokenValueObject {
+        return new TokenValueObject({
+            accessToken: this.generateAccessToken(payload),
+            refreshToken,
+        });
+    }
+
     generateTokens(payload: JwtPayloadSign): TokenValueObject {
-        this.logger.verbose(
-            `Generated access and refresh token for ${payload.userId} user`
-        );
         return new TokenValueObject({
             accessToken: this.generateAccessToken(payload),
             refreshToken: this.generateRefreshToken(payload),
