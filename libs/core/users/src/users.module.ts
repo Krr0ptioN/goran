@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { UsersService } from './application/services';
 import { CreateUserCommandHandler } from './application/commands/create-user';
 import { DeleteUserCommandHandler } from './application/commands/delete-user/delete-user.command-handler';
@@ -14,7 +14,6 @@ import {
 } from './application/ports';
 import { PostgreSqlDrizzleUsersRepository } from './infrastructure/persistence/drizzle/postgres-drizzle-users.repository';
 import { UserMapper } from './application/mappers/user.mapper';
-import { CqrsModule } from '@nestjs/cqrs';
 
 const writeRepo = {
     provide: WriteModelUsersRepository,
@@ -35,8 +34,8 @@ const queries = [
     FindOneUserByUsernameQueryHandler,
 ];
 
+@Global()
 @Module({
-    imports: [CqrsModule],
     providers: [
         UserMapper,
         ...queries,
@@ -47,4 +46,4 @@ const queries = [
     ],
     exports: [UserMapper, UsersService],
 })
-export class UsersModule {}
+export class UsersModule { }
