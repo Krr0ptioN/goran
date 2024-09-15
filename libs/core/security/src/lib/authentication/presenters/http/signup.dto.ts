@@ -1,6 +1,6 @@
 import { IsEmail, IsDefined, IsOptional } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsPassword } from '@goran/security';
+import { IsPassword } from '../../../password';
 import { IsUsername } from '@goran/users';
 import { Optional } from '@goran/common';
 

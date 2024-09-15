@@ -1,7 +1,8 @@
 import { Logger } from '@nestjs/common';
 import { SigninCommand } from './signin.command';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { PasswordService, SessionsService } from '@goran/security';
+import { SessionsService } from '../../../../sessions';
+import { PasswordService } from '../../../../password';
 import { UserMapper, UsersService } from '@goran/users';
 import { Result, Err, Ok } from 'oxide.ts';
 import { InvalidAuthenticationCredentials } from '../../../domain';
@@ -21,7 +22,7 @@ export class SigninCommandHandler implements ICommandHandler<SigninCommand> {
         private readonly deviceDetector: DeviceDetectorService,
         private readonly userMapper: UserMapper,
         private usersService: UsersService
-    ) {}
+    ) { }
 
     async execute(
         command: SigninCommand
@@ -51,8 +52,8 @@ export class SigninCommandHandler implements ICommandHandler<SigninCommand> {
             await this.ipLocator.getLocation(command.clientInfo.ip ?? ''),
             !Guard.isEmpty(command.clientInfo.userAgent)
                 ? this.deviceDetector.getDevice(
-                      command.clientInfo.userAgent ?? ''
-                  )
+                    command.clientInfo.userAgent ?? ''
+                )
                 : undefined
         );
 

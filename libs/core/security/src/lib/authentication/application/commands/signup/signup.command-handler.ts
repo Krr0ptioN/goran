@@ -5,7 +5,8 @@ import { UsersService } from '@goran/users';
 import { Ok, Result } from 'oxide.ts';
 import { ExceptionBase, Guard } from '@goran/common';
 import { AuthenticationCredentialDto } from '../../dtos';
-import { PasswordService, SessionsService } from '@goran/security';
+import { SessionsService } from '../../../../sessions';
+import { PasswordService } from '../../../../password';
 import { IpLocatorService } from '@goran/ip-locator';
 import { DeviceDetectorService } from '@goran/device-detector';
 
@@ -44,7 +45,9 @@ export class SignupCommandHandler implements ICommandHandler<SignupCommand> {
             command.clientInfo.ip ?? '',
             await this.ipLocator.getLocation(command.clientInfo.ip ?? ''),
             !Guard.isEmpty(command.clientInfo.userAgent)
-                ? this.deviceDetector.getDevice(command.clientInfo.userAgent ?? '')
+                ? this.deviceDetector.getDevice(
+                      command.clientInfo.userAgent ?? ''
+                  )
                 : undefined
         );
 

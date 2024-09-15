@@ -1,5 +1,5 @@
 import { IsEmail, IsOptional, IsDefined } from 'class-validator';
-import { IsPassword } from '@goran/security';
+import { IsPassword } from '../../../password';
 import { IsUsername } from '@goran/users';
 import { Optional } from '@goran/common';
 
