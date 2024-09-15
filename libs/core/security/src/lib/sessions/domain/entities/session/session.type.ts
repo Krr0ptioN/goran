@@ -1,6 +1,6 @@
 import { AggregateID, RequireOnlyOne, Optional } from '@goran/common';
 
-type SessionStatus = 'active' | 'revoked';
+export type SessionStatus = 'active' | 'revoked';
 
 export interface SessionProps {
     refreshToken: string;
