@@ -1,1 +1,2 @@
-export * from './postgres-sessions.repository'
+export * from './sessions-write-postgres.repository'
+export * from './postgres-read-sessions.repository'
