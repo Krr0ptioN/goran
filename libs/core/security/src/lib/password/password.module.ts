@@ -1,16 +1,17 @@
-import { Module } from '@nestjs/common';
-import { BcryptPasswordHasher } from './infrastructure/bcrypt-password-hasher';
-import { PasswordService } from './application/services/password.service';
-import { PasswordHasher } from './domain/password-hasher.interface';
+import { Global, Module } from '@nestjs/common';
+import { BcryptPasswordHasher } from './infrastructure';
+import { PasswordService } from './application';
+import { PasswordHasher } from './domain';
 
+@Global()
 @Module({
-  providers: [
-    PasswordService,
-    {
-      provide: PasswordHasher,
-      useClass: BcryptPasswordHasher,
-    },
-  ],
-  exports: [PasswordService],
+    providers: [
+        PasswordService,
+        {
+            provide: PasswordHasher,
+            useClass: BcryptPasswordHasher,
+        },
+    ],
+    exports: [PasswordService],
 })
-export class PasswordModule {}
+export class PasswordModule { }
