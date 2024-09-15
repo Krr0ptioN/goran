@@ -1,9 +1,12 @@
 import { Module } from '@nestjs/common';
-import { PasswordModule } from '../password/password.module';
-import { IpLocatorModule } from '@goran/ip-locator';
-import { DeviceDetectorModule } from '@goran/device-detector';
+import { AuthenticationController } from './presenters/http';
+import {
+    SignupCommandHandler,
+    SigninCommandHandler,
+} from './application/commands';
 
 @Module({
-    imports: [PasswordModule, IpLocatorModule, DeviceDetectorModule],
+    providers: [SignupCommandHandler, SigninCommandHandler],
+    controllers: [AuthenticationController],
 })
 export class AuthenticationModule {}
