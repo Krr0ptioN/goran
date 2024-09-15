@@ -12,7 +12,7 @@ import { PasswordResetSessionService } from '../services/password-reset-session.
 
 @Injectable()
 export class JwtPasswordResetSessionGuard
-    extends AuthGuard('password-reset-session')
+    extends AuthGuard('jwt-password-reset-session')
     implements CanActivate
 {
     logger = new Logger(JwtPasswordResetSessionGuard.name);
@@ -31,7 +31,7 @@ export class JwtPasswordResetSessionGuard
             const requestAgg = await this.sessionService.getAggByToken(token);
             const status = requestAgg.getProps().status;
             if (status === 'successful' || status === 'dismissed') {
-                throw new InvalidTokenError('Invalid token provided');
+                throw new InvalidTokenError();
             }
             return true;
         } catch (error) {
