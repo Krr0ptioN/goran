@@ -141,10 +141,27 @@ export class SessionsService {
         }
     }
 
-    async getActiveSessionsForUser(userId: string): Promise<SessionModel[]> {
-        return await this.sessionsReadRepository.findActiveSessionsByUserId(
-            userId
-        );
+    async revokeSession(
+        sessionId: string
+    ): Promise<Result<SessionEntity, ExceptionBase>> {
+        const sessionOption = await this.sessionsReadRepository.findOneById(sessionId);
+
+        if (sessionOption.isNone())
+            return Err(new SessionNotFoundError());
+
+        try {
+            const session = sessionOption.unwrap();
+            await this.cacheManager.set(
+                session.refreshToken,
+                'revoked',
+                this.refreshIn
+            );
+            return await this.sessionsWriteRepository.revokeByRefreshToken(
+                session.refreshToken
+            );
+        } catch (error) {
+            return Err(new SessionRevokeFailedError());
+        }
     }
 
     async deleteSession(sessionId: string): Promise<void> {
@@ -153,5 +170,20 @@ export class SessionsService {
 
     async getSessionByToken(token: string): Promise<Option<SessionModel>> {
         return await this.sessionsReadRepository.findByRefreshToken(token);
+    }
+
+    /**
+     * @param {AggregateId} userId - User Id
+     * @param {SessionStatus} sessionsStatus - Filtering by status
+     * @returns The list of sessions withe associating session status
+     */
+    async getSessionsByUser(
+        userId: AggregateID,
+        sessionsStatus?: SessionStatus
+    ): Promise<SessionModel[]> {
+        return await this.sessionsReadRepository.findByUserId(
+            userId,
+            sessionsStatus
+        );
     }
 }
