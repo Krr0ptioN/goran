@@ -20,7 +20,7 @@
         "paths": {
             "@goran/brand": ["libs/ui/brand/src/index.ts"],
             "@goran/common": ["libs/shared/common/src/index.ts"],
-            "@goran/config": ["libs/core/config/src/index.ts"],
+            "@goran/config": ["libs/shared/config/src/index.ts"],
             "@goran/device-detector": [
                 "libs/generics/device-detector/src/index.ts"
             ],
@@ -28,7 +28,8 @@
                 "libs/data-access/drizzle/src/index.ts"
             ],
             "@goran/ip-locator": ["libs/generics/ip-locator/src/index.ts"],
-            "@goran/mail": ["libs/core/mail/src/index.ts"],
+            "@goran/library": ["libs/core/library/src/index.ts"],
+            "@goran/mail": ["libs/generics/mail/src/index.ts"],
             "@goran/security": ["libs/core/security/src/index.ts"],
             "@goran/ui-common": ["libs/ui/common/src/index.ts"],
             "@goran/ui-common/*": ["libs/libs/ui-common/src/*"],
