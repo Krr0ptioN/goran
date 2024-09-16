@@ -124,7 +124,7 @@ export class SessionsService {
         });
     }
 
-    async revokeSession(
+    async revokeSessionByRefreshToken(
         refreshToken: string
     ): Promise<Result<SessionEntity, ExceptionBase>> {
         try {
