@@ -6,7 +6,7 @@ import { RequireAtLeastOne } from 'type-fest';
 
 @Injectable()
 export class ResendMailProvider implements MailProvider {
-    constructor(private readonly resendService: ResendService) { }
+    constructor(private readonly resendService: ResendService) {}
 
     public send(mail: RequireAtLeastOne<MailDto, 'html' | 'text'>) {
         this.resendService.send({
