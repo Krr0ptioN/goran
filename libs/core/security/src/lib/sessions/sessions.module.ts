@@ -11,6 +11,8 @@ import {
     SessionsReadModelRepositoryPostgres,
     SessionsWriteModelRepositoryPostgres,
 } from './infrastructure';
+import { RefreshTokenController } from './presenters/http/tokens';
+import { SessionsController } from './presenters/http/sessions';
 
 export class SessionsModule {
     static register(options: { refreshIn: string }): DynamicModule {
@@ -36,6 +38,7 @@ export class SessionsModule {
             ],
             imports: [TokensModule],
             exports: [SessionMapper, SessionsService, SessionTokenFactory],
+            controllers: [RefreshTokenController, SessionsController],
         };
     }
 }
