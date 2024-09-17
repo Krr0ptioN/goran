@@ -2851,7 +2851,7 @@ __metadata:
     passport: "npm:^0.7.0"
     passport-jwt: "npm:^4.0.1"
     pg: "npm:^8.12.0"
-    pg-mem: "npm:^2.8.1"
+    pg-mem: "npm:^3.0.2"
     pnpm: "npm:8"
     postcss: "npm:^8.4.40"
     postgres: "npm:^3.4.4"
@@ -22246,9 +22246,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pg-mem@npm:^2.8.1":
-  version: 2.9.1
-  resolution: "pg-mem@npm:2.9.1"
+"pg-mem@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "pg-mem@npm:3.0.2"
   dependencies:
     functional-red-black-tree: "npm:^1.0.1"
     immutable: "npm:^4.3.4"
@@ -22263,6 +22263,8 @@ __metadata:
     knex: ">=0.20"
     kysely: ">=0.26"
     pg-promise: ">=10.8.7"
+    pg-server: ^0.1.5
+    postgres: ^3.4.4
     slonik: ">=23.0.1"
     typeorm: ">=0.2.29"
   peerDependenciesMeta:
@@ -22278,11 +22280,15 @@ __metadata:
       optional: true
     pg-promise:
       optional: true
+    pg-server:
+      optional: true
+    postgres:
+      optional: true
     slonik:
       optional: true
     typeorm:
       optional: true
-  checksum: 10c0/ee5f2598f68d7e2e877bf0269c4657863ae81c1f3f6bd9cd976b0913a8897f55e45e4c6c5fe542a63c2f33f846b3e68e5301f2f0ecfde54aa1c6e19202dbfaac
+  checksum: 10c0/09d26b2b7067ac348fc2450d137da87690b720fee26308afeb172787b503bb76b306883b764ffc911cabfc8f648e06bb0d1ab6798e2e04a4511213f1f9aeed80
   languageName: node
   linkType: hard
 
