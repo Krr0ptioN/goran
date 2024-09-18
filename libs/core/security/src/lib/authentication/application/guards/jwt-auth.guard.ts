@@ -5,15 +5,21 @@ import {
     Logger,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { AuthenticationTokenService } from '../services';
 import { Request } from 'express';
 import { UnauthorizedException } from '@nestjs/common';
-import { InvalidTokenError } from '../../domain/errors';
+import {
+    InvalidTokenError,
+    TokensService,
+} from '../../../tokens';
+import { SessionsService } from '../../../sessions';
 
 @Injectable()
-export class JwtAuthGuard extends AuthGuard('local') implements CanActivate {
+export class JwtAuthGuard extends AuthGuard('jwt') implements CanActivate {
     logger = new Logger(JwtAuthGuard.name);
-    constructor(private readonly tokenService: AuthenticationTokenService) {
+    constructor(
+        private readonly tokenService: TokensService,
+        private readonly sessionsService: SessionsService
+    ) {
         super();
     }
 
@@ -24,19 +30,19 @@ export class JwtAuthGuard extends AuthGuard('local') implements CanActivate {
         try {
             const user = await this.tokenService.getUserFromToken(token);
             if (user.isNone()) {
-                throw new InvalidTokenError('Invalid token provided');
+                throw new InvalidTokenError();
             }
-            const isTokenRevoked = await this.tokenService.isTokenRevoked(
-                token
-            );
-            if (isTokenRevoked === true) {
-                throw new UnauthorizedException('Token has been revoked');
+            const isTokenRevoked =
+                await this.sessionsService.isRefreshTokenRevoked(token);
+
+            if (isTokenRevoked.isErr() || isTokenRevoked.unwrap()) {
+                throw new UnauthorizedException();
             }
+
             req.user = user;
             return true;
         } catch (error) {
-            this.logger.error(error);
-            throw new UnauthorizedException('Invalid user');
+            throw new InvalidTokenError();
         }
     }
 }

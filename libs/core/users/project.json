@@ -1,0 +1,16 @@
+{
+    "name": "users",
+    "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "libs/core/users/src",
+    "projectType": "library",
+    "tags": [],
+    "targets": {
+        "test": {
+            "executor": "@nx/jest:jest",
+            "options": {
+                "jestConfig": "libs/core/users/jest.config.ts",
+                "passWithNoTests": true
+            }
+        }
+    }
+}
