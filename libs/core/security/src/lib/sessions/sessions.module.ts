@@ -12,7 +12,7 @@ import {
     SessionsWriteModelRepositoryPostgres,
 } from './infrastructure';
 import { RefreshTokenController } from './presenters/http/tokens';
-import { SessionsController } from './presenters/http/sessions';
+import { JwtAuthGuard } from '../authentication';
 
 export class SessionsModule {
     static register(options: { refreshIn: string }): DynamicModule {
@@ -31,14 +31,20 @@ export class SessionsModule {
                 SessionMapper,
                 SessionsService,
                 SessionTokenFactory,
+                JwtAuthGuard,
                 {
                     provide: 'REFRESH_IN',
                     useValue: options.refreshIn,
                 },
             ],
             imports: [TokensModule],
-            exports: [SessionMapper, SessionsService, SessionTokenFactory],
-            controllers: [RefreshTokenController, SessionsController],
+            exports: [
+                JwtAuthGuard,
+                SessionMapper,
+                SessionsService,
+                SessionTokenFactory,
+            ],
+            controllers: [RefreshTokenController],
         };
     }
 }

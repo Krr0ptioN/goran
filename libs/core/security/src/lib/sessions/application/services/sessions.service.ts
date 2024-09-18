@@ -20,6 +20,7 @@ import { SessionModel } from '../sessions.model';
 import {
     SessionNotFoundError,
     SessionRevokeFailedError,
+    SessionDeletionFailedError,
 } from '../../domain/errors';
 import { SessionRevokedError } from '../../domain/errors/session-revoked.error';
 
@@ -34,7 +35,7 @@ export class SessionsService {
         @Inject(CACHE_MANAGER) private cacheManager: Cache,
         @Inject('REFRESH_IN') private readonly refreshIn: number,
         private readonly tokensService: TokensService
-    ) { }
+    ) {}
 
     async createSession(
         user: UserEntity,
@@ -116,11 +117,11 @@ export class SessionsService {
                 result
                     ? Err(new SessionRevokedError())
                     : Ok(
-                        this.sessionTokenFactory.generateAccessTokenForRefreshToken(
-                            refreshToken,
-                            { userId }
-                        )
-                    ),
+                          this.sessionTokenFactory.generateAccessTokenForRefreshToken(
+                              refreshToken,
+                              { userId }
+                          )
+                      ),
         });
     }
 
@@ -144,10 +145,11 @@ export class SessionsService {
     async revokeSession(
         sessionId: string
     ): Promise<Result<SessionEntity, ExceptionBase>> {
-        const sessionOption = await this.sessionsReadRepository.findOneById(sessionId);
+        const sessionOption = await this.sessionsReadRepository.findOneById(
+            sessionId
+        );
 
-        if (sessionOption.isNone())
-            return Err(new SessionNotFoundError());
+        if (sessionOption.isNone()) return Err(new SessionNotFoundError());
 
         try {
             const session = sessionOption.unwrap();
@@ -164,8 +166,16 @@ export class SessionsService {
         }
     }
 
-    async deleteSession(sessionId: string): Promise<void> {
-        await this.sessionsWriteRepository.delete(sessionId);
+    async deleteSession(
+        sessionId: string
+    ): Promise<Result<true, ExceptionBase>> {
+        try {
+            const result = await this.sessionsWriteRepository.delete(sessionId);
+            if (result.isErr()) return Err(new SessionNotFoundError());
+            return Ok(true);
+        } catch (error) {
+            return Err(new SessionDeletionFailedError());
+        }
     }
 
     async getSessionByToken(token: string): Promise<Option<SessionModel>> {
@@ -175,15 +185,21 @@ export class SessionsService {
     /**
      * @param {AggregateId} userId - User Id
      * @param {SessionStatus} sessionsStatus - Filtering by status
-     * @returns The list of sessions withe associating session status
+     * @returns The list of sessions with associating session status
      */
     async getSessionsByUser(
         userId: AggregateID,
         sessionsStatus?: SessionStatus
-    ): Promise<SessionModel[]> {
-        return await this.sessionsReadRepository.findByUserId(
+    ): Promise<Result<SessionModel[], ExceptionBase>> {
+        const sessions = await this.sessionsReadRepository.findByUserId(
             userId,
             sessionsStatus
         );
+
+        if (!sessions) {
+            return Err(new SessionNotFoundError());
+        }
+
+        return Ok(sessions);
     }
 }

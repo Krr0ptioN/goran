@@ -2,6 +2,7 @@ export interface BaseResponseProps<TData> {
     message: string;
     code: string;
     success: boolean;
+    desc?: string;
     data?: TData;
     errors?: string[];
 }
@@ -25,6 +26,7 @@ export class ResponseBase<TData = undefined> implements BaseResponseProps<TData>
     readonly message: string;
     readonly success: boolean;
     readonly code: string;
+    readonly desc?: string;
     readonly data?: TData;
     readonly errors?: string[];
 }

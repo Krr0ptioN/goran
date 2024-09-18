@@ -19,6 +19,6 @@ export type SessionDto = {
     userId: string;
     refreshToken: string;
     ip: string;
-    location: Optional<string>;
-    device: Optional<string>;
+    location?: Optional<string>;
+    device?: Optional<string>;
 };

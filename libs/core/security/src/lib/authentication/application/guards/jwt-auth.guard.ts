@@ -9,9 +9,9 @@ import { Request } from 'express';
 import { UnauthorizedException } from '@nestjs/common';
 import {
     InvalidTokenError,
-    SessionsService,
     TokensService,
-} from '@goran/security';
+} from '../../../tokens';
+import { SessionsService } from '../../../sessions';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') implements CanActivate {
