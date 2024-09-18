@@ -1,25 +1,26 @@
 {
-  "extends": "../../../tsconfig.base.json",
-  "compilerOptions": {
-    "module": "commonjs",
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "noImplicitOverride": true,
-    "noPropertyAccessFromIndexSignature": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true
-  },
-  "ts-node": {
+    "extends": "../../../tsconfig.base.json",
     "compilerOptions": {
-      "module": "commonjs",
-      "target": "ES2023"
-    }
-  },
-  "files": [],
-  "include": [],
-  "references": [
-    {
-      "path": "./tsconfig.lib.json"
-    }
-  ]
+        "module": "commonjs",
+        "forceConsistentCasingInFileNames": true,
+        "strict": true,
+        "strictNullChecks": true,
+        "noImplicitOverride": true,
+        "noPropertyAccessFromIndexSignature": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true
+    },
+    "ts-node": {
+        "compilerOptions": {
+            "module": "commonjs",
+            "target": "ES2023"
+        }
+    },
+    "files": [],
+    "include": [],
+    "references": [
+        {
+            "path": "./tsconfig.lib.json"
+        }
+    ]
 }

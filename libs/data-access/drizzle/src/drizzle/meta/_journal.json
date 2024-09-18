@@ -15,6 +15,13 @@
       "when": 1724437474829,
       "tag": "0001_add-password-reset",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1726321256960,
+      "tag": "0002_users-auth-sessions",
+      "breakpoints": true
     }
   ]
 }
