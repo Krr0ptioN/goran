@@ -18,6 +18,8 @@ import { IpLocatorModule } from '@goran/ip-locator';
 import { CacheModule } from '@nestjs/cache-manager';
 import { JwtModule } from '@nestjs/jwt';
 import { CqrsModule } from '@nestjs/cqrs';
+import { LoggerModule } from 'nestjs-pino';
+import { PassportModule } from '@nestjs/passport';
 
 export class AppModule {
     static register(options: ApplicationBootstrapOptions) {
@@ -26,6 +28,19 @@ export class AppModule {
             controllers: [AppController],
             providers: [AppService],
             imports: [
+                LoggerModule.forRoot({
+                    pinoHttp: {
+                        customProps: (req, res) => ({
+                            context: 'HTTP',
+                        }),
+                        transport: {
+                            target: 'pino-pretty',
+                            options: {
+                                singleLine: true,
+                            },
+                        },
+                    },
+                }),
                 CqrsModule.forRoot(),
                 ConfigModule.forRoot({
                     isGlobal: true,
@@ -42,6 +57,7 @@ export class AppModule {
                         expiresIn: options.security.expiresIn,
                     },
                 }),
+                PassportModule.register({ global: true }),
                 UsersModule,
                 PasswordModule,
                 TokensModule,

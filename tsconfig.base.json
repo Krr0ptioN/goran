@@ -28,7 +28,6 @@
                 "libs/data-access/drizzle/src/index.ts"
             ],
             "@goran/ip-locator": ["libs/generics/ip-locator/src/index.ts"],
-            "@goran/library": ["libs/core/library/src/index.ts"],
             "@goran/mail": ["libs/generics/mail/src/index.ts"],
             "@goran/security": ["libs/core/security/src/index.ts"],
             "@goran/ui-common": ["libs/ui/common/src/index.ts"],

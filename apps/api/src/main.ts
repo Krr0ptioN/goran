@@ -19,7 +19,9 @@ async function bootstrap() {
         })
     );
 
-    const app = await NestFactory.create(AppModule.register(config));
+    const app = await NestFactory.create(AppModule.register(config), {
+        bufferLogs: true,
+    });
     await registerGlobals(app, globalPrefix);
 
     setupSwagger(app);

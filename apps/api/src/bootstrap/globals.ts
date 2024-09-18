@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import cookieParser from 'cookie-parser';
+import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
 
 /**
  * Registers global pipes and interceptors, plus server conifguration
@@ -20,6 +21,8 @@ export async function registerGlobals(
     app.setGlobalPrefix(globalPrefix);
     app.use(cookieParser());
     app.useGlobalPipes(new ValidationPipe());
+    app.useLogger(app.get(Logger));
+    app.useGlobalInterceptors(new LoggerErrorInterceptor());
     app.useGlobalInterceptors(
         new ClassSerializerInterceptor(app.get(Reflector))
     );
