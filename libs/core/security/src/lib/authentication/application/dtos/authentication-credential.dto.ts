@@ -1,4 +1,4 @@
-import { TokenProps, TokenValueObject } from '../../domain';
+import { TokenProps, TokenValueObject } from '../../../tokens';
 
 export class AuthenticationCredentialDto {
     userId: string;
