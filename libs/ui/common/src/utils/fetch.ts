@@ -1,23 +1,17 @@
-import { FetchOptions, ofetch } from 'ofetch';
 import { CONFIG_APP } from '@goran/config';
 
-export const $fetch = ofetch.create({
-    baseURL: process.env[CONFIG_APP.API_BASE_URL],
-});
-
-export const fetcher = <T = any>(
-    url: string,
-    ops: FetchOptions<'json'> = {},
+export const fetchApi = <T = any>(
+    endpoint: string,
+    ops: object = { headers: {} },
     token?: string
 ) => {
+    const baseURL = process.env[CONFIG_APP.API_BASE_URL];
     ops['headers'] = {
-        ...(ops?.headers || {}),
+        ...(ops['headers'] || {}),
     };
 
     if (token)
         Object.assign(ops['headers'], { Authorization: `Bearer ${token}` });
 
-    return $fetch<T>(url, ops);
+    return fetch(`${baseURL}${endpoint}`, ops);
 };
-
-export const fetch = fetcher;
