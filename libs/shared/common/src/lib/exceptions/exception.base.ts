@@ -4,7 +4,6 @@ export interface SerializedException {
   code: string;
   stack?: string;
   cause?: string;
-  metadata?: unknown;
   /**
    * ^ Consider adding optional `metadata` object to
    * exceptions (if language doesn't support anything
@@ -12,6 +11,14 @@ export interface SerializedException {
    * information about the exception when throwing.
    * This will make debugging easier.
    */
+  metadata?: unknown;
+  /**
+   * Success is indication of whether the operation succeed,
+   * or not. Since some errors can be invoked despite the fact
+   * the operation successfuly completed.
+   */
+  success: boolean;
+  
 }
 
 /**
@@ -46,8 +53,17 @@ export abstract class ExceptionBase extends Error {
       message: this.message,
       code: this.code,
       stack: this.stack,
+      success: false,
       cause: JSON.stringify(this.cause),
       metadata: this.metadata,
+    };
+  }
+
+  toClientError(): SerializedException {
+    return {
+      message: this.message,
+      code: this.code,
+      success: false,
     };
   }
 }

@@ -1,47 +1,42 @@
-import { fetch } from '@goran/ui-common';
-import { signinSchema } from './schema';
-import { useNavigate } from '@tanstack/react-router';
-import { useState } from 'react';
-import { FieldValues, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, Form } from '@goran/ui-components';
+'use client';
+
+import { useFormStatus, useFormState } from 'react-dom';
+import { Form, Button } from '@goran/ui-components';
 import { EmailField, PasswordField } from '../../components';
+import { signIn } from './sign-in.action';
+import {
+    SignInSchema,
+    initialValues,
+    initialState,
+    SignInValues,
+} from './schema';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useFormAction } from '@goran/ui-common';
+import Link from 'next/link';
 
 export const SignInForm = () => {
-    const form = useForm({
-        resolver: zodResolver(signinSchema),
-        defaultValues: {
-            email: '',
-            password: '',
-        },
+    const [state, formAction] = useFormState(signIn, initialState);
+    const { pending } = useFormStatus();
+
+    const form = useFormAction<SignInValues>({
+        resolver: zodResolver(SignInSchema),
+        defaultValues: initialValues,
     });
-
-    const navigate = useNavigate({ from: '/login' });
-    const [error, setError] = useState<string>('');
-
-    const submit = async (values: FieldValues) => {
-        setError('');
-
-        try {
-            const { access_token } = await fetch('/auth/sign-in', {
-                method: 'post',
-                body: values,
-            });
-            navigate({ to: '/' });
-        } catch (err: any) {
-            setError(err.response._data?.detail || 'An error occurred');
-        }
-    };
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(submit)}>
+            <form {...form.submitAction(formAction)}>
                 <EmailField />
                 <PasswordField />
+                <Link
+                    href="/auth/forgot-password"
+                    className="ml-auto inline-block text-sm underline"
+                >
+                    Forgot your password?
+                </Link>
                 <Button className="mt-3 w-full" type="submit">
                     Sign In
                 </Button>
-                {error && error}
             </form>
         </Form>
     );
