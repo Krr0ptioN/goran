@@ -1,6 +1,9 @@
-# security
+# @goran/security
 
-This library was generated with [Nx](https://nx.dev).
+-   Session Management
+-   SecurityMetrics
+-   Password Reset
+-   Authentication
 
 ## Running unit tests
 

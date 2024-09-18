@@ -1,0 +1,9 @@
+{
+    "name": "ip-locator",
+    "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "libs/generics/ip-locator/src",
+    "projectType": "library",
+    "tags": [],
+    "// targets": "to see all targets run: nx show project ip-locator --web",
+    "targets": {}
+}
