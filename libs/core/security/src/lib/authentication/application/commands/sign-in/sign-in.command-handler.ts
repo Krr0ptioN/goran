@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import { SigninCommand } from './signin.command';
+import { SignInCommand } from './sign-in.command';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { SessionsService } from '../../../../sessions';
 import { PasswordService } from '../../../../password';
@@ -11,9 +11,9 @@ import { ExceptionBase, Guard } from '@goran/common';
 import { IpLocatorService } from '@goran/ip-locator';
 import { DeviceDetectorService } from '@goran/device-detector';
 
-@CommandHandler(SigninCommand)
-export class SigninCommandHandler implements ICommandHandler<SigninCommand> {
-    private readonly logger = new Logger(SigninCommand.name);
+@CommandHandler(SignInCommand)
+export class SignInCommandHandler implements ICommandHandler<SignInCommand> {
+    private readonly logger = new Logger(SignInCommand.name);
 
     constructor(
         private readonly passwordService: PasswordService,
@@ -22,10 +22,10 @@ export class SigninCommandHandler implements ICommandHandler<SigninCommand> {
         private readonly deviceDetector: DeviceDetectorService,
         private readonly userMapper: UserMapper,
         private usersService: UsersService
-    ) { }
+    ) {}
 
     async execute(
-        command: SigninCommand
+        command: SignInCommand
     ): Promise<Result<AuthenticationCredentialDto, ExceptionBase>> {
         const { username, email, password } = command;
         const userResult = await this.usersService.findUserByIdenfitier({
@@ -52,8 +52,8 @@ export class SigninCommandHandler implements ICommandHandler<SigninCommand> {
             await this.ipLocator.getLocation(command.clientInfo.ip ?? ''),
             !Guard.isEmpty(command.clientInfo.userAgent)
                 ? this.deviceDetector.getDevice(
-                    command.clientInfo.userAgent ?? ''
-                )
+                      command.clientInfo.userAgent ?? ''
+                  )
                 : undefined
         );
 

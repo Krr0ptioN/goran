@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import { SignupCommand } from './signup.command';
+import { SignUpCommand } from './signup.command';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { UsersService } from '@goran/users';
 import { Ok, Result } from 'oxide.ts';
@@ -10,8 +10,8 @@ import { PasswordService } from '../../../../password';
 import { IpLocatorService } from '@goran/ip-locator';
 import { DeviceDetectorService } from '@goran/device-detector';
 
-@CommandHandler(SignupCommand)
-export class SignupCommandHandler implements ICommandHandler<SignupCommand> {
+@CommandHandler(SignUpCommand)
+export class SignUpCommandHandler implements ICommandHandler<SignUpCommand> {
     constructor(
         private readonly sessionsService: SessionsService,
         private readonly passwordService: PasswordService,
@@ -19,10 +19,10 @@ export class SignupCommandHandler implements ICommandHandler<SignupCommand> {
         private readonly ipLocator: IpLocatorService,
         private readonly deviceDetector: DeviceDetectorService
     ) {}
-    private readonly logger = new Logger(SignupCommand.name);
+    private readonly logger = new Logger(SignUpCommand.name);
 
     async execute(
-        command: SignupCommand
+        command: SignUpCommand
     ): Promise<Result<AuthenticationCredentialDto, ExceptionBase>> {
         const hashedPassword = await this.passwordService.hashPassword(
             command.password

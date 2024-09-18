@@ -10,14 +10,14 @@ import { ClientInfoDto } from '../../dtos';
  * @param {string} email
  * @param {ClientInfoDto} clientInfo  @readonly
  */
-export class SignupCommand extends Command {
+export class SignUpCommand extends Command {
     readonly email: string;
     readonly fullname: Optional<string>;
     readonly username: string;
     readonly password: string;
     readonly clientInfo: ClientInfoDto;
 
-    constructor(props: CommandProps<SignupCommand>) {
+    constructor(props: CommandProps<SignUpCommand>) {
         super(props);
         this.fullname = props.fullname;
         this.username = props.username;
