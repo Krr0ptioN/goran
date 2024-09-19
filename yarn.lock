@@ -2884,7 +2884,7 @@ __metadata:
     typescript: "npm:~5.4.5"
     ulid: "npm:^2.3.0"
     vaul: "npm:^0.9.1"
-    vite: "npm:~5.0.13"
+    vite: "npm:~5.1.8"
     vite-plugin-dts: "npm:^4.2.1"
     vitest: "npm:^1.6.0"
     webpack-cli: "npm:^5.1.4"
@@ -23737,7 +23737,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.4.32":
+"postcss@npm:^8.4.35":
   version: 8.4.47
   resolution: "postcss@npm:8.4.47"
   dependencies:
@@ -27740,13 +27740,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:~5.0.13":
-  version: 5.0.13
-  resolution: "vite@npm:5.0.13"
+"vite@npm:~5.1.8":
+  version: 5.1.8
+  resolution: "vite@npm:5.1.8"
   dependencies:
     esbuild: "npm:^0.19.3"
     fsevents: "npm:~2.3.3"
-    postcss: "npm:^8.4.32"
+    postcss: "npm:^8.4.35"
     rollup: "npm:^4.2.0"
   peerDependencies:
     "@types/node": ^18.0.0 || >=20.0.0
@@ -27776,7 +27776,7 @@ __metadata:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: 10c0/3c926f21b27379742a182c6594629ef5287fac2860e5f35ce744da35f35c3a967e822fb9b24d62a0f67a5fccca29b82d7982fbfc5208a58bfef31de7a8d499a4
+  checksum: 10c0/1e2087792b1a4fa3a18e37ecba590ab14b6e01d4632684827afef320e0951e8221eef1515f8c0fdf9fa9bb3fb814f1e96f2e32cda4ae81138374b3cc5588f144
   languageName: node
   linkType: hard
 
