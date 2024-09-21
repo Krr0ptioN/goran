@@ -17,7 +17,7 @@ export default async function middleware(req: NextRequest) {
         return NextResponse.redirect(new URL('/sign-in', req.nextUrl));
     }
 
-    const session = await verifySessionCookies({ accessCookie, refetchCookie: refreshCookie });
+    const session = await verifySessionCookies({ accessCookie, refreshCookie });
 
     if (isProtectedRoute && !session?.userId) {
         return NextResponse.redirect(new URL('/sign-in', req.nextUrl));
