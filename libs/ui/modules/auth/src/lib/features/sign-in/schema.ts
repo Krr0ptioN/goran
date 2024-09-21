@@ -7,7 +7,15 @@ export const SignInSchema = z.object({
 
 export type SignInValues = z.infer<typeof SignInSchema>;
 
-export const initialState = {
+export type SignInInitialStatus = {
+    errors: {
+        email: undefined;
+        password: undefined;
+    };
+    message: undefined;
+};
+
+export const signInInitialState = {
     errors: {
         email: undefined,
         password: undefined,
@@ -15,7 +23,7 @@ export const initialState = {
     message: undefined,
 };
 
-export const initialValues = {
+export const signInInitialValues = {
     email: '',
     password: '',
 };
