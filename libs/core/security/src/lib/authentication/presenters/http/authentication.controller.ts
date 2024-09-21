@@ -25,19 +25,20 @@ import { Result, match } from 'oxide.ts';
 import { ExceptionBase } from '@goran/common';
 import { SignInSuccessResponse } from './signin.response';
 import { SignUpSuccessResponse } from './signup.resonse';
-import {SignOutSuccessResponse} from './sign-out.resonse';
+import { SignOutSuccessResponse } from './sign-out.resonse';
 import { Request } from 'express';
 import { UserAgent } from '@goran/common';
 import { TokensService } from '../../../tokens';
+import { GetMeSuccessResponse } from './get-me.resonse';
 
 @ApiTags('auth')
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('auth')
 export class AuthenticationController {
     constructor(
-        private readonly commandBus: CommandBus, 
-        private readonly tokensService: TokensService,
-    ) {}
+        private readonly commandBus: CommandBus,
+        private readonly tokensService: TokensService
+    ) { }
 
     @ApiOkResponse({ type: SignUpSuccessResponse })
     @ApiOperation({ summary: ApiDocsAuthentication.operationsSummary.signup })
@@ -110,12 +111,14 @@ export class AuthenticationController {
     @UseGuards(JwtAuthGuard)
     @Post('sign-out')
     async signOut(@Req() req: Request, @CurrentUser() user: UserEntity) {
-        const signOutResult: Result<true, ExceptionBase> = await this.commandBus.execute(
-            new SignOutCommand({
-                userId: user.id,
-                refreshToken: this.tokensService.extractTokenFromRequest(req) 
-            })
-        );
+        const signOutResult: Result<true, ExceptionBase> =
+            await this.commandBus.execute(
+                new SignOutCommand({
+                    userId: user.id,
+                    refreshToken:
+                        this.tokensService.extractTokenFromRequest(req),
+                })
+            );
 
         match(signOutResult, {
             Ok: () => {
@@ -126,6 +129,19 @@ export class AuthenticationController {
                     throw new ConflictHttpException(error);
                 throw error;
             },
+        });
+    }
+
+    @ApiOkResponse({ type: GetMeSuccessResponse })
+    @ApiOperation({})
+    @UseGuards(JwtAuthGuard)
+    @Post('@me')
+    async getMe(@CurrentUser() user: UserEntity) {
+        return new GetMeSuccessResponse({
+            userId: user.id,
+            email: user.getProps().email,
+            fullname: user.getProps().fullname,
+            username: user.getProps().username,
         });
     }
 }
