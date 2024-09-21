@@ -20,7 +20,7 @@ import {
     SignOutCommand,
     SignUpCommand,
 } from '../../application';
-import { CurrentUser, UserAlreadyExistsError, UserEntity } from '@goran/users';
+import { CurrentUser, UserEntity } from '@goran/users';
 import { Result, match } from 'oxide.ts';
 import { ExceptionBase } from '@goran/common';
 import { SignInSuccessResponse } from './signin.response';
@@ -65,9 +65,7 @@ export class AuthenticationController {
                     userId: credential.userId,
                 });
             },
-            Err: (error: Error) => {
-                if (error instanceof UserAlreadyExistsError)
-                    throw new ConflictHttpException(error);
+            Err: (error: ExceptionBase) => {
                 throw error;
             },
         });
@@ -98,9 +96,7 @@ export class AuthenticationController {
                     userId: credential.userId,
                 });
             },
-            Err: (error: Error) => {
-                if (error instanceof ExceptionBase)
-                    throw new ConflictHttpException(error);
+            Err: (error: ExceptionBase) => {
                 throw error;
             },
         });
@@ -124,9 +120,7 @@ export class AuthenticationController {
             Ok: () => {
                 return new SignOutSuccessResponse();
             },
-            Err: (error: Error) => {
-                if (error instanceof ExceptionBase)
-                    throw new ConflictHttpException(error);
+            Err: (error: ExceptionBase) => {
                 throw error;
             },
         });
