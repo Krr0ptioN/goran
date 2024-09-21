@@ -1,11 +1,10 @@
-import { CONFIG_APP } from '@goran/config';
+import { env } from '../env';
 
 export const fetchApi = <T = any>(
     endpoint: string,
     ops: object = { headers: {} },
     token?: string
 ) => {
-    const baseURL = process.env[CONFIG_APP.API_BASE_URL];
     ops['headers'] = {
         ...(ops['headers'] || {}),
     };
@@ -13,5 +12,5 @@ export const fetchApi = <T = any>(
     if (token)
         Object.assign(ops['headers'], { Authorization: `Bearer ${token}` });
 
-    return fetch(`${baseURL}${endpoint}`, ops);
+    return fetch(`${env.API_BASE_URL}${endpoint}`, ops);
 };
