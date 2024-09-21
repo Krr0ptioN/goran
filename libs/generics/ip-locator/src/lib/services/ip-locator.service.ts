@@ -2,6 +2,7 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
 import { Geolocation, IpLocationDto } from '../types';
+import { PreconditionedLocationFails } from './preconditioned-location-fails';
 
 @Injectable()
 export class IpLocatorService {
@@ -22,7 +23,7 @@ export class IpLocatorService {
     private readonly fields = 541151;
 
     get getFields() {
-        return this.fields
+        return this.fields;
     }
 
     /**
@@ -33,6 +34,10 @@ export class IpLocatorService {
         return `${this.api}/${ip}?fields=${this.getFields}`;
     }
 
+    isIpLocalhost(ip: string): boolean {
+        return ip === 'localhost' || ip === '127.0.0.1' || ip === '::1';
+    }
+
     /**
      * @param ip - IP of the client
      *
@@ -40,10 +45,19 @@ export class IpLocatorService {
      * @returns {IpLocationDto}
      */
     async locate(ip: string): Promise<IpLocationDto> {
-        const { data } = await firstValueFrom(
-            this.httpService.get<IpLocationDto>(this.getApi(ip))
-        );
-        return data;
+        if (this.isIpLocalhost(ip)) {
+            return PreconditionedLocationFails.localhostLocation;
+        }
+
+        try {
+            const { data } = await firstValueFrom(
+                this.httpService.get<IpLocationDto>(this.getApi(ip))
+            );
+            return data;
+        } catch (error) {
+            console.error(`Failed to locate IP: ${ip}`, error);
+            return PreconditionedLocationFails.unknownLocation;
+        }
     }
 
     /**
