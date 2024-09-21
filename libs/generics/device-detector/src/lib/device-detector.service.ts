@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import DeviceDetector from 'node-device-detector';
+import DeviceDetector from 'node-device-detector'; 
 
 @Injectable()
 export class DeviceDetectorService {
@@ -11,6 +11,7 @@ export class DeviceDetectorService {
         deviceInfo: false,
         maxUserAgentSize: 500,
     });
+    
     constructor() { }
 
     /**
