@@ -1,16 +1,18 @@
+'use server';
+import 'server-only';
+
 import { env } from '../env';
 
-export const fetchApi = <T = any>(
+export const fetchApi = (
     endpoint: string,
-    ops: object = { headers: {} },
+    ops: RequestInit = { headers: {} },
     token?: string
 ) => {
-    ops['headers'] = {
+    ops.headers = {
+        'Content-Type': 'application/json',
+        Authorization: token ? `Bearer ${token}` : '',
         ...(ops['headers'] || {}),
     };
-
-    if (token)
-        Object.assign(ops['headers'], { Authorization: `Bearer ${token}` });
 
     return fetch(`${env.API_BASE_URL}${endpoint}`, ops);
 };
