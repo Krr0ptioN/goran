@@ -1,11 +1,11 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
-import { Geolocation, IpLocationDto } from './types';
+import { Geolocation, IpLocationDto } from '../types';
 
 @Injectable()
 export class IpLocatorService {
-    constructor(private readonly fetchService: HttpService) { }
+    constructor(private readonly httpService: HttpService) { }
 
     private api = 'https://ip-api.com/json';
 
@@ -19,14 +19,18 @@ export class IpLocatorService {
      *    - Timezone and gepolocation: lat,lon,timezone
      * @see https://ip-api.com/docs/api:json
      */
-    private fields = 541151;
+    private readonly fields = 541151;
+
+    get getFields() {
+        return this.fields
+    }
 
     /**
      * @param ip - IP of the client
      * @returns API URL path to query from
      */
-    private getApi(ip: string) {
-        return `${this.api}/${ip}?fields=${this.fields}`;
+    public getApi(ip: string) {
+        return `${this.api}/${ip}?fields=${this.getFields}`;
     }
 
     /**
@@ -37,7 +41,7 @@ export class IpLocatorService {
      */
     async locate(ip: string): Promise<IpLocationDto> {
         const { data } = await firstValueFrom(
-            this.fetchService.get<IpLocationDto>(this.getApi(ip))
+            this.httpService.get<IpLocationDto>(this.getApi(ip))
         );
         return data;
     }
