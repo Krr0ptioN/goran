@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import { SignUpCommand } from './signup.command';
+import { SignUpCommand } from './sign-up.command';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { UsersService } from '@goran/users';
 import { Ok, Result } from 'oxide.ts';
@@ -38,17 +38,20 @@ export class SignUpCommandHandler implements ICommandHandler<SignUpCommand> {
 
         const user = userResult.unwrap();
 
-        this.logger.verbose(`User with ${user.email} email signed up`);
+        this.logger.log(`User with ${user.email} email signed up`);
+        const ipLocation = await this.ipLocator.getLocation(
+            command.clientInfo.ip ?? ''
+        );
+        this.logger.log(ipLocation);
+        const device = !Guard.isEmpty(command.clientInfo.userAgent)
+            ? this.deviceDetector.getDevice(command.clientInfo.userAgent ?? '')
+            : 'Unknown';
 
         const sessionCreationResult = await this.sessionsService.createSession(
             user,
             command.clientInfo.ip ?? '',
-            await this.ipLocator.getLocation(command.clientInfo.ip ?? ''),
-            !Guard.isEmpty(command.clientInfo.userAgent)
-                ? this.deviceDetector.getDevice(
-                      command.clientInfo.userAgent ?? ''
-                  )
-                : undefined
+            ipLocation,
+            device
         );
 
         const [tokens, session] = sessionCreationResult.unwrap();
