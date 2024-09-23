@@ -2809,7 +2809,7 @@ __metadata:
     axios: "npm:^1.7.7"
     babel-jest: "npm:^29.4.1"
     bcrypt: "npm:^5.1.1"
-    cache-manager: "npm:^5.7.4"
+    cache-manager: "npm:^6.0.0"
     class-transformer: "npm:^0.5.1"
     class-validator: "npm:^0.14.1"
     class-variance-authority: "npm:^0.7.0"
@@ -3309,6 +3309,15 @@ __metadata:
     "@jridgewell/resolve-uri": "npm:^3.1.0"
     "@jridgewell/sourcemap-codec": "npm:^1.4.14"
   checksum: 10c0/3d1ce6ebc69df9682a5a8896b414c6537e428a1d68b02fcc8363b04284a8ca0df04d0ee3013132252ab14f2527bc13bea6526a912ecb5658f0e39fd2860b4df4
+  languageName: node
+  linkType: hard
+
+"@keyv/serialize@npm:*":
+  version: 1.0.1
+  resolution: "@keyv/serialize@npm:1.0.1"
+  dependencies:
+    buffer: "npm:^6.0.3"
+  checksum: 10c0/948fadc632f6050b67cb8ea664192a98d7743015e1b449d383addacbce371414b9cd7129b33ab36d5d81b558744ab0a56c2753b287e7c4f5b2c46401c486cbd0
   languageName: node
   linkType: hard
 
@@ -12801,15 +12810,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cache-manager@npm:^5.7.4":
-  version: 5.7.6
-  resolution: "cache-manager@npm:5.7.6"
+"cache-manager@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "cache-manager@npm:6.0.0"
   dependencies:
-    eventemitter3: "npm:^5.0.1"
-    lodash.clonedeep: "npm:^4.5.0"
-    lru-cache: "npm:^10.2.2"
-    promise-coalesce: "npm:^1.1.2"
-  checksum: 10c0/fdf99c4cb3682187fd57f5b7053573dae91800f57f785c7644e5b923d4146833ab600759678eb1a5a94be74db9301850a0ff4391fc97cffd89a0f13ae4358175
+    keyv: "npm:^5.0.3"
+  checksum: 10c0/6532ef0e6a9e453b1387ef23072c5a5b193c01d6908e217d805c0c414a2982eacc592caf8c8a2e66facbb42a74ad4c414d4b3458e0af9a631551f74e271d45fe
   languageName: node
   linkType: hard
 
@@ -16356,13 +16362,6 @@ __metadata:
   version: 4.0.7
   resolution: "eventemitter3@npm:4.0.7"
   checksum: 10c0/5f6d97cbcbac47be798e6355e3a7639a84ee1f7d9b199a07017f1d2f1e2fe236004d14fa5dfaeba661f94ea57805385e326236a6debbc7145c8877fbc0297c6b
-  languageName: node
-  linkType: hard
-
-"eventemitter3@npm:^5.0.1":
-  version: 5.0.1
-  resolution: "eventemitter3@npm:5.0.1"
-  checksum: 10c0/4ba5c00c506e6c786b4d6262cfbce90ddc14c10d4667e5c83ae993c9de88aa856033994dd2b35b83e8dc1170e224e66a319fa80adc4c32adcd2379bbc75da814
   languageName: node
   linkType: hard
 
@@ -19915,6 +19914,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"keyv@npm:^5.0.3":
+  version: 5.0.3
+  resolution: "keyv@npm:5.0.3"
+  dependencies:
+    "@keyv/serialize": "npm:*"
+  checksum: 10c0/0fb822178d012225767a7d3d1020b0c587095e107a8cee9c3aefa3a195514fe361baa75831aeadf6b2314fb47852d4400343ecfba5632562a16851b822acd247
+  languageName: node
+  linkType: hard
+
 "kind-of@npm:^3.0.2":
   version: 3.2.2
   resolution: "kind-of@npm:3.2.2"
@@ -20254,13 +20262,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash.clonedeep@npm:^4.5.0":
-  version: 4.5.0
-  resolution: "lodash.clonedeep@npm:4.5.0"
-  checksum: 10c0/2caf0e4808f319d761d2939ee0642fa6867a4bbf2cfce43276698828380756b99d4c4fa226d881655e6ac298dd453fe12a5ec8ba49861777759494c534936985
-  languageName: node
-  linkType: hard
-
 "lodash.debounce@npm:^4.0.8":
   version: 4.0.8
   resolution: "lodash.debounce@npm:4.0.8"
@@ -20454,7 +20455,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lru-cache@npm:^10.0.1, lru-cache@npm:^10.2.0, lru-cache@npm:^10.2.2":
+"lru-cache@npm:^10.0.1, lru-cache@npm:^10.2.0":
   version: 10.4.3
   resolution: "lru-cache@npm:10.4.3"
   checksum: 10c0/ebd04fbca961e6c1d6c0af3799adcc966a1babe798f685bb84e6599266599cd95d94630b10262f5424539bc4640107e8a33aa28585374abf561d30d16f4b39fb
@@ -23857,13 +23858,6 @@ __metadata:
   version: 0.11.10
   resolution: "process@npm:0.11.10"
   checksum: 10c0/40c3ce4b7e6d4b8c3355479df77aeed46f81b279818ccdc500124e6a5ab882c0cc81ff7ea16384873a95a74c4570b01b120f287abbdd4c877931460eca6084b3
-  languageName: node
-  linkType: hard
-
-"promise-coalesce@npm:^1.1.2":
-  version: 1.1.2
-  resolution: "promise-coalesce@npm:1.1.2"
-  checksum: 10c0/9bcdc954a645b30ccb094ae76e36212af2ee7ecc6b9fc67634d7d4f490d082c1efc39590737d957a32f6df93e7c5f51ca232549095e9e2d7291c0482d1bb1557
   languageName: node
   linkType: hard
 
