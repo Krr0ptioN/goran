@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UsersService } from '@goran/users';
+import { UserModel, UsersService } from '@goran/users';
+import { Option } from 'oxide.ts';
 import { Request } from 'express';
 
 @Injectable()
@@ -8,12 +9,11 @@ export class TokensService {
     constructor(
         private readonly jwtService: JwtService,
         private readonly usersService: UsersService
-    ) { }
+    ) {}
 
-    async getUserFromToken(token: string) {
+    async getUserFromToken(token: string): Promise<Option<UserModel>> {
         const id = this.jwtService.decode(token)['userId'];
-        const user = await this.usersService.findOneById(id);
-        return user;
+        return await this.usersService.findOneById(id);
     }
 
     async refreshTokenIsValid(refreshToken: string): Promise<boolean> {
