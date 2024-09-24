@@ -6,20 +6,26 @@ import { fetchApi } from '@goran/ui-common';
 /**
  * Refreshes the token using the refresh cookie.
  * @param refreshCookie - The refresh token cookie.
- * @returns Error message or refreshed token data.
+ * @returns Access token or error message.
  */
 export async function refreshToken(refreshCookie?: string) {
     const res = await fetchApi(`/auth/token/refresh`, {
         method: 'POST',
         credentials: 'include',
-        headers: {},
+        headers: {
+            'Content-Type': 'application/json', // Set content type
+        },
         body: JSON.stringify({ token: refreshCookie }),
     });
 
     if (!res.ok) {
-        throw new Error('Failed to refresh token');
+        const errorData = await res.json(); // Get error details
+        throw new Error(errorData.message || 'Failed to refresh token');
     }
 
     const refreshResult = await res.json();
-    return { error: refreshResult.error || 'Token refresh failed' };
+    return { 
+        accessToken: refreshResult.accessToken,
+        refreshToken: refreshResult.refreshToken
+    };
 }
