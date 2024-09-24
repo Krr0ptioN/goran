@@ -22,12 +22,12 @@ export class SignInCommandHandler implements ICommandHandler<SignInCommand> {
         private readonly deviceDetector: DeviceDetectorService,
         private readonly userMapper: UserMapper,
         private usersService: UsersService
-    ) {}
+    ) { }
 
     async execute(
         command: SignInCommand
     ): Promise<Result<AuthenticationCredentialDto, ExceptionBase>> {
-        const { username, email, password } = command;
+        const { username, email, password, clientInfo } = command; 
         const userResult = await this.usersService.findUserByIdenfitier({
             username,
             email,
@@ -46,17 +46,20 @@ export class SignInCommandHandler implements ICommandHandler<SignInCommand> {
             return Err(new InvalidAuthenticationCredentials());
         }
 
+        const ip = clientInfo?.ip ?? '';
+        const userAgent = clientInfo?.userAgent ?? '';
+
+        const ipLocation = await this.ipLocator.getLocation(ip);
+        const device = !Guard.isEmpty(userAgent) ? this.deviceDetector.getDevice(userAgent) : 'Unknown';
+
         const sessionCreationResult = await this.sessionsService.createSession(
             user,
-            command.clientInfo.ip ?? '',
-            await this.ipLocator.getLocation(command.clientInfo.ip ?? ''),
-            !Guard.isEmpty(command.clientInfo.userAgent)
-                ? this.deviceDetector.getDevice(
-                      command.clientInfo.userAgent ?? ''
-                  )
-                : undefined
+            ip,
+            ipLocation,
+            device
         );
 
+        if (sessionCreationResult.isErr()) return sessionCreationResult;
         const [tokens, session] = sessionCreationResult.unwrap();
 
         this.logger.verbose(
