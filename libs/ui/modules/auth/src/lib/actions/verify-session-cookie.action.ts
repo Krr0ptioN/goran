@@ -18,7 +18,8 @@ export async function verifySessionCookies({
     refreshCookie?: string;
 }) {
     try {
-        return await getUserInfo(accessCookie);
+        const info = await getUserInfo(accessCookie);
+        return info;
     } catch (error) {
         console.error('Error fetching user data:', error);
         try {
