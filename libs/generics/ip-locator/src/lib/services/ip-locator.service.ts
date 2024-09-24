@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
 import { Geolocation, IpLocationDto } from '../types';
 import { PreconditionedLocationFails } from './preconditioned-location-fails';
+import { Guard } from '@goran/common';
 
 @Injectable()
 export class IpLocatorService {
@@ -45,6 +46,9 @@ export class IpLocatorService {
      * @returns {IpLocationDto}
      */
     async locate(ip: string): Promise<IpLocationDto> {
+        if (Guard.isEmpty(ip)) {
+            return PreconditionedLocationFails.localhostLocation;
+        }
         if (this.isIpLocalhost(ip)) {
             return PreconditionedLocationFails.localhostLocation;
         }
