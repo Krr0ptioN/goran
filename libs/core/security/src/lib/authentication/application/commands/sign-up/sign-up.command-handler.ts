@@ -38,11 +38,10 @@ export class SignUpCommandHandler implements ICommandHandler<SignUpCommand> {
 
         const user = userResult.unwrap();
 
-        this.logger.log(`User with ${user.email} email signed up`);
         const ipLocation = await this.ipLocator.getLocation(
             command.clientInfo.ip ?? ''
         );
-        this.logger.log(ipLocation);
+
         const device = !Guard.isEmpty(command.clientInfo.userAgent)
             ? this.deviceDetector.getDevice(command.clientInfo.userAgent ?? '')
             : 'Unknown';
@@ -53,8 +52,11 @@ export class SignUpCommandHandler implements ICommandHandler<SignUpCommand> {
             ipLocation,
             device
         );
+
         if (sessionCreationResult.isErr()) return sessionCreationResult;
+
         const [tokens, session] = sessionCreationResult.unwrap();
+        this.logger.log(`User with ${user.email} email signed up`);
 
         return Ok(new AuthenticationCredentialDto({ userId: user.id, tokens }));
     }
