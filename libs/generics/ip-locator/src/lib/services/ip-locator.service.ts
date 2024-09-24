@@ -35,8 +35,14 @@ export class IpLocatorService {
         return `${this.api}/${ip}?fields=${this.getFields}`;
     }
 
+    /**
+     * @param ip - IP address to check
+     * @param localIps - Array of local IP addresses
+     * @returns boolean indicating if the IP is a local IP
+     */
     isIpLocalhost(ip: string): boolean {
-        return ip === 'localhost' || ip === '127.0.0.1' || ip === '::1';
+        const localIps = ['localhost', '127.0.0.1', '::1', '0.0.0.0']
+        return localIps.includes(ip);
     }
 
     /**
