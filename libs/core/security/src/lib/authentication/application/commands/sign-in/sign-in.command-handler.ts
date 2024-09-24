@@ -46,7 +46,7 @@ export class SignInCommandHandler implements ICommandHandler<SignInCommand> {
             return Err(new InvalidAuthenticationCredentials());
         }
 
-        const ip = clientInfo?.ip ?? '';
+        const ip = clientInfo?.ip ?? '0.0.0.0';
         const userAgent = clientInfo?.userAgent ?? '';
 
         const ipLocation = await this.ipLocator.getLocation(ip);
