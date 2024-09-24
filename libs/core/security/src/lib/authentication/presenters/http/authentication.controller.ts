@@ -3,6 +3,7 @@ import {
     ClassSerializerInterceptor,
     ConflictException as ConflictHttpException,
     Controller,
+    Get,
     Post,
     Req,
     UseGuards,
@@ -20,7 +21,7 @@ import {
     SignOutCommand,
     SignUpCommand,
 } from '../../application';
-import { CurrentUser, UserEntity } from '@goran/users';
+import { CurrentUser, UserEntity, UserModel } from '@goran/users';
 import { Result, match } from 'oxide.ts';
 import { ExceptionBase } from '@goran/common';
 import { SignInSuccessResponse } from './signin.response';
@@ -30,6 +31,7 @@ import { Request } from 'express';
 import { UserAgent } from '@goran/common';
 import { TokensService } from '../../../tokens';
 import { GetMeSuccessResponse } from './get-me.resonse';
+import { PinoLogger, InjectPinoLogger } from 'nestjs-pino';
 
 @ApiTags('auth')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -37,7 +39,9 @@ import { GetMeSuccessResponse } from './get-me.resonse';
 export class AuthenticationController {
     constructor(
         private readonly commandBus: CommandBus,
-        private readonly tokensService: TokensService
+        private readonly tokensService: TokensService,
+        @InjectPinoLogger(AuthenticationController.name)
+        private readonly logger: PinoLogger
     ) { }
 
     @ApiOkResponse({ type: SignUpSuccessResponse })
@@ -57,7 +61,7 @@ export class AuthenticationController {
                 new SignUpCommand({ ...body, clientInfo })
             );
 
-        match(result, {
+        return match(result, {
             Ok: (credential: AuthenticationCredentialDto) => {
                 return new SignUpSuccessResponse({
                     accessToken: credential.tokens.accessToken,
@@ -88,7 +92,7 @@ export class AuthenticationController {
                 new SignInCommand({ ...body, clientInfo })
             );
 
-        match(result, {
+        return match(result, {
             Ok: (credential: AuthenticationCredentialDto) => {
                 return new SignInSuccessResponse({
                     accessToken: credential.tokens.accessToken,
@@ -116,7 +120,7 @@ export class AuthenticationController {
                 })
             );
 
-        match(signOutResult, {
+        return match(signOutResult, {
             Ok: () => {
                 return new SignOutSuccessResponse();
             },
@@ -129,13 +133,13 @@ export class AuthenticationController {
     @ApiOkResponse({ type: GetMeSuccessResponse })
     @ApiOperation({})
     @UseGuards(JwtAuthGuard)
-    @Post('@me')
-    async getMe(@CurrentUser() user: UserEntity) {
+    @Get('@me')
+    async getMe(@CurrentUser() user: UserModel) {
         return new GetMeSuccessResponse({
             userId: user.id,
-            email: user.getProps().email,
-            fullname: user.getProps().fullname,
-            username: user.getProps().username,
+            email: user.email,
+            fullname: user.fullname,
+            username: user.username,
         });
     }
 }
