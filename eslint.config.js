@@ -8,6 +8,9 @@ const compat = new FlatCompat({
 });
 
 module.exports = [
+    {
+        ignores: ["./**/eslint.config.js", "./**/webpack.config.js"],
+    },
     { plugins: { '@nx': nxEslintPlugin } },
     ...compat
         .config({
@@ -28,7 +31,7 @@ module.exports = [
     {
         files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
         rules: {
-            indent: ['error', 2],
+            indent: ['error', 4],
             '@nx/enforce-module-boundaries': [
                 'error',
                 {
