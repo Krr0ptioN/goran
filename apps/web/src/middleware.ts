@@ -17,15 +17,19 @@ export default async function middleware(req: NextRequest) {
         return NextResponse.redirect(new URL('/sign-in', req.nextUrl));
     }
 
-    const session = await verifySessionCookies({ accessCookie, refreshCookie });
+    const sessionVerifiicationResult = await verifySessionCookies({
+        accessCookie,
+        refreshCookie,
+    });
 
-    if (isProtectedRoute && !session?.userId) {
+    if (isProtectedRoute && sessionVerifiicationResult.isErr())
         return NextResponse.redirect(new URL('/sign-in', req.nextUrl));
-    }
+
+    const session = sessionVerifiicationResult.unwrap();
 
     if (
         isPublicRoute &&
-        session?.userId &&
+        session.userId &&
         !req.nextUrl.pathname.startsWith('/')
     ) {
         return NextResponse.redirect(new URL('/', req.nextUrl));
