@@ -25,7 +25,7 @@ function parseISODate(isoDateString: string): Date | undefined {
     return isNaN(date.getTime()) ? undefined : date;
 }
 
-const useDateField = ({ name }) => {
+const useDateField = (name: string) => {
     const form = useFormContext();
 
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(
@@ -48,7 +48,7 @@ const useDateField = ({ name }) => {
 };
 
 export const DateField: FC<DateFieldProps> = ({ name, label }) => {
-    const { form, selectedDate, setSelectedDate } = useDateField({ name });
+    const { form, selectedDate, setSelectedDate } = useDateField(name);
 
     return (
         <FormField
