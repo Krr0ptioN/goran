@@ -1,11 +1,16 @@
 import { fetchApi } from '@goran/ui-common';
 
+export interface UserInfo {
+    userId: string;
+    email: string;
+}
+
 /**
  * Fetches user data using the access cookie.
  * @param accessCookie - The access token cookie.
  * @returns User data or an error.
  */
-export async function getUserInfo(accessCookie?: string) {
+export async function getUserInfo(accessCookie?: string): Promise<UserInfo> {
     const res = await fetchApi(
         `/auth/@me`,
         {
