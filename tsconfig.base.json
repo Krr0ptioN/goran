@@ -19,6 +19,7 @@
         "baseUrl": ".",
         "paths": {
             "@goran/brand": ["libs/ui/brand/src/index.ts"],
+            "@goran/catalog": ["libs/core/catalog/src/index.ts"],
             "@goran/common": ["libs/shared/common/src/index.ts"],
             "@goran/config": ["libs/shared/config/src/index.ts"],
             "@goran/device-detector": [
