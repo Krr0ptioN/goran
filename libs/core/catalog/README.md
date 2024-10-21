@@ -1,6 +1,11 @@
 # catalog
 
-This library was generated with [Nx](https://nx.dev).
+## Required API
+
+-   Add new song to catalog
+-   Edit the existing song information in catalog
+-   Delete the exsting song from catalog
+-   Add new song to catalog
 
 ## Running unit tests
 
