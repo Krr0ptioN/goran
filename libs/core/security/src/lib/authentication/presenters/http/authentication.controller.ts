@@ -1,7 +1,6 @@
 import {
     Body,
     ClassSerializerInterceptor,
-    ConflictException as ConflictHttpException,
     Controller,
     Get,
     Post,
@@ -31,7 +30,6 @@ import { Request } from 'express';
 import { UserAgent } from '@goran/common';
 import { TokensService } from '../../../tokens';
 import { GetMeSuccessResponse } from './get-me.resonse';
-import { PinoLogger, InjectPinoLogger } from 'nestjs-pino';
 
 @ApiTags('auth')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -40,8 +38,6 @@ export class AuthenticationController {
     constructor(
         private readonly commandBus: CommandBus,
         private readonly tokensService: TokensService,
-        @InjectPinoLogger(AuthenticationController.name)
-        private readonly logger: PinoLogger
     ) { }
 
     @ApiOkResponse({ type: SignUpSuccessResponse })
@@ -53,7 +49,7 @@ export class AuthenticationController {
         @UserAgent() userAgent: string
     ) {
         const clientInfo = {
-            ip: req.ip!,
+            ip: req.ip ?? '0.0.0.0',
             userAgent,
         };
         const result: Result<AuthenticationCredentialDto, ExceptionBase> =
