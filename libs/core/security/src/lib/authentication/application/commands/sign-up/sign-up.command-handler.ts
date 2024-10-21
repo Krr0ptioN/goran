@@ -18,7 +18,7 @@ export class SignUpCommandHandler implements ICommandHandler<SignUpCommand> {
         private readonly usersService: UsersService,
         private readonly ipLocator: IpLocatorService,
         private readonly deviceDetector: DeviceDetectorService
-    ) { }
+    ) {}
     private readonly logger = new Logger(SignUpCommand.name);
 
     async execute(
@@ -55,7 +55,7 @@ export class SignUpCommandHandler implements ICommandHandler<SignUpCommand> {
 
         if (sessionCreationResult.isErr()) return sessionCreationResult;
 
-        const [tokens, session] = sessionCreationResult.unwrap();
+        const [tokens] = sessionCreationResult.unwrap();
         this.logger.log(`User with ${user.email} email signed up`);
 
         return Ok(new AuthenticationCredentialDto({ userId: user.id, tokens }));

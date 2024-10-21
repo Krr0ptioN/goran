@@ -3,7 +3,6 @@ import { SignInCommandHandler } from './sign-in.command-handler';
 import { SignInCommand } from './sign-in.command';
 import {
     UserEntity,
-    UserModel,
     UsersService,
     UserMapper
 } from '@goran/users';
