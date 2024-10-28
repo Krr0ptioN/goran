@@ -154,7 +154,7 @@
     "cypress": "^13.13.1",
     "drizzle-kit": "^0.24.2",
     "eslint": "~9.10.0",
-    "eslint-config-next": "14.0.4",
+    "eslint-config-next": "15.0.1",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-cypress": "^2.15.2",
     "eslint-plugin-import": "2.30.0",
