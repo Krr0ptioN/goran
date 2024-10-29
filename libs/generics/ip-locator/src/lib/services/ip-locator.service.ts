@@ -9,7 +9,7 @@ import { Guard } from '@goran/common';
 export class IpLocatorService {
     constructor(private readonly httpService: HttpService) { }
 
-    private api = 'https://ip-api.com/json';
+    private readonly api = 'https://ip-api.com/json';
 
     /**
      * @description 541151 is a number generated to include the
