@@ -1,2 +1,2 @@
-export * from './signup.command-handler';
-export * from './signup.command';
+export * from './sign-up.command-handler';
+export * from './sign-up.command';

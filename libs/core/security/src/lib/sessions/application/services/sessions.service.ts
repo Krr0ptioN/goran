@@ -35,7 +35,7 @@ export class SessionsService {
         @Inject(CACHE_MANAGER) private cacheManager: Cache,
         @Inject('REFRESH_IN') private readonly refreshIn: number,
         private readonly tokensService: TokensService
-    ) {}
+    ) { }
 
     async createSession(
         user: UserEntity,
@@ -90,12 +90,6 @@ export class SessionsService {
 
         if (revokedToken === 'revoked') return Ok(true);
 
-        const sessionOption =
-            await this.sessionsReadRepository.findByRefreshToken(token);
-
-        if (sessionOption.isNone()) return Err(new SessionNotFoundError());
-        if (sessionOption.unwrap().status === 'revoked') return Ok(true);
-
         return Ok(false);
     }
 
@@ -117,11 +111,11 @@ export class SessionsService {
                 result
                     ? Err(new SessionRevokedError())
                     : Ok(
-                          this.sessionTokenFactory.generateAccessTokenForRefreshToken(
-                              refreshToken,
-                              { userId }
-                          )
-                      ),
+                        this.sessionTokenFactory.generateAccessTokenForRefreshToken(
+                            refreshToken,
+                            { userId }
+                        )
+                    ),
         });
     }
 
