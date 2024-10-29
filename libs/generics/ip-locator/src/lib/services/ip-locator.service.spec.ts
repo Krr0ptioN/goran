@@ -6,7 +6,6 @@ import { IpLocationDto, Geolocation } from '../types';
 
 describe('IpLocatorService', () => {
     let service: IpLocatorService;
-    let httpService: HttpService;
 
     const mockHttpService = {
         get: jest.fn(),
@@ -24,7 +23,6 @@ describe('IpLocatorService', () => {
         }).compile();
 
         service = module.get<IpLocatorService>(IpLocatorService);
-        httpService = module.get<HttpService>(HttpService);
     });
 
     afterEach(() => {
@@ -52,16 +50,22 @@ describe('IpLocatorService', () => {
             const result = await service.locate(mockIp);
 
             expect(result).toEqual(mockResponse);
-            expect(mockHttpService.get).toHaveBeenCalledWith(service.getApi(mockIp));
+            expect(mockHttpService.get).toHaveBeenCalledWith(
+                service.getApi(mockIp)
+            );
         });
 
         it('should throw an error for an invalid IP', async () => {
             const mockIp = 'invalid-ip';
 
-            mockHttpService.get.mockReturnValue(throwError(() => new Error('Invalid IP')));
+            mockHttpService.get.mockReturnValue(
+                throwError(() => new Error('Invalid IP'))
+            );
 
             await expect(service.locate(mockIp)).rejects.toThrow('Invalid IP');
-            expect(mockHttpService.get).toHaveBeenCalledWith(service.getApi(mockIp));
+            expect(mockHttpService.get).toHaveBeenCalledWith(
+                service.getApi(mockIp)
+            );
         });
     });
 
@@ -109,7 +113,10 @@ describe('IpLocatorService', () => {
 
             const result: Geolocation = await service.getGeolocation(mockIp);
 
-            expect(result).toEqual({ lat: mockResponse.lat, lon: mockResponse.lon });
+            expect(result).toEqual({
+                lat: mockResponse.lat,
+                lon: mockResponse.lon,
+            });
         });
     });
 });
