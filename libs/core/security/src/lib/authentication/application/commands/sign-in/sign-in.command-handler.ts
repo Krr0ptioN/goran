@@ -1,4 +1,3 @@
-import { Logger } from '@nestjs/common';
 import { SignInCommand } from './sign-in.command';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { SessionsService } from '../../../../sessions';
@@ -61,7 +60,7 @@ export class SignInCommandHandler implements ICommandHandler<SignInCommand> {
         );
 
         if (sessionCreationResult.isErr()) return sessionCreationResult;
-        const [tokens, session] = sessionCreationResult.unwrap();
+        const [tokens] = sessionCreationResult.unwrap();
 
         this.logger.info(
             `User with ${userDto.email} email is authenticated`

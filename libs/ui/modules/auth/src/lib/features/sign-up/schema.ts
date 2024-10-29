@@ -12,7 +12,7 @@ export const SignUpSchema = z.object({
         .min(8, { message: 'Be at least 8 characters long' })
         .regex(/[a-z]/, { message: 'Contain at least one lowercase letter.' })
         .regex(/[A-Z]/, { message: 'Contain at least one uppercase letter.' })
-        .regex(/[0-9]/, { message: 'Contain at least one number.' })
+        .regex(/\d/, { message: 'Contain at least one number.' })
         .regex(/[^a-zA-Z0-9]/, {
             message: 'Contain at least one special character.',
         })

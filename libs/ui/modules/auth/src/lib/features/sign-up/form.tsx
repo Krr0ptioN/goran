@@ -12,7 +12,6 @@ import { signUp } from './sign-up.action';
 import { SignUpSchema, signUpInitialValues, SignUpValues } from './schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useFormAction } from '@goran/ui-common';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 export const SignUpForm = () => {
