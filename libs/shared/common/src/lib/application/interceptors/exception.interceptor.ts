@@ -7,10 +7,7 @@ import {
 } from '@nestjs/common';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import {
-    ExceptionBase,
-    ApiErrorResponse,
-} from '@goran/common';
+import { ExceptionBase, ApiErrorResponse } from '@goran/common';
 
 export class ExceptionInterceptor implements NestInterceptor {
     private readonly logger: Logger = new Logger(ExceptionInterceptor.name);
@@ -22,15 +19,12 @@ export class ExceptionInterceptor implements NestInterceptor {
         return next.handle().pipe(
             catchError((err) => {
                 if (err.status >= 400 && err.status < 500) {
-                    this.logger.debug(
-                        err.message
-                    );
+                    this.logger.debug(err.message);
 
                     const isClassValidatorError =
                         Array.isArray(err?.response?.message) &&
                         typeof err?.response?.error === 'string' &&
                         err.status === 400;
-                    // Transforming class-validator errors to a different format
                     if (isClassValidatorError) {
                         err = new BadRequestException(
                             new ApiErrorResponse({

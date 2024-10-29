@@ -1,4 +1,3 @@
-import { Logger } from '@nestjs/common';
 import { SignInCommand } from './sign-in.command';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { SessionsService } from '../../../../sessions';
@@ -10,24 +9,25 @@ import { AuthenticationCredentialDto } from '../../dtos';
 import { ExceptionBase, Guard } from '@goran/common';
 import { IpLocatorService } from '@goran/ip-locator';
 import { DeviceDetectorService } from '@goran/device-detector';
+import { PinoLogger, InjectPinoLogger } from 'nestjs-pino';
 
 @CommandHandler(SignInCommand)
 export class SignInCommandHandler implements ICommandHandler<SignInCommand> {
-    private readonly logger = new Logger(SignInCommand.name);
-
     constructor(
         private readonly passwordService: PasswordService,
         private readonly ipLocator: IpLocatorService,
         private readonly sessionsService: SessionsService,
         private readonly deviceDetector: DeviceDetectorService,
         private readonly userMapper: UserMapper,
-        private usersService: UsersService
-    ) {}
+        private readonly usersService: UsersService,
+        @InjectPinoLogger(SignInCommandHandler.name)
+        private readonly logger: PinoLogger
+    ) { }
 
     async execute(
         command: SignInCommand
     ): Promise<Result<AuthenticationCredentialDto, ExceptionBase>> {
-        const { username, email, password } = command;
+        const { username, email, password, clientInfo } = command;
         const userResult = await this.usersService.findUserByIdenfitier({
             username,
             email,
@@ -46,20 +46,23 @@ export class SignInCommandHandler implements ICommandHandler<SignInCommand> {
             return Err(new InvalidAuthenticationCredentials());
         }
 
+        const ip = clientInfo?.ip ?? '0.0.0.0';
+        const userAgent = clientInfo?.userAgent ?? '';
+
+        const ipLocation = await this.ipLocator.getLocation(ip);
+        const device = !Guard.isEmpty(userAgent) ? this.deviceDetector.getDevice(userAgent) : 'Unknown';
+
         const sessionCreationResult = await this.sessionsService.createSession(
             user,
-            command.clientInfo.ip ?? '',
-            await this.ipLocator.getLocation(command.clientInfo.ip ?? ''),
-            !Guard.isEmpty(command.clientInfo.userAgent)
-                ? this.deviceDetector.getDevice(
-                      command.clientInfo.userAgent ?? ''
-                  )
-                : undefined
+            ip,
+            ipLocation,
+            device
         );
 
-        const [tokens, session] = sessionCreationResult.unwrap();
+        if (sessionCreationResult.isErr()) return sessionCreationResult;
+        const [tokens] = sessionCreationResult.unwrap();
 
-        this.logger.verbose(
+        this.logger.info(
             `User with ${userDto.email} email is authenticated`
         );
 

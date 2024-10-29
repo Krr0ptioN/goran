@@ -1,8 +1,8 @@
 import {
     Body,
     ClassSerializerInterceptor,
-    ConflictException as ConflictHttpException,
     Controller,
+    Get,
     Post,
     Req,
     UseGuards,
@@ -20,24 +20,25 @@ import {
     SignOutCommand,
     SignUpCommand,
 } from '../../application';
-import { CurrentUser, UserAlreadyExistsError, UserEntity } from '@goran/users';
+import { CurrentUser, UserEntity, UserModel } from '@goran/users';
 import { Result, match } from 'oxide.ts';
 import { ExceptionBase } from '@goran/common';
 import { SignInSuccessResponse } from './signin.response';
 import { SignUpSuccessResponse } from './signup.resonse';
-import {SignOutSuccessResponse} from './sign-out.resonse';
+import { SignOutSuccessResponse } from './sign-out.resonse';
 import { Request } from 'express';
 import { UserAgent } from '@goran/common';
 import { TokensService } from '../../../tokens';
+import { GetMeSuccessResponse } from './get-me.resonse';
 
 @ApiTags('auth')
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('auth')
 export class AuthenticationController {
     constructor(
-        private readonly commandBus: CommandBus, 
+        private readonly commandBus: CommandBus,
         private readonly tokensService: TokensService,
-    ) {}
+    ) { }
 
     @ApiOkResponse({ type: SignUpSuccessResponse })
     @ApiOperation({ summary: ApiDocsAuthentication.operationsSummary.signup })
@@ -48,7 +49,7 @@ export class AuthenticationController {
         @UserAgent() userAgent: string
     ) {
         const clientInfo = {
-            ip: req.ip!,
+            ip: req.ip ?? '0.0.0.0',
             userAgent,
         };
         const result: Result<AuthenticationCredentialDto, ExceptionBase> =
@@ -56,7 +57,7 @@ export class AuthenticationController {
                 new SignUpCommand({ ...body, clientInfo })
             );
 
-        match(result, {
+        return match(result, {
             Ok: (credential: AuthenticationCredentialDto) => {
                 return new SignUpSuccessResponse({
                     accessToken: credential.tokens.accessToken,
@@ -64,9 +65,7 @@ export class AuthenticationController {
                     userId: credential.userId,
                 });
             },
-            Err: (error: Error) => {
-                if (error instanceof UserAlreadyExistsError)
-                    throw new ConflictHttpException(error);
+            Err: (error: ExceptionBase) => {
                 throw error;
             },
         });
@@ -89,7 +88,7 @@ export class AuthenticationController {
                 new SignInCommand({ ...body, clientInfo })
             );
 
-        match(result, {
+        return match(result, {
             Ok: (credential: AuthenticationCredentialDto) => {
                 return new SignInSuccessResponse({
                     accessToken: credential.tokens.accessToken,
@@ -97,9 +96,7 @@ export class AuthenticationController {
                     userId: credential.userId,
                 });
             },
-            Err: (error: Error) => {
-                if (error instanceof ExceptionBase)
-                    throw new ConflictHttpException(error);
+            Err: (error: ExceptionBase) => {
                 throw error;
             },
         });
@@ -110,22 +107,35 @@ export class AuthenticationController {
     @UseGuards(JwtAuthGuard)
     @Post('sign-out')
     async signOut(@Req() req: Request, @CurrentUser() user: UserEntity) {
-        const signOutResult: Result<true, ExceptionBase> = await this.commandBus.execute(
-            new SignOutCommand({
-                userId: user.id,
-                refreshToken: this.tokensService.extractTokenFromRequest(req) 
-            })
-        );
+        const signOutResult: Result<true, ExceptionBase> =
+            await this.commandBus.execute(
+                new SignOutCommand({
+                    userId: user.id,
+                    refreshToken:
+                        this.tokensService.extractTokenFromRequest(req),
+                })
+            );
 
-        match(signOutResult, {
+        return match(signOutResult, {
             Ok: () => {
                 return new SignOutSuccessResponse();
             },
-            Err: (error: Error) => {
-                if (error instanceof ExceptionBase)
-                    throw new ConflictHttpException(error);
+            Err: (error: ExceptionBase) => {
                 throw error;
             },
+        });
+    }
+
+    @ApiOkResponse({ type: GetMeSuccessResponse })
+    @ApiOperation({})
+    @UseGuards(JwtAuthGuard)
+    @Get('@me')
+    async getMe(@CurrentUser() user: UserModel) {
+        return new GetMeSuccessResponse({
+            userId: user.id,
+            email: user.email,
+            fullname: user.fullname,
+            username: user.username,
         });
     }
 }

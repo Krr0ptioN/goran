@@ -1,4 +1,4 @@
-import { Inject, Logger } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { DeleteUserCommand } from './delete-user.command';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { WriteModelUsersRepository } from '../../ports/users.repository';

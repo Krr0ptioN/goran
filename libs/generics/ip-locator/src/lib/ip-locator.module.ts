@@ -1,5 +1,5 @@
 import { Global, Module } from '@nestjs/common';
-import { IpLocatorService } from './ip-locator.service';
+import { IpLocatorService } from './services/ip-locator.service';
 import { HttpModule } from '@nestjs/axios';
 
 @Global()

@@ -1,3 +1,4 @@
+import { DomainExceptionFilter } from '@goran/common';
 import {
     ClassSerializerInterceptor,
     INestApplication,
@@ -23,6 +24,7 @@ export async function registerGlobals(
     app.useGlobalPipes(new ValidationPipe());
     app.useLogger(app.get(Logger));
     app.useGlobalInterceptors(new LoggerErrorInterceptor());
+    app.useGlobalFilters(new DomainExceptionFilter());
     app.useGlobalInterceptors(
         new ClassSerializerInterceptor(app.get(Reflector))
     );

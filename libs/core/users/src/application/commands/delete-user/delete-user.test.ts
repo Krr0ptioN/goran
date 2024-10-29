@@ -1,43 +1,66 @@
-import { CommandBus, CqrsModule } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EventEmitter2, EventEmitterModule } from '@nestjs/event-emitter';
 import { DeleteUserCommandHandler } from './delete-user.command-handler';
-import {
-    InMemoryUsersRepository,
-    UsersRepository,
-    UsersRepositoryProvider,
-    UserMapper,
-} from '@goran/users';
+import { WriteModelUsersRepository } from '../../ports/users.repository';
+import { UserMapper } from '../../mappers';
+import { DeleteUserCommand } from './delete-user.command';
+import { Err, Ok, Result } from 'oxide.ts';
+import { UserNotFoundError } from '../../../domain/errors';
+import { UserEntity } from '../../../domain/entities/user/user.entity';
 
-describe('Create user', () => {
-    let commandBus: CommandBus;
-    let repo: UsersRepository;
-    let eventEmitter: EventEmitter2;
+describe('DeleteUserCommandHandler', () => {
+    let commandHandler: DeleteUserCommandHandler;
+    let userRepo: WriteModelUsersRepository;
+
+    const mockUser: UserEntity = UserEntity.create({
+        email: 'test@example.com',
+        username: 'testuser',
+        password: 'test[asswprd',
+        fullname: 'Test User',
+    });
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            imports: [EventEmitterModule.forRoot(), CqrsModule.forRoot()],
             providers: [
                 UserMapper,
                 DeleteUserCommandHandler,
                 {
-                    provide: UsersRepositoryProvider,
-                    useClass: InMemoryUsersRepository,
+                    provide: WriteModelUsersRepository,
+                    useValue: {
+                        delete: jest.fn(),
+                    },
                 },
             ],
         }).compile();
 
-        commandBus = module.get<CommandBus>(CommandBus);
-        commandBus.register([DeleteUserCommandHandler]);
-        eventEmitter = module.get<EventEmitter2>(EventEmitter2);
-        repo = module.get<UsersRepository>(UsersRepositoryProvider);
+        commandHandler = module.get<DeleteUserCommandHandler>(DeleteUserCommandHandler);
+        userRepo = module.get<WriteModelUsersRepository>(WriteModelUsersRepository);
     });
 
-    it('should delete a user successfully', async () => {});
+    it('should delete a user successfully', async () => {
+        const command = new DeleteUserCommand({ user: mockUser });
+        jest.spyOn(userRepo, 'delete').mockResolvedValue(Ok(true));
 
-    it('should return an error if the user is not found', async () => {});
+        const result: Result<boolean, any> = await commandHandler.execute(command);
 
-    it('should handle a ConflictException and return a UserNotFoundError', async () => {});
+        expect(result.isOk()).toBe(true);
+        expect(userRepo.delete).toHaveBeenCalledWith(mockUser);
+    });
 
-    it('should throw an error if an unexpected error occurs', async () => {});
+    it('should return a UserNotFoundError if the user is not found', async () => {
+        const command = new DeleteUserCommand({ user: mockUser });
+        jest.spyOn(userRepo, 'delete').mockResolvedValue(Err(new UserNotFoundError()));
+
+        const result: Result<boolean, any> = await commandHandler.execute(command);
+
+        expect(result.isErr()).toBe(true);
+        expect(result.unwrapErr()).toBeInstanceOf(UserNotFoundError);
+    });
+
+    it('should throw an error if an unexpected error occurs', async () => {
+        const command = new DeleteUserCommand({ user: mockUser });
+        const unexpectedError = new Error('Unexpected error');
+        jest.spyOn(userRepo, 'delete').mockRejectedValue(unexpectedError);
+
+        await expect(commandHandler.execute(command)).rejects.toThrow(unexpectedError);
+    });
 });
