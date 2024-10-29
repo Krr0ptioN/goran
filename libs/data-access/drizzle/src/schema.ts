@@ -82,7 +82,6 @@ export const SessionsDataPgTable = pgTable(
             uniquerefreshToken: uniqueIndex('unique_refresh_token').on(
                 sessions.refreshToken
             ),
-            uniqueUserIdx: uniqueIndex('unique_user_idx').on(sessions.userId),
         };
     }
 );

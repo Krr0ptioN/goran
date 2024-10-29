@@ -1,67 +1,67 @@
 name: CI
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
+    push:
+        branches:
+            - main
+    pull_request:
 
 permissions:
-  actions: read
-  contents: read
+    actions: read
+    contents: read
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 20
-          cache: 'yarn'
-      - run: yarn install --immutable
-      - run: yarn nx affected -t lint
+    lint:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: 20
+                  cache: 'yarn'
+            - run: yarn install --immutable
+            - run: yarn nx affected --base=origin/main -t lint
 
-  build:
-    needs: ["lint"]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 20
-          cache: 'yarn'
-      - run: yarn install --immutable
-      - run: yarn nx affected -t build
+    build:
+        needs: ['lint']
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: 20
+                  cache: 'yarn'
+            - run: yarn install --immutable
+            - run: yarn nx affected --base=origin/main -t build
 
-  test:
-    needs: ["build"]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 20
-          cache: 'yarn'
-      - run: yarn install --immutable
-      - run: yarn nx affected -t test
+    test:
+        needs: ['build']
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: 20
+                  cache: 'yarn'
+            - run: yarn install --immutable
+            - run: yarn nx affected --base=origin/main -t test
 
-  e2e:
-    needs: ["build","test"]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 20
-          cache: 'yarn'
-      - run: yarn install --immutable
-      - run: yarn nx affected -t e2e
+    e2e:
+        needs: ['build', 'test']
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: 20
+                  cache: 'yarn'
+            - run: yarn install --immutable
+            - run: yarn nx affected -t e2e

@@ -1,6 +1,6 @@
 # ui-common
 
-This library was generated with [Nx](https://nx.dev).
+This library provides common utilities for UI component and modules.
 
 ## Running unit tests
 
