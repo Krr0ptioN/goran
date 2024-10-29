@@ -31,6 +31,9 @@ export enum CONFIG_APP {
     MAIL_FROM = 'MAIL_FROM',
 
     SERVER_PASSWORD_RESET_URL = 'SERVER_PASSWORD_RESET_URL',
+
+    // UI
+    API_BASE_URL = 'API_BASE_URL',
 }
 
 export const configSchema = Joi.object({
@@ -54,12 +57,12 @@ export const configSchema = Joi.object({
     // Mail
     MAIL_INFRA: Joi.string().valid('resend', 'mailer').default('mailer'),
     RESEND_GORAN_API: Joi.string(),
-    MAIL_HOST_ADDRESS: Joi.string().email(),
+    MAIL_HOST_ADDRESS: Joi.string().email({ tlds: false }),
     MAIL_PORT: Joi.number().port(),
     MAIL_SECURE: Joi.boolean(),
     MAIL_USER: Joi.string(),
     MAIL_PASSWORD: Joi.string(),
     MAIL_FROM: Joi.string(),
 
-    SERVER_PASSWORD_RESET_URL: Joi.string().required(),
+    API_BASE_URL: Joi.string().required(),
 });

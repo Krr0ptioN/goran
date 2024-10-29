@@ -24,5 +24,4 @@ EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
-CREATE UNIQUE INDEX IF NOT EXISTS "unique_refresh_token" ON "sessions" USING btree ("refresh_token");--> statement-breakpoint
-CREATE UNIQUE INDEX IF NOT EXISTS "unique_user_idx" ON "sessions" USING btree ("user_id");
+CREATE UNIQUE INDEX IF NOT EXISTS "unique_refresh_token" ON "sessions" USING btree ("refresh_token");

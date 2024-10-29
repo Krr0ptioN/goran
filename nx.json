@@ -1,10 +1,7 @@
 {
     "$schema": "./node_modules/nx/schemas/nx-schema.json",
     "namedInputs": {
-        "default": [
-            "{projectRoot}/**/*",
-            "sharedGlobals"
-        ],
+        "default": ["{projectRoot}/**/*", "sharedGlobals"],
         "production": [
             "default",
             "!{projectRoot}/.eslintrc.json",
@@ -83,7 +80,8 @@
             },
             "library": {
                 "style": "tailwind",
-                "linter": "eslint"
+                "linter": "eslint",
+                "unitTestRunner": "none"
             }
         },
         "@nx/next": {
@@ -96,13 +94,11 @@
     "targetDefaults": {
         "@nx/js:swc": {
             "cache": true,
-            "dependsOn": [
-                "^build"
-            ],
-            "inputs": [
-                "production",
-                "^production"
-            ]
+            "dependsOn": ["^build"],
+            "inputs": ["production", "^production"]
+        },
+        "e2e-ci--**/*": {
+            "dependsOn": ["^build"]
         }
     }
 }
