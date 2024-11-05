@@ -1,6 +1,6 @@
 import { AggregateRoot, AggregateID } from '@goran/common';
 import { SongDeletedDomainEvent, SongCreatedDomainEvent } from '../../events';
-import { CreateSongProps, SongProps } from './user.types';
+import { CreateSongProps, SongProps } from './song.types';
 import { ulid } from 'ulid';
 
 export class SongEntity extends AggregateRoot<SongProps> {
