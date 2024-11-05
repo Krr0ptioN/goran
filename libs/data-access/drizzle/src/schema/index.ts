@@ -12,8 +12,8 @@ import {
 } from './producers';
 import { PlaylistsSongsTable, PlaylistsTable } from './playlists';
 import { GenresTable } from './genres/genres';
-import { SongsTable } from './songs/songs';
-import { SongsGenresTable } from './songs/songs-genres';
+import { SongsTable, SongsGenresTable } from './songs/songs';
+import { AlbumsTable, AlbumsProducersTable, AlbumsSongsTable } from './albums';
 
 export default {
     // Users
@@ -32,6 +32,11 @@ export default {
     // Songs
     SongsTable,
     SongsGenresTable,
+
+    //Albums
+    AlbumsTable,
+    AlbumsSongsTable,
+    AlbumsProducersTable,
 
     // Genres
     GenresTable,
