@@ -1,7 +1,8 @@
-import { pgTable, text, timestamp, uniqueIndex } from 'drizzle-orm/pg-core';
+import { pgTable, text, uniqueIndex } from 'drizzle-orm/pg-core';
+import { timestamps } from './columns.helpers';
 import { ulid } from 'ulid';
 
-export const UsersDataPgTable = pgTable(
+export const UsersTable = pgTable(
     'users',
     {
         id: text('id')
@@ -11,8 +12,7 @@ export const UsersDataPgTable = pgTable(
         username: text('name').notNull().unique(),
         password: text('password').notNull(),
         email: text('email').notNull().unique(),
-        createdAt: timestamp('created_at').defaultNow().notNull(),
-        updatedAt: timestamp('updated_at').defaultNow().notNull(),
+        ...timestamps,
     },
     (users) => {
         return {

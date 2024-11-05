@@ -1,6 +1,7 @@
-import { pgTable, text, timestamp, pgEnum } from 'drizzle-orm/pg-core';
+import { pgTable, text, pgEnum } from 'drizzle-orm/pg-core';
+import { timestamps } from './columns.helpers';
 import { ulid } from 'ulid';
-import { UsersDataPgTable } from './users';
+import { UsersTable } from './users';
 
 export const passwordResetStatusEnum = pgEnum('password_reset_status', [
     'requested',
@@ -9,21 +10,15 @@ export const passwordResetStatusEnum = pgEnum('password_reset_status', [
     'dismissed',
 ]);
 
-export const PasswordResetRequestsDataPgTable = pgTable(
-    'password_reset_requests',
-    {
-        id: text('id')
-            .primaryKey()
-            .$defaultFn(() => ulid()),
-        userId: text('user_id')
-            .references(() => UsersDataPgTable.id)
-            .notNull(),
-        status: passwordResetStatusEnum('status')
-            .notNull()
-            .default('requested'),
-        token: text('token').notNull().unique(),
-        otpcode: text('otpcode').notNull(),
-        createdAt: timestamp('created_at').defaultNow().notNull(),
-        updatedAt: timestamp('updated_at').defaultNow().notNull(),
-    }
-);
+export const PasswordResetRequestsTable = pgTable('password_reset_requests', {
+    id: text('id')
+        .primaryKey()
+        .$defaultFn(() => ulid()),
+    userId: text('user_id')
+        .references(() => UsersTable.id)
+        .notNull(),
+    status: passwordResetStatusEnum('status').notNull().default('requested'),
+    token: text('token').notNull().unique(),
+    otpcode: text('otpcode').notNull(),
+    ...timestamps,
+});
