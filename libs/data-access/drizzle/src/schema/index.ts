@@ -10,9 +10,9 @@ import {
     ProducersSongsTable,
     ProducersAlbumsTable,
 } from './producers';
-import { PlaylistsSongsTable, PlaylistsTable } from './playlists';
 import { GenresTable } from './genres/genres';
-import { SongsTable, SongsGenresTable } from './songs/songs';
+import { PlaylistsSongsTable, PlaylistsTable } from './playlists';
+import { SongsTable, SongsGenresTable } from './songs';
 import { AlbumsTable, AlbumsProducersTable, AlbumsSongsTable } from './albums';
 
 export default {
