@@ -1,0 +1,45 @@
+
+fs: FileService
+catalog: CatalogAggregator
+minio: MinioFileService
+s3: S3FileService
+localfs: LocalFileService
+
+s3: {
+    shape: class
+}
+
+localfs: {
+    shape: class
+}
+
+minio: {
+    shape: class
+    icon: "https://raw.githubusercontent.com/minio/minio/master/.github/logo.svg?sanitize=true"
+}
+
+
+fs: {
+    shape: class
+    +upload(file blob, name string): Result
+    +get(mediaId string): Result
+}
+
+catalog -> fs
+
+fs -> minio
+fs -> localfs
+fs -> s3
+
+
+uploaded: Uploaded
+registered: Registered
+published: Published
+optimizied: Optimizied
+archieved: Archieved
+trash: Trash
+deleted: Deleted
+
+uploaded -> registered: The file is associated with an entity
+registered -> published: File can be retrieved by the client
+published -> optimizied: The file is optimizied for different clients and type of connections
