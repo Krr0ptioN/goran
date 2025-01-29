@@ -1,4 +1,4 @@
-import { FilesService } from './application';
+import { FilesService, FilePreparationService } from './application';
 import { FileStorageOptions } from './files-modules.type';
 import { configFilesProviderModule } from './config-files-provider-module.util';
 
@@ -10,8 +10,8 @@ export class FilesModule {
             module: FilesModule,
             global: true,
             imports: [fileProviderModule],
-            providers: [FilesService],
-            exports: [FilesService],
+            providers: [FilePreparationService,FilesService],
+            exports: [FilePreparationService,FilesService],
         };
     }
 }

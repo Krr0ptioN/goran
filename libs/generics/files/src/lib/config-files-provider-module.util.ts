@@ -12,6 +12,6 @@ export function configFilesProviderModule({
     if (provider === 'minio' && isMinioProviderOptionsValid(options)) {
         return MinioProviderModule.register(options);
     } else {
-        throw new Error('Invalid mail provider configuration');
+        throw new Error('Invalid object storage configuration');
     }
 }

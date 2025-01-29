@@ -1,7 +1,7 @@
 import { AppMimeType } from './app-mime-type';
 
 export interface BufferedFile {
-    fieldname: string;
+    fieldname?: string;
     originalname: string;
     encoding: string;
     mimetype: AppMimeType;

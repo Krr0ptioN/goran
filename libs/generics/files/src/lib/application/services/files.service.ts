@@ -8,7 +8,7 @@ import { ExceptionBase } from '@goran/common';
 export class FilesService {
     constructor(private readonly fileProvider: FileProvider) { }
 
-    public upload(
+    public async upload(
         dto: FileUploadDto
     ): Promise<Result<FileUploaded, ExceptionBase>> {
         return this.fileProvider.upload(dto.file, dto.bucketName);
