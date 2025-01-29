@@ -20,6 +20,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { CqrsModule } from '@nestjs/cqrs';
 import { LoggerModule } from 'nestjs-pino';
 import { PassportModule } from '@nestjs/passport';
+import { FilesModule } from '@goran/files';
 
 export class AppModule {
     static register(options: ApplicationBootstrapOptions) {
@@ -30,7 +31,7 @@ export class AppModule {
             imports: [
                 LoggerModule.forRoot({
                     pinoHttp: {
-                        customProps: (req, res) => ({
+                        customProps: () => ({
                             context: 'HTTP',
                         }),
                         transport: {
@@ -67,6 +68,7 @@ export class AppModule {
                     refreshIn: options.security.refreshIn,
                 }),
                 AuthenticationModule,
+                FilesModule,
                 PasswordResetModule,
             ],
         };

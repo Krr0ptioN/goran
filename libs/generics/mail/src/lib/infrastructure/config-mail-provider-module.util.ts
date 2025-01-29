@@ -6,13 +6,13 @@ import {
 import { MailerProviderModule, MailerProviderOptions } from './mailer';
 import { ResendProviderModule, ResendProviderOptions } from './resend';
 
-export function isMailerProviderOptions(
+export function isMailerProviderOptionsCorrect(
     options: MailInfraProviderOptions
 ): options is MailerProviderOptions {
     return 'host' in options && 'port' in options && 'auth' in options;
 }
 
-export function isResendProviderOptions(
+export function isResendProviderOptionsCorrect(
     options: MailInfraProviderOptions
 ): options is ResendProviderOptions {
     return 'apiKey' in options;
@@ -25,9 +25,12 @@ export function configMailProviderModule({
     provider: MailInfraProvider;
     options: MailInfraProviderOptions;
 }): DynamicModule {
-    if (provider === 'resend' && isResendProviderOptions(options)) {
+    if (provider === 'resend' && isResendProviderOptionsCorrect(options)) {
         return ResendProviderModule.register(options);
-    } else if (isMailerProviderOptions(options)) {
+    } else if (
+        provider === 'mailer' &&
+        isMailerProviderOptionsCorrect(options)
+    ) {
         return MailerProviderModule.register(options);
     } else {
         throw new Error('Invalid mail provider configuration');

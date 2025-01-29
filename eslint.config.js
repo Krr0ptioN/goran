@@ -25,7 +25,10 @@ module.exports = [
                 '@darraghor/nestjs-typed/injectable-should-be-provided': 'off',
             },
             languageOptions: {
-                parserOptions: { project: ['./tsconfig.base.json'] },
+                parserOptions: {                     
+                    tsconfigRootDir: __dirname,
+                    project: ['./tsconfig.base.json'] 
+                },
             },
         })),
     {
