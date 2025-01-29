@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { eq } from 'drizzle-orm/expressions';
 import {
     DrizzleService,
-    PasswordResetRequestsDataPgTable as Table,
+    PasswordResetRequestsTable as Table,
 } from '@goran/drizzle-data-access';
 import { Some, None, Option, Ok, Err, Result } from 'oxide.ts';
 import { ExceptionBase } from '@goran/common';
@@ -26,11 +26,9 @@ export class PostgreSqlDrizzlePasswordResetRequestRepository
         const requests = await this.drizzleService.db
             .select()
             .from(Table)
-            .where(eq(Table.token, token))
-        if (requests.length !== 1)
-            return None;
+            .where(eq(Table.token, token));
+        if (requests.length !== 1) return None;
         return Some(requests[0]);
-
     }
 
     async findOneById(id: string): Promise<Option<PasswordResetRequestModel>> {

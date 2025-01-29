@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { eq } from 'drizzle-orm/expressions';
-import { DrizzleService, UsersDataPgTable } from '@goran/drizzle-data-access';
+import { DrizzleService, UsersTable } from '@goran/drizzle-data-access';
 import {
     UserMapper,
     UserModel,
@@ -20,20 +20,19 @@ import { ExceptionBase, Paginated, PaginatedQueryParams } from '@goran/common';
 @Injectable()
 export class PostgreSqlDrizzleUsersRepository
     implements
-        Partial<ReadModelUsersRepository>,
-        Partial<WriteModelUsersRepository>
-{
+    Partial<ReadModelUsersRepository>,
+    Partial<WriteModelUsersRepository> {
     constructor(
         private readonly drizzleService: DrizzleService,
         private readonly mapper: UserMapper
-    ) {}
+    ) { }
 
     async findAllPaginated(
         params: PaginatedQueryParams
     ): Promise<Paginated<UserModel>> {
         const query = this.drizzleService.db
             .select()
-            .from(UsersDataPgTable)
+            .from(UsersTable)
             .limit(params.limit)
             .offset(params.offset);
 
@@ -50,8 +49,8 @@ export class PostgreSqlDrizzleUsersRepository
     async findOneById(userId: string): Promise<Option<UserModel>> {
         const query = this.drizzleService.db
             .select()
-            .from(UsersDataPgTable)
-            .where(eq(UsersDataPgTable.id, userId));
+            .from(UsersTable)
+            .where(eq(UsersTable.id, userId));
 
         const result = await query.execute();
         return result.length > 0 ? Some(result[0]) : None;
@@ -60,8 +59,8 @@ export class PostgreSqlDrizzleUsersRepository
     async findOneByEmail(email: string): Promise<Option<UserModel>> {
         return await this.drizzleService.db
             .select()
-            .from(UsersDataPgTable)
-            .where(eq(UsersDataPgTable.email, email))
+            .from(UsersTable)
+            .where(eq(UsersTable.email, email))
             .then((result: UserModel[]) => {
                 return result && result.length > 0 ? Some(result[0]) : None;
             });
@@ -70,8 +69,8 @@ export class PostgreSqlDrizzleUsersRepository
     async findOneByUsername(username: string): Promise<Option<UserModel>> {
         return await this.drizzleService.db
             .select()
-            .from(UsersDataPgTable)
-            .where(eq(UsersDataPgTable.username, username))
+            .from(UsersTable)
+            .where(eq(UsersTable.username, username))
             .then((result: UserModel[]) => {
                 return result && result.length > 0 ? Some(result[0]) : None;
             });
@@ -107,7 +106,7 @@ export class PostgreSqlDrizzleUsersRepository
             fullname: persistenceModel.fullname ?? null,
         };
         return await this.drizzleService.db
-            .insert(UsersDataPgTable)
+            .insert(UsersTable)
             .values(recordToInsert)
             .returning()
             .then(async (result: UserModel[]) =>
@@ -121,9 +120,9 @@ export class PostgreSqlDrizzleUsersRepository
         email: string
     ): Promise<Option<UserEntity>> {
         return await this.drizzleService.db
-            .update(UsersDataPgTable)
+            .update(UsersTable)
             .set({ email })
-            .where(eq(UsersDataPgTable.email, user.getProps().email))
+            .where(eq(UsersTable.email, user.getProps().email))
             .returning()
             .then(async (result: UserModel[]) =>
                 Some(await this.mapper.toDomain(result[0]))
@@ -136,9 +135,9 @@ export class PostgreSqlDrizzleUsersRepository
         username: string
     ): Promise<Option<UserEntity>> {
         return await this.drizzleService.db
-            .update(UsersDataPgTable)
+            .update(UsersTable)
             .set({ username })
-            .where(eq(UsersDataPgTable.username, user.getProps().username))
+            .where(eq(UsersTable.username, user.getProps().username))
             .returning()
             .then(async (result: UserModel[]) =>
                 Some(await this.mapper.toDomain(result[0]))
@@ -151,9 +150,9 @@ export class PostgreSqlDrizzleUsersRepository
         password: string
     ): Promise<Option<UserEntity>> {
         return await this.drizzleService.db
-            .update(UsersDataPgTable)
+            .update(UsersTable)
             .set({ password })
-            .where(eq(UsersDataPgTable.id, user.getProps().id))
+            .where(eq(UsersTable.id, user.getProps().id))
             .returning()
             .then(async (result: UserModel[]) =>
                 Some(await this.mapper.toDomain(result[0]))
@@ -165,8 +164,8 @@ export class PostgreSqlDrizzleUsersRepository
         const userFound = await this.findOneById(user.id);
         if (userFound.isNone()) return Err(new UserNotFoundError());
         return this.drizzleService.db
-            .delete(UsersDataPgTable)
-            .where(eq(UsersDataPgTable.id, user.id))
+            .delete(UsersTable)
+            .where(eq(UsersTable.id, user.id))
             .then(() => Ok(true))
             .catch((err: Error) => Err(new UserDeletionFailedError(err)));
     }

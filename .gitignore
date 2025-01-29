@@ -44,7 +44,7 @@ Thumbs.db
 .env.*
 .env
 .vercel
-infra/postgres
+infra/postgres/data
 
 # Next.js
 .next
@@ -53,3 +53,4 @@ out
 .yarn
 .yarn/install-state.gz
 docs/music-catalog.svg
+infra/minio/data
