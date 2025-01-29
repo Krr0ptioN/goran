@@ -21,6 +21,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { LoggerModule } from 'nestjs-pino';
 import { PassportModule } from '@nestjs/passport';
 import { FilesModule } from '@goran/files';
+import { CatalogModule } from '@goran/catalog';
 
 export class AppModule {
     static register(options: ApplicationBootstrapOptions) {
@@ -50,6 +51,7 @@ export class AppModule {
                 }),
                 CacheModule.register({ isGlobal: true }),
                 DatabaseModule.forRoot(options.database),
+                FilesModule.register(options.fileStorage),
                 MailModule.register(options.mail),
                 JwtModule.register({
                     global: true,
@@ -68,8 +70,8 @@ export class AppModule {
                     refreshIn: options.security.refreshIn,
                 }),
                 AuthenticationModule,
-                FilesModule,
                 PasswordResetModule,
+                CatalogModule,
             ],
         };
     }
