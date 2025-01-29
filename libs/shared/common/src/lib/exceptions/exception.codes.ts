@@ -5,7 +5,11 @@
  * cannot be performed anymore so a `code` string is used instead.
  * code constants can be stored in a separate file so they
  * can be shared and reused on a receiving side (code sharing is
- * useful when developing fullstack apps or microservices)
+ * useful when developing fullstack apps or microservices).
+ *
+ * Also in presentation layer, your frontend and API serving app,
+ * will have easier time to  correctly detect the error so it can
+ * internationalize accordingly.
  */
 export const ARGUMENT_INVALID = 'GENERIC.ARGUMENT_INVALID';
 export const ARGUMENT_OUT_OF_RANGE = 'GENERIC.ARGUMENT_OUT_OF_RANGE';

@@ -11,7 +11,8 @@ export const SongsTable = pgTable('songs', {
     userId: text('user_id')
         .references(() => UsersTable.id)
         .notNull(),
-    mediaId: text('media_id').notNull(),
+    audioFileKey: text('audio_file_key'),
+    coverImageKey: text('cover_image_key'),
     title: text('title').notNull(),
     releasedDate: date('released_date'),
     duration: integer('duration').notNull(),

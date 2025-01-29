@@ -4,6 +4,7 @@ export enum CONFIG_APP {
     // Server
     SERVER_PORT = 'SERVER_PORT',
     SERVER_ADDRESS = 'SERVER_ADDRES',
+
     // Database
     DB_HOST = 'DB_HOST',
     DB_PORT = 'DB_PORT',
@@ -29,6 +30,15 @@ export enum CONFIG_APP {
     MAIL_USER = 'MAIL_USER',
     MAIL_PASSWORD = 'MAIL_PASSWORD',
     MAIL_FROM = 'MAIL_FROM',
+
+    // File Storage
+    FILES_INFRA = 'FILES_INFRA',
+    FILES_MINIO_ENDPOINT = 'FILES_MINIO_ENDPOINT',
+    FILES_MINIO_PORT = 'FILES_MINIO_PORT',
+    FILES_MINIO_USE_SSL = 'FILES_MINIO_USE_SSL',
+    FILES_MINIO_ACCESSKEY = 'FILES_MINIO_ACCESSKEY',
+    FILES_MINIO_SECRETKEY = 'FILES_MINIO_SECRETKEY',
+    FILES_MINIO_BUCKETNAME = 'FILES_MINIO_BUCKETNAME',
 
     SERVER_PASSWORD_RESET_URL = 'SERVER_PASSWORD_RESET_URL',
 
@@ -63,6 +73,15 @@ export const configSchema = Joi.object({
     MAIL_USER: Joi.string(),
     MAIL_PASSWORD: Joi.string(),
     MAIL_FROM: Joi.string(),
+
+    // File Storage
+    FILES_INFRA: Joi.string().valid('minio').default('minio'),
+    FILES_MINIO_ENDPOINT: Joi.string(),
+    FILES_MINIO_PORT: Joi.string().default(9001),
+    FILES_MINIO_USE_SSL: Joi.boolean().default(true),
+    FILES_MINIO_ACCESSKEY: Joi.string(),
+    FILES_MINIO_SECRETKEY: Joi.string(),
+    FILES_MINIO_BUCKETNAME: Joi.string(),
 
     API_BASE_URL: Joi.string().required(),
 });

@@ -12,5 +12,6 @@ export const PlaylistsTable = pgTable('playlists', {
         .notNull()
         .references(() => UsersTable.id),
     description: text('description'),
+    coverImageKey: text('cover_image_key'),
     name: text('name'),
 });

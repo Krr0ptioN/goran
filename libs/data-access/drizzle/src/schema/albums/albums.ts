@@ -8,5 +8,6 @@ export const AlbumsTable = pgTable('albums', {
         .primaryKey()
         .$defaultFn(() => ulid()),
     name: text('name'),
+    coverImageKey: text('cover_image_key'),
     releasedDate: date('released_date'),
 });

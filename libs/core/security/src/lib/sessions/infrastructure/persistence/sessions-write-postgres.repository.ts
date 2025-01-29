@@ -2,10 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { SessionsWriteModelRepository, SessionMapper } from '../../application';
 import { SessionEntity } from '../../domain';
 import { eq } from 'drizzle-orm';
-import {
-    SessionsDataPgTable as SessionsTable,
-    DrizzleService,
-} from '@goran/drizzle-data-access';
+import { SessionsTable, DrizzleService } from '@goran/drizzle-data-access';
 import { ExceptionBase } from '@goran/common';
 import { Err, Ok, Result } from 'oxide.ts';
 import {
