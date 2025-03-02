@@ -111,7 +111,6 @@
     "devDependencies": {
         "@babel/core": "^7.26.9",
         "@babel/preset-react": "^7.26.3",
-        "@darraghor/eslint-plugin-nestjs-typed": "^6.2.5",
         "@eslint/eslintrc": "^3.3.0",
         "@eslint/js": "^9.21.0",
         "@faker-js/faker": "^9.5.1",
