@@ -17,12 +17,13 @@ jobs:
             - uses: actions/checkout@v4
               with:
                   fetch-depth: 0
-            - uses: actions/setup-node@v3
+
+            - uses: pnpm/action-setup@v2
               with:
-                  node-version: 20
-                  cache: 'yarn'
-            - run: yarn install --immutable
-            - run: yarn nx affected --base=origin/main -t lint
+                  version: 10
+
+            - run: pnpm install --no-frozen-lockfile
+            - run: pnpm nx affected --base=origin/main -t lint
 
     build:
         needs: ['lint']
@@ -31,12 +32,11 @@ jobs:
             - uses: actions/checkout@v4
               with:
                   fetch-depth: 0
-            - uses: actions/setup-node@v3
+            - uses: pnpm/action-setup@v2
               with:
-                  node-version: 20
-                  cache: 'yarn'
-            - run: yarn install --immutable
-            - run: yarn nx affected --base=origin/main -t build
+                  version: 10
+            - run: pnpm install --no-frozen-lockfile
+            - run: pnpm nx affected --base=origin/main -t build
 
     test:
         needs: ['build']
@@ -45,12 +45,11 @@ jobs:
             - uses: actions/checkout@v4
               with:
                   fetch-depth: 0
-            - uses: actions/setup-node@v3
+            - uses: pnpm/action-setup@v2
               with:
-                  node-version: 20
-                  cache: 'yarn'
-            - run: yarn install --immutable
-            - run: yarn nx affected --base=origin/main -t test
+                  version: 10
+            - run: pnpm install --no-frozen-lockfile
+            - run: pnpm nx affected --base=origin/main -t test
 
     e2e:
         needs: ['build', 'test']
@@ -59,9 +58,8 @@ jobs:
             - uses: actions/checkout@v4
               with:
                   fetch-depth: 0
-            - uses: actions/setup-node@v3
+            - uses: pnpm/action-setup@v2
               with:
-                  node-version: 20
-                  cache: 'yarn'
-            - run: yarn install --immutable
-            - run: yarn nx affected -t e2e
+                  version: 10
+            - run: pnpm install --no-frozen-lockfile
+            - run: pnpm nx affected -t e2e

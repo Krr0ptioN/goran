@@ -9,25 +9,19 @@ const compat = new FlatCompat({
 
 module.exports = [
     {
-        ignores: ["./**/eslint.config.js", "./**/webpack.config.js"],
+        ignores: ['./**/eslint.config.js', './**/webpack.config.js'],
     },
     { plugins: { '@nx': nxEslintPlugin } },
-    ...compat
-        .config({
-            extends: ['plugin:@darraghor/nestjs-typed/recommended'],
-            plugins: ['@darraghor/nestjs-typed'],
-        })
-        .map((config) => ({
-            ...config,
-            files: ['**/*.ts', '**/*.js'],
-            rules: {
-                ...config.rules,
-                '@darraghor/nestjs-typed/injectable-should-be-provided': 'off',
-            },
-            languageOptions: {
-                parserOptions: { project: ['./tsconfig.base.json'] },
-            },
-        })),
+    ...compat.map((config) => ({
+        ...config,
+        files: ['**/*.ts', '**/*.js'],
+        rules: {
+            ...config.rules,
+        },
+        languageOptions: {
+            parserOptions: { project: ['./tsconfig.base.json'] },
+        },
+    })),
     {
         files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
         rules: {
