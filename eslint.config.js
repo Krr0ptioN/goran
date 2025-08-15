@@ -1,4 +1,4 @@
-const { FlatCompat } = require('@eslint/eslintrc');
+const  {FlatCompat}  = require('@eslint/eslintrc');
 const js = require('@eslint/js');
 const nxEslintPlugin = require('@nx/eslint-plugin');
 
@@ -7,21 +7,11 @@ const compat = new FlatCompat({
     recommendedConfig: js.configs.recommended,
 });
 
-module.exports = [
+module.export = [
     {
         ignores: ['./**/eslint.config.js', './**/webpack.config.js'],
     },
     { plugins: { '@nx': nxEslintPlugin } },
-    ...compat.map((config) => ({
-        ...config,
-        files: ['**/*.ts', '**/*.js'],
-        rules: {
-            ...config.rules,
-        },
-        languageOptions: {
-            parserOptions: { project: ['./tsconfig.base.json'] },
-        },
-    })),
     {
         files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
         rules: {
@@ -41,6 +31,16 @@ module.exports = [
             ],
         },
     },
+    ...compat.config().map((config) => ({
+        ...config,
+        files: ['**/*.ts', '**/*.js'],
+        rules: {
+            ...config.rules,
+        },
+        languageOptions: {
+            parserOptions: { project: ['./tsconfig.base.json'] },
+        },
+    })),
     ...compat.config({ extends: ['plugin:@nx/typescript'] }).map((config) => ({
         ...config,
         files: ['**/*.ts', '**/*.tsx'],
