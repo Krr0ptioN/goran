@@ -1,14 +1,14 @@
 import { AggregateID, Entity } from '@goran/common';
-import { CreateSongProps, SongProps } from './album.types';
+import { CreateAlbumProps, AlbumProps } from './album.types';
 import { ulid } from 'ulid';
 
-export class SongEntity extends Entity<SongProps> {
+export class AlbumEntity extends Entity<AlbumProps> {
     protected readonly _id: AggregateID;
 
-    static create(create: CreateSongProps): SongEntity {
+    static create(create: CreateAlbumProps): AlbumEntity {
         const id = ulid();
-        const props: SongProps = { ...create };
-        const song = new SongEntity({ id, props });
+        const props: AlbumProps = { ...create };
+        const song = new AlbumEntity({ id, props });
         return song;
     }
 
