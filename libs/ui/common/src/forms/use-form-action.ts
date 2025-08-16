@@ -5,7 +5,7 @@ import { FieldValues, useForm, UseFormProps } from 'react-hook-form';
 export function useFormAction<
   TFieldValues extends FieldValues = FieldValues,
   TContext = any,
-  TTransformedValues extends FieldValues | undefined = undefined
+  TTransformedValues extends FieldValues = TFieldValues
 >(props?: UseFormProps<TFieldValues, TContext, TTransformedValues>) {
   const form = useForm<TFieldValues, TContext, TTransformedValues>(props);
 
@@ -16,8 +16,5 @@ export function useFormAction<
     return { onSubmit: form.handleSubmit(onAction as any) };
   };
 
-  return {
-    ...form,
-    submitAction,
-  };
+  return { ...form, submitAction };
 }
