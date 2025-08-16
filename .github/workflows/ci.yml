@@ -20,9 +20,10 @@ jobs:
             - uses: actions/setup-node@v3
               with:
                   node-version: 20
-                  cache: 'yarn'
-            - run: yarn install --immutable
-            - run: yarn nx affected --base=origin/main -t lint
+                  cache: 'pnpm'
+            - run: corepack enable
+            - run: pnpm install --frozen-lockfile
+            - run: pnpm nx affected --base=origin/main -t lint
 
     build:
         needs: ['lint']
@@ -34,9 +35,10 @@ jobs:
             - uses: actions/setup-node@v3
               with:
                   node-version: 20
-                  cache: 'yarn'
-            - run: yarn install --immutable
-            - run: yarn nx affected --base=origin/main -t build
+                  cache: 'pnpm'
+            - run: corepack enable
+            - run: pnpm install --frozen-lockfile
+            - run: pnpm nx affected --base=origin/main -t build
 
     test:
         needs: ['build']
@@ -48,9 +50,10 @@ jobs:
             - uses: actions/setup-node@v3
               with:
                   node-version: 20
-                  cache: 'yarn'
-            - run: yarn install --immutable
-            - run: yarn nx affected --base=origin/main -t test
+                  cache: 'pnpm'
+            - run: corepack enable
+            - run: pnpm install --frozen-lockfile
+            - run: pnpm nx affected --base=origin/main -t test
 
     e2e:
         needs: ['build', 'test']
@@ -62,6 +65,7 @@ jobs:
             - uses: actions/setup-node@v3
               with:
                   node-version: 20
-                  cache: 'yarn'
-            - run: yarn install --immutable
-            - run: yarn nx affected -t e2e
+                  cache: 'pnpm'
+            - run: corepack enable
+            - run: pnpm install --frozen-lockfile
+            - run: pnpm nx affected -t e2e
