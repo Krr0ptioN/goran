@@ -1,4 +1,4 @@
-/* eslint-disable */
+ 
 export default {
     displayName: 'ip-locator',
     preset: '../../../jest.preset.js',
