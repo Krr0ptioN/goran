@@ -3,7 +3,7 @@ import { RefreshTokenInput } from './refresh-token.dto';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '@goran/users';
 import { Request } from 'express';
-import { InvalidTokenError } from '@goran/security';
+import { InvalidTokenError } from '../../../../tokens';
 import { SessionsService } from '../../../application';
 
 @ApiTags('auth')

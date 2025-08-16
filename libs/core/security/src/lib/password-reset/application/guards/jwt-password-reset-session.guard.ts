@@ -7,7 +7,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 import { UnauthorizedException } from '@nestjs/common';
-import { InvalidTokenError, TokensService } from '@goran/security';
+import { InvalidTokenError, TokensService } from '../../../tokens';
 import { PasswordResetSessionService } from '../services/password-reset-session.service';
 
 @Injectable()
