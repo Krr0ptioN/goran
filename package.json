@@ -185,5 +185,5 @@
         "webpack-cli": "^5.1.4",
         "jest-util": "~30.0.0"
     },
-    "packageManager": "pnpm@9.11.0"
+    "packageManager": "pnpm@10.14.0"
 }
