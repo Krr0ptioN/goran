@@ -9,25 +9,23 @@ import { CONFIG_APP } from '@goran/config';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-    constructor(
-        private readonly userService: UsersService,
-        private readonly mapper: UserMapper,
-        readonly configService: ConfigService
-    ) {
-        super({
-            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-            secretOrKey: configService.get<string>(
-                CONFIG_APP.JWT_ACCESS_SECRET
-            ),
-            ignoreExpiration: true,
-        });
-    }
+  constructor(
+    private readonly userService: UsersService,
+    private readonly mapper: UserMapper,
+    private readonly configService: ConfigService,
+  ) {
+    const secret = configService.getOrThrow<string>(CONFIG_APP.JWT_ACCESS_SECRET);
 
-    async validate(payload: JwtPayload): Promise<UserEntity> {
-        const userResult = await this.userService.findOneById(payload.userId);
-        if (!userResult.isSome()) {
-            throw new UnauthorizedException();
-        }
-        return await this.mapper.toDomain(userResult.unwrap());
-    }
+    super({
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      secretOrKey: secret,
+      ignoreExpiration: true,
+    });
+  }
+
+  async validate(payload: JwtPayload): Promise<UserEntity> {
+    const userResult = await this.userService.findOneById(payload.userId);
+    if (!userResult.isSome()) throw new UnauthorizedException();
+    return this.mapper.toDomain(userResult.unwrap());
+  }
 }
