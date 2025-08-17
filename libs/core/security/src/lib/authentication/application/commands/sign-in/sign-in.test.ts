@@ -18,6 +18,7 @@ import { Ok, Err } from 'oxide.ts';
 import { AuthenticationCredentialDto } from '../../dtos';
 import { TokenValueObject } from '../../../../tokens';
 import { InvalidAuthenticationCredentials } from "../../../domain";
+import { PinoLogger } from 'nestjs-pino';
 
 describe('SignInCommandHandler', () => {
     let handler: SignInCommandHandler;
@@ -63,6 +64,17 @@ describe('SignInCommandHandler', () => {
                     },
                 },
                 UserMapper,
+                {
+                    provide: 'PinoLogger:SignInCommandHandler',
+                    useValue: {
+                    setContext: jest.fn(),
+                    info: jest.fn(),
+                    error: jest.fn(),
+                    warn: jest.fn(),
+                    debug: jest.fn(),
+                    trace: jest.fn(),
+                    },
+                },
             ],
         }).compile();
 

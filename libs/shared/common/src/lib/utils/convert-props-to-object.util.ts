@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types */
+ 
 import { Entity } from '../ddd/entity.base';
 import { ValueObject } from '../ddd/value-object.base';
 
@@ -33,7 +33,7 @@ function convertToPlainObject(item: any): any {
 export function convertPropsToObject(props: any): any {
   const propsCopy = structuredClone(props);
 
-  // eslint-disable-next-line guard-for-in
+   
   for (const prop in propsCopy) {
     if (Array.isArray(propsCopy[prop])) {
       propsCopy[prop] = (propsCopy[prop] as Array<unknown>).map((item) => {

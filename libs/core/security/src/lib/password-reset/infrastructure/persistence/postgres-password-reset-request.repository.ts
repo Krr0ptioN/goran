@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { eq } from 'drizzle-orm/expressions';
+import { eq } from 'drizzle-orm';
 import {
     DrizzleService,
     PasswordResetRequestsTable as Table,
