@@ -12,6 +12,11 @@ permissions:
 env:
   NODE_VERSION: '20'
   API_BASE_URL: 'http://localhost:9000/api'
+  JWT_ACCESS_SECRET: "EcnaMaa4tnadoaEcnaMa4tnadoaEcnaMaa4sdfklJFcna"
+  JWT_REFRESH_SECRET: "l6b9oBa2HOxEcnaaMtiZoWsTdaa4tnpaJ71xmklJFThY"
+  SECURITY_EXPIRES_IN: "3000000"
+  SECURITY_REFRESH_IN: "604800000"
+  SECURITY_BCRYPT_SALT: 10
 
 jobs:
   lint:
