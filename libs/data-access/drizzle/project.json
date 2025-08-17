@@ -15,12 +15,7 @@
             "executor": "@nx/linter:eslint",
             "outputs": [
                 "{options.outputFile}"
-            ],
-            "options": {
-                "lintFilePatterns": [
-                    "libs/data-acces/drizzle/**/*.ts"
-                ]
-            }
+            ]
         },
         "seed": {
             "executor": "nx:run-commands",
