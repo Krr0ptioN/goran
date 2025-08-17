@@ -2,7 +2,7 @@ import { AggregateRoot, AggregateID, ExceptionBase } from '@goran/common';
 import { ulid } from 'ulid';
 import { UserEntity } from '@goran/users';
 import { PasswordResetTokenVO } from '../value-objects';
-import { OtpCodeVO } from '@goran/security';
+import { OtpCodeVO } from '../../../password';
 import { Err, Ok, Result } from 'oxide.ts';
 import {
     InvalidOtpCodeError,

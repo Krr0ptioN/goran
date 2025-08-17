@@ -1,13 +1,8 @@
-import {
-    BadRequestException,
-    CallHandler,
-    ExecutionContext,
-    Logger,
-    NestInterceptor,
-} from '@nestjs/common';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { ExceptionBase, ApiErrorResponse } from '@goran/common';
+import { ExceptionBase } from '../../exceptions';
+import { ApiErrorResponse } from '../../api';
+import { BadRequestException, CallHandler, ExecutionContext, Logger, NestInterceptor } from '@nestjs/common';
 
 export class ExceptionInterceptor implements NestInterceptor {
     private readonly logger: Logger = new Logger(ExceptionInterceptor.name);

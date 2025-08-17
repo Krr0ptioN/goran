@@ -52,3 +52,7 @@ out
 .yarn/install-state.gz
 .yarn
 .yarn/install-state.gz
+infra/minio/data
+
+.cursor/rules/nx-rules.mdc
+.github/instructions/nx.instructions.md

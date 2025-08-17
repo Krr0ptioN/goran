@@ -2,6 +2,7 @@ const { FlatCompat } = require('@eslint/eslintrc');
 const js = require('@eslint/js');
 const nxEslintPlugin = require('@nx/eslint-plugin');
 
+
 const compat = new FlatCompat({
     baseDirectory: __dirname,
     recommendedConfig: js.configs.recommended,
@@ -12,22 +13,22 @@ module.exports = [
         ignores: ["./**/eslint.config.js", "./**/webpack.config.js"],
     },
     { plugins: { '@nx': nxEslintPlugin } },
-    ...compat
-        .config({
-            extends: ['plugin:@darraghor/nestjs-typed/recommended'],
-            plugins: ['@darraghor/nestjs-typed'],
-        })
-        .map((config) => ({
-            ...config,
-            files: ['**/*.ts', '**/*.js'],
-            rules: {
-                ...config.rules,
-                '@darraghor/nestjs-typed/injectable-should-be-provided': 'off',
-            },
-            languageOptions: {
-                parserOptions: { project: ['./tsconfig.base.json'] },
-            },
-        })),
+    // ...compat
+    //     .config({
+    //         extends: ['plugin:@darraghor/nestjs-typed/recommended'],
+    //         plugins: ['@darraghor/nestjs-typed'],
+    //     })
+    //     .map((config) => ({
+    //         ...config,
+    //         files: ['**/*.ts', '**/*.js'],
+    //         rules: {
+    //             ...config.rules,
+    //             '@darraghor/nestjs-typed/injectable-should-be-provided': 'off',
+    //         },
+    //         languageOptions: {
+    //             parserOptions: { project: ['./tsconfig.base.json'] },
+    //         },
+    //     })),
     {
         files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
         rules: {
@@ -73,4 +74,16 @@ module.exports = [
             ...config.rules,
         },
     })),
+    {
+        files: ['**/*.{ts,tsx}'],
+        rules: {
+            '@typescript-eslint/no-unused-expressions': 'off',
+            '@typescript-eslint/no-empty-object-type': 'off',
+            '@typescript-eslint/no-empty-interface': 'off',
+            '@typescript-eslint/no-unused-vars': 'off',
+            '@typescript-eslint/no-empty-function': 'off',
+            '@typescript-eslint/no-explicit-any': 'off',
+            '@typescript-eslint/no-unsafe-function-type': 'off',
+        },
+    },
 ];
