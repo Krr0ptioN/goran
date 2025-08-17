@@ -1,67 +1,115 @@
 name: CI
 
 on:
-    push:
-        branches:
-            - main
-    pull_request:
+  push:
+    branches: [main]
+  pull_request:
 
 permissions:
-    actions: read
-    contents: read
+  actions: read
+  contents: read
+
+env:
+  NODE_VERSION: '20'
+  API_BASE_URL: 'http://localhost:9000/api'
+  JWT_ACCESS_SECRET: "EcnaMaa4tnadoaEcnaMa4tnadoaEcnaMaa4sdfklJFcna"
+  JWT_REFRESH_SECRET: "l6b9oBa2HOxEcnaaMtiZoWsTdaa4tnpaJ71xmklJFThY"
+  SECURITY_EXPIRES_IN: "3000000"
+  SECURITY_REFRESH_IN: "604800000"
+  SECURITY_BCRYPT_SALT: 10
 
 jobs:
-    lint:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-              with:
-                  fetch-depth: 0
-            - uses: actions/setup-node@v3
-              with:
-                  node-version: 20
-                  cache: 'yarn'
-            - run: yarn install --immutable
-            - run: yarn nx affected --base=origin/main -t lint
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    build:
-        needs: ['lint']
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-              with:
-                  fetch-depth: 0
-            - uses: actions/setup-node@v3
-              with:
-                  node-version: 20
-                  cache: 'yarn'
-            - run: yarn install --immutable
-            - run: yarn nx affected --base=origin/main -t build
+      - uses: pnpm/action-setup@v4
+        with:
+          run_install: false
 
-    test:
-        needs: ['build']
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-              with:
-                  fetch-depth: 0
-            - uses: actions/setup-node@v3
-              with:
-                  node-version: 20
-                  cache: 'yarn'
-            - run: yarn install --immutable
-            - run: yarn nx affected --base=origin/main -t test
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          registry-url: https://registry.npmjs.org
+          cache: pnpm
 
-    e2e:
-        needs: ['build', 'test']
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-              with:
-                  fetch-depth: 0
-            - uses: actions/setup-node@v3
-              with:
-                  node-version: 20
-                  cache: 'yarn'
-            - run: yarn install --immutable
-            - run: yarn nx affected -t e2e
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint (affected)
+        run: pnpm nx affected --base=origin/main -t lint
+
+  build:
+    needs: [lint]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          registry-url: https://registry.npmjs.org
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build (affected)
+        run: pnpm nx affected --base=origin/main -t build
+
+  test:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          registry-url: https://registry.npmjs.org
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Test (affected)
+        run: pnpm nx affected --base=origin/main -t test
+  ## No need for E2E until MVP
+  # e2e:
+  #   needs: [build, test]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 0
+  #
+  #     - uses: pnpm/action-setup@v4
+  #       with:
+  #         run_install: false
+  #
+  #     - uses: actions/setup-node@v4
+  #       with:
+  #         node-version: ${{ env.NODE_VERSION }}
+  #         registry-url: https://registry.npmjs.org
+  #         cache: pnpm
+  #
+  #     - name: Install dependencies
+  #       run: pnpm install --frozen-lockfile
+  #
+  #     - name: E2E (affected)
+  #       run: pnpm nx affected -t e2e
