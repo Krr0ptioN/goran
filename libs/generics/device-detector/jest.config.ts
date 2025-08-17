@@ -1,4 +1,4 @@
-/* eslint-disable */
+ 
 export default {
     displayName: 'device-detector',
     preset: '../../../jest.preset.js',

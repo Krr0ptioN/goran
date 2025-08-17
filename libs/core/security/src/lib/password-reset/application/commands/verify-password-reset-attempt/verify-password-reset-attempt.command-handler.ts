@@ -2,7 +2,7 @@ import { BadRequestException, Logger } from '@nestjs/common';
 import { VerifyPasswordResetAttemptCommand } from './verify-password-reset-attempt.command';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { PasswordResetRequestRepository } from '../../ports';
-import { OtpCodeVO } from '@goran/security';
+import { OtpCodeVO } from '../../../../password';
 import { PasswordResetSessionService } from '../../services/password-reset-session.service';
 
 @CommandHandler(VerifyPasswordResetAttemptCommand)

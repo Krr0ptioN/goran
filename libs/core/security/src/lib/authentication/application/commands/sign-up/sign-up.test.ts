@@ -17,6 +17,7 @@ import { DeviceDetectorService } from '@goran/device-detector';
 import { Ok, Err } from 'oxide.ts';
 import { AuthenticationCredentialDto } from '../../dtos';
 import { TokenValueObject } from '../../../../tokens';
+import { LoggerModule } from 'nestjs-pino';
 
 describe('SignUpCommandHandler', () => {
     let handler: SignUpCommandHandler;
@@ -28,6 +29,21 @@ describe('SignUpCommandHandler', () => {
 
     beforeEach(async () => {
         const module = await Test.createTestingModule({
+            imports: [
+                LoggerModule.forRoot({
+                    pinoHttp: {
+                        customProps: (req, res) => ({
+                            context: 'HTTP',
+                        }),
+                        transport: {
+                            target: 'pino-pretty',
+                            options: {
+                                singleLine: true,
+                            },
+                        },
+                    },
+                }),
+            ],
             providers: [
                 SignUpCommandHandler,
                 {
