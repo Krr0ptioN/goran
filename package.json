@@ -84,7 +84,7 @@
         "pg-mem": "^3.0.5",
         "pino-http": "^10.5.0",
         "pino-pretty": "^13.1.1",
-        "pnpm": "^8.15.9",
+        "pnpm": "^10.0.0",
         "postgres": "^3.4.7",
         "react": "19.1.1",
         "react-day-picker": "9.8.1",
