@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { SessionStatus } from '../../../domain';
 import { SessionDto, SessionsService } from '../../../application';
-import { JwtAuthGuard } from '../../../../authentication';
+import { JwtAuthGuard } from '../../../../authentication/application/guards/jwt-auth.guard';
 import { ApiTags } from '@nestjs/swagger';
 import { match, Result } from 'oxide.ts';
 import { GetSessionsSuccessResponse } from './get-sessions.response';
@@ -20,8 +20,8 @@ import { CurrentUser, UserEntity } from '@goran/users';
 import { RevokedSessionSuccessResponse } from './revoked-session.response';
 import { ExceptionBase } from '@goran/common';
 
-@UseGuards(JwtAuthGuard)
 @Controller()
+@UseGuards(JwtAuthGuard)
 export class SessionsController {
     constructor(private readonly sessionsService: SessionsService) { }
 

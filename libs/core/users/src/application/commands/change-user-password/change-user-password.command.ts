@@ -1,5 +1,5 @@
 import { Command, CommandProps } from '@goran/common';
-import { UserEntity } from '@goran/users';
+import { UserEntity } from '../../../domain';
 
 export class ChangeUserPasswordCommand extends Command {
     readonly newHashedPassword: string;

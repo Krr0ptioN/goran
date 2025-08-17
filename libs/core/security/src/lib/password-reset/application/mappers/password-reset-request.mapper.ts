@@ -4,7 +4,7 @@ import {
     PasswordResetRequestAggregate,
     PasswordResetTokenVO,
 } from '../../domain';
-import { OtpCodeVO } from '@goran/security';
+import { OtpCodeVO } from '../../../password';
 import { PasswordResetRequestModel } from '../models/password-reset-request.model';
 import { UserMapper, UsersService } from '@goran/users';
 

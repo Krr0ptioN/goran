@@ -5,7 +5,7 @@ import TailwindAnimation from 'tailwindcss-animate';
 import { nextui } from '@nextui-org/react';
 
 const config = {
-  darkMode: ['class'],
+  darkMode: ['class', '.dark'],
   content: [
     join(
       __dirname,

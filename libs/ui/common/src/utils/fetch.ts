@@ -3,7 +3,7 @@ import 'server-only';
 
 import { env } from '../env';
 
-export const fetchApi = (
+export const fetchApi = async (
     endpoint: string,
     ops: RequestInit = { headers: {} },
     token?: string
