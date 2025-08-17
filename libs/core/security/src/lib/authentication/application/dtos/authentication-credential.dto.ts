@@ -6,6 +6,9 @@ export class AuthenticationCredentialDto {
 
     constructor(props: { userId: string; tokens: TokenValueObject }) {
         this.userId = props.userId;
-        this.tokens = props.tokens.unpack();
+        this.tokens = {
+            accessToken: props.tokens.accessToken,
+            refreshToken: props.tokens.refreshToken,
+        }
     }
 }
