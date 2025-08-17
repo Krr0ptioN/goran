@@ -1,4 +1,3 @@
-import { Logger } from '@nestjs/common';
 import { SignUpCommand } from './sign-up.command';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { UsersService } from '@goran/users';
@@ -9,6 +8,7 @@ import { SessionsService } from '../../../../sessions';
 import { PasswordService } from '../../../../password';
 import { IpLocatorService } from '@goran/ip-locator';
 import { DeviceDetectorService } from '@goran/device-detector';
+import { PinoLogger } from 'nestjs-pino';
 
 @CommandHandler(SignUpCommand)
 export class SignUpCommandHandler implements ICommandHandler<SignUpCommand> {
@@ -17,9 +17,9 @@ export class SignUpCommandHandler implements ICommandHandler<SignUpCommand> {
         private readonly passwordService: PasswordService,
         private readonly usersService: UsersService,
         private readonly ipLocator: IpLocatorService,
-        private readonly deviceDetector: DeviceDetectorService
+        private readonly deviceDetector: DeviceDetectorService,
+        private readonly logger: PinoLogger
     ) {}
-    private readonly logger = new Logger(SignUpCommand.name);
 
     async execute(
         command: SignUpCommand
@@ -55,8 +55,8 @@ export class SignUpCommandHandler implements ICommandHandler<SignUpCommand> {
 
         if (sessionCreationResult.isErr()) return sessionCreationResult;
 
-        const [tokens] = sessionCreationResult.unwrap();
-        this.logger.log(`User with ${user.email} email signed up`);
+        const [tokens,] = sessionCreationResult.unwrap();
+        this.logger.info(`User with ${user.email} email signed up`);
 
         return Ok(new AuthenticationCredentialDto({ userId: user.id, tokens }));
     }

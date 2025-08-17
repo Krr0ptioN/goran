@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { eq } from 'drizzle-orm/expressions';
-import { DrizzleService, UsersTable } from '@goran/drizzle-data-access';
+import { eq } from 'drizzle-orm';
+import { DrizzleService, UsersDataPgTable } from '@goran/drizzle-data-access';
 import {
     UserMapper,
     UserModel,
