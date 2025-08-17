@@ -89,27 +89,27 @@ jobs:
 
       - name: Test (affected)
         run: pnpm nx affected --base=origin/main -t test
-
-  e2e:
-    needs: [build, test]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - uses: pnpm/action-setup@v4
-        with:
-          run_install: false
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          registry-url: https://registry.npmjs.org
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: E2E (affected)
-        run: pnpm nx affected -t e2e
+  ## No need for E2E until MVP
+  # e2e:
+  #   needs: [build, test]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 0
+  #
+  #     - uses: pnpm/action-setup@v4
+  #       with:
+  #         run_install: false
+  #
+  #     - uses: actions/setup-node@v4
+  #       with:
+  #         node-version: ${{ env.NODE_VERSION }}
+  #         registry-url: https://registry.npmjs.org
+  #         cache: pnpm
+  #
+  #     - name: Install dependencies
+  #       run: pnpm install --frozen-lockfile
+  #
+  #     - name: E2E (affected)
+  #       run: pnpm nx affected -t e2e
