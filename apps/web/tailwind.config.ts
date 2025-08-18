@@ -2,16 +2,14 @@ import { join } from 'path';
 import { createGlobPatternsForDependencies } from '@nx/react/tailwind';
 import type { Config } from 'tailwindcss';
 import TailwindAnimation from 'tailwindcss-animate';
-import { nextui } from '@nextui-org/react';
 
 const config = {
   darkMode: ['class', '.dark'],
   content: [
     join(
       __dirname,
-      '{src,pages,components,app}/**/*!(*.stories|*.spec).{ts,tsx,html}'
+      './src/**/*!(*.stories|*.spec).{ts,tsx,html}'
     ),
-    '../../node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}',
     ...createGlobPatternsForDependencies(__dirname),
   ],
   prefix: '',
@@ -89,7 +87,7 @@ const config = {
       },
     },
   },
-  plugins: [nextui(), TailwindAnimation],
+  plugins: [TailwindAnimation],
 } satisfies Config;
 
 export default config;
