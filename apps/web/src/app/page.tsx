@@ -1,6 +1,6 @@
-import './global.css';
-import { Button } from '@goran/ui-components';
+import "./global.css"
+import MusicApp from './_components/music-app';
 
 export default function Index() {
-    return <Button>Goran</Button>;
+    return <MusicApp />;
 }
