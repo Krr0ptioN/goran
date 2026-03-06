@@ -69,6 +69,7 @@
         "joi": "^18.0.0",
         "lucide-react": "^0.539.0",
         "nanoid": "^5.1.5",
+        "nestjs-minio-client": "^2.2.0",
         "nestjs-pino": "^4.4.0",
         "nestjs-request-context": "^4.0.0",
         "nestjs-resend": "^1.0.3",
