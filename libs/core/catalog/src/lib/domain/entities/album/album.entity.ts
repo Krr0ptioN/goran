@@ -7,7 +7,13 @@ export class AlbumEntity extends Entity<AlbumProps> {
 
     static create(create: CreateAlbumProps): AlbumEntity {
         const id = ulid();
-        const props: AlbumProps = { ...create };
+        const props: AlbumProps = {
+            name: create.name,
+            coverImageKey: create.coverImageKey ?? null,
+            releasedDate: create.releasedDate ?? null,
+            producerIds: create.producerIds ?? [],
+            songIds: create.songIds ?? [],
+        };
         const song = new AlbumEntity({ id, props });
         return song;
     }

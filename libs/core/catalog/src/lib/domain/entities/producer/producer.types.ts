@@ -11,11 +11,11 @@ export interface ProducerProps {
 
 export interface CreateProducerProps {
     fullname: string;
-    nickname: Optional<string>;
-    bio: Optional<string>;
-    genreIds: AggregateID[];
-    songIds: AggregateID[];
-    albumIds: AggregateID[];
+    nickname?: Optional<string>;
+    bio?: Optional<string>;
+    genreIds?: AggregateID[];
+    songIds?: AggregateID[];
+    albumIds?: AggregateID[];
 }
 
 export type UpdateProducerProps = RequireOnlyOne<CreateProducerProps>;

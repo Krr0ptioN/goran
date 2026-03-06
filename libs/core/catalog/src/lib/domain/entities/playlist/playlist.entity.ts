@@ -7,7 +7,13 @@ export class PlaylistEntity extends Entity<PlaylistProps> {
 
     static create(create: CreatePlaylistProps): PlaylistEntity {
         const id = ulid();
-        const props: PlaylistProps = { ...create };
+        const props: PlaylistProps = {
+            ownerId: create.ownerId,
+            name: create.name,
+            description: create.description ?? null,
+            coverImageKey: create.coverImageKey ?? null,
+            songIds: create.songIds ?? [],
+        };
         const song = new PlaylistEntity({ id, props });
         return song;
     }

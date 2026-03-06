@@ -1,14 +1,18 @@
-import { RequireOnlyOne, AggregateID } from '@goran/common';
+import { AggregateID, Optional, RequireOnlyOne } from '@goran/common';
 
 export interface AlbumProps {
     producerIds: AggregateID[];
-    releasedDate: Date;
+    songIds: AggregateID[];
+    releasedDate: Optional<Date>;
+    coverImageKey: Optional<string>;
     name: string;
 }
 
 export interface CreateAlbumProps {
-    producerIds: AggregateID[];
-    releasedDate: Date;
+    producerIds?: AggregateID[];
+    songIds?: AggregateID[];
+    releasedDate?: Optional<Date>;
+    coverImageKey?: Optional<string>;
     name: string;
 }
 
