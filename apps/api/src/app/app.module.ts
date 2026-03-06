@@ -23,6 +23,10 @@ import { PassportModule } from '@nestjs/passport';
 import { FilesModule } from '@goran/files';
 import { CatalogModule } from '@goran/catalog';
 
+type JwtExpiresIn =
+    | number
+    | `${number}${'ms' | 's' | 'm' | 'h' | 'd' | 'w' | 'y'}`;
+
 export class AppModule {
     static register(options: ApplicationBootstrapOptions) {
         return {
@@ -57,7 +61,7 @@ export class AppModule {
                     global: true,
                     secret: options.security.jwtAccessSecret,
                     signOptions: {
-                        expiresIn: options.security.expiresIn,
+                        expiresIn: options.security.expiresIn as JwtExpiresIn,
                     },
                 }),
                 PassportModule.register({ global: true }),

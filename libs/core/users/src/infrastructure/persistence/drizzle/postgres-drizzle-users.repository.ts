@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
-import { DrizzleService, UsersDataPgTable } from '@goran/drizzle-data-access';
+import { DrizzleService, UsersTable } from '@goran/drizzle-data-access';
 import {
     UserMapper,
     UserModel,
@@ -20,15 +20,16 @@ import { ExceptionBase, Paginated, PaginatedQueryParams } from '@goran/common';
 @Injectable()
 export class PostgreSqlDrizzleUsersRepository
     implements
-    Partial<ReadModelUsersRepository>,
-    Partial<WriteModelUsersRepository> {
+        Partial<ReadModelUsersRepository>,
+        Partial<WriteModelUsersRepository>
+{
     constructor(
         private readonly drizzleService: DrizzleService,
-        private readonly mapper: UserMapper
-    ) { }
+        private readonly mapper: UserMapper,
+    ) {}
 
     async findAllPaginated(
-        params: PaginatedQueryParams
+        params: PaginatedQueryParams,
     ): Promise<Paginated<UserModel>> {
         const query = this.drizzleService.db
             .select()
@@ -77,7 +78,7 @@ export class PostgreSqlDrizzleUsersRepository
     }
 
     async insertOne(
-        user: UserEntity
+        user: UserEntity,
     ): Promise<Result<UserEntity, ExceptionBase>> {
         const userFound = await this.findOneById(user.id);
         if (userFound.isSome()) return Err(new UserAlreadyExistsError());
@@ -91,8 +92,8 @@ export class PostgreSqlDrizzleUsersRepository
         ) {
             return Err(
                 new UserCreationFailedError(
-                    new Error('Missing required fields')
-                )
+                    new Error('Missing required fields'),
+                ),
             );
         }
 
@@ -110,14 +111,14 @@ export class PostgreSqlDrizzleUsersRepository
             .values(recordToInsert)
             .returning()
             .then(async (result: UserModel[]) =>
-                Ok(await this.mapper.toDomain(result[0]))
+                Ok(await this.mapper.toDomain(result[0])),
             )
             .catch((err: Error) => Err(new UserCreationFailedError(err)));
     }
 
     async updateEmail(
         user: UserEntity,
-        email: string
+        email: string,
     ): Promise<Option<UserEntity>> {
         return await this.drizzleService.db
             .update(UsersTable)
@@ -125,14 +126,14 @@ export class PostgreSqlDrizzleUsersRepository
             .where(eq(UsersTable.email, user.getProps().email))
             .returning()
             .then(async (result: UserModel[]) =>
-                Some(await this.mapper.toDomain(result[0]))
+                Some(await this.mapper.toDomain(result[0])),
             )
             .catch(() => None);
     }
 
     async updateUsername(
         user: UserEntity,
-        username: string
+        username: string,
     ): Promise<Option<UserEntity>> {
         return await this.drizzleService.db
             .update(UsersTable)
@@ -140,14 +141,14 @@ export class PostgreSqlDrizzleUsersRepository
             .where(eq(UsersTable.username, user.getProps().username))
             .returning()
             .then(async (result: UserModel[]) =>
-                Some(await this.mapper.toDomain(result[0]))
+                Some(await this.mapper.toDomain(result[0])),
             )
             .catch(() => None);
     }
 
     async updatePassword(
         user: UserEntity,
-        password: string
+        password: string,
     ): Promise<Option<UserEntity>> {
         return await this.drizzleService.db
             .update(UsersTable)
@@ -155,7 +156,7 @@ export class PostgreSqlDrizzleUsersRepository
             .where(eq(UsersTable.id, user.getProps().id))
             .returning()
             .then(async (result: UserModel[]) =>
-                Some(await this.mapper.toDomain(result[0]))
+                Some(await this.mapper.toDomain(result[0])),
             )
             .catch(() => None);
     }
