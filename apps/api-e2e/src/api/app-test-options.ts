@@ -30,6 +30,6 @@ export const testOptions: ApplicationBootstrapOptions = {
         port: 5432,
         database: 'test',
         user: 'u',
-        password: 'p',
+        password: process.env.DB_PASS ?? process.env.DB_USER ?? '',
     },
 };
