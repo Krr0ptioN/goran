@@ -17,7 +17,7 @@ import { DeviceDetectorService } from '@goran/device-detector';
 import { Ok, Err } from 'oxide.ts';
 import { AuthenticationCredentialDto } from '../../dtos';
 import { TokenValueObject } from '../../../../tokens';
-import { LoggerModule } from 'nestjs-pino';
+import { PinoLogger } from 'nestjs-pino';
 
 describe('SignUpCommandHandler', () => {
     let handler: SignUpCommandHandler;
@@ -29,23 +29,14 @@ describe('SignUpCommandHandler', () => {
 
     beforeEach(async () => {
         const module = await Test.createTestingModule({
-            imports: [
-                LoggerModule.forRoot({
-                    pinoHttp: {
-                        customProps: (req, res) => ({
-                            context: 'HTTP',
-                        }),
-                        transport: {
-                            target: 'pino-pretty',
-                            options: {
-                                singleLine: true,
-                            },
-                        },
-                    },
-                }),
-            ],
             providers: [
                 SignUpCommandHandler,
+                {
+                    provide: PinoLogger,
+                    useValue: {
+                        info: jest.fn(),
+                    },
+                },
                 {
                     provide: UsersService,
                     useValue: {
@@ -135,23 +126,23 @@ describe('SignUpCommandHandler', () => {
         }
 
         expect(passwordService.hashPassword).toHaveBeenCalledWith(
-            command.password
+            command.password,
         );
         expect(usersService.create).toHaveBeenCalledWith({
             ...command,
             password: hashedPassword,
         });
         expect(ipLocatorService.getLocation).toHaveBeenCalledWith(
-            command.clientInfo.ip
+            command.clientInfo.ip,
         );
         expect(deviceDetectorService.getDevice).toHaveBeenCalledWith(
-            command.clientInfo.userAgent
+            command.clientInfo.userAgent,
         );
         expect(sessionsService.createSession).toHaveBeenCalledWith(
             user,
             command.clientInfo.ip,
             'Test Location',
-            'Test Device'
+            'Test Device',
         );
     });
 
@@ -211,7 +202,7 @@ describe('SignUpCommandHandler', () => {
             user,
             '',
             'Unknown',
-            'Test Device'
+            'Test Device',
         );
     });
 
@@ -250,7 +241,7 @@ describe('SignUpCommandHandler', () => {
             user,
             '127.0.0.1',
             'Test Location',
-            'Unknown'
+            'Unknown',
         );
     });
 

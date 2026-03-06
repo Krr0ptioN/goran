@@ -52,21 +52,27 @@ describe('IpLocatorService', () => {
 
             expect(result).toEqual(mockResponse);
             expect(mockHttpService.get).toHaveBeenCalledWith(
-                service.getApi(mockIp)
+                service.getApi(mockIp),
             );
         });
 
         it('should return fallback location for an invalid IP', async () => {
             const mockIp = 'invalid-ip';
+            const consoleErrorSpy = jest
+                .spyOn(console, 'error')
+                .mockImplementation(() => undefined);
             mockHttpService.get.mockReturnValue(
                 throwError(() => new Error('Invalid IP')),
             );
 
             await expect(service.locate(mockIp)).resolves.toEqual(
-                PreconditionedLocationFails.unknownLocation
+                PreconditionedLocationFails.unknownLocation,
             );
 
-            expect(mockHttpService.get).toHaveBeenCalledWith(service.getApi(mockIp));
+            expect(mockHttpService.get).toHaveBeenCalledWith(
+                service.getApi(mockIp),
+            );
+            expect(consoleErrorSpy).toHaveBeenCalled();
         });
     });
 
