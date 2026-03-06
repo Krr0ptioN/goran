@@ -7,7 +7,14 @@ export class ProducerEntity extends Entity<ProducerProps> {
 
     static create(create: CreateProducerProps): ProducerEntity {
         const id = ulid();
-        const props: ProducerProps = { ...create };
+        const props: ProducerProps = {
+            fullname: create.fullname,
+            nickname: create.nickname ?? null,
+            bio: create.bio ?? null,
+            genreIds: create.genreIds ?? [],
+            songIds: create.songIds ?? [],
+            albumIds: create.albumIds ?? [],
+        };
         const song = new ProducerEntity({ id, props });
         return song;
     }
