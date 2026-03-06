@@ -4,7 +4,7 @@ import { ProducersTable } from './producers';
 import { SongsTable } from '../songs/songs';
 
 export const ProducersSongsTable = pgTable(
-    'producers',
+    'producers_songs',
     {
         ...timestamps,
         producerId: text('producer_id')
@@ -16,5 +16,5 @@ export const ProducersSongsTable = pgTable(
     },
     (columns) => ({
         pk: primaryKey({ columns: [columns.producerId, columns.songId] }),
-    })
+    }),
 );
