@@ -9,5 +9,5 @@ export const ProducersTable = pgTable('producers', {
         .$defaultFn(() => ulid()),
     fullname: text('fullname'),
     nickname: text('nickname'),
-    bio: text('nickname'),
+    bio: text('bio'),
 });
