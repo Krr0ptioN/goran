@@ -2,18 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { SessionsReadModelRepository } from '../../application';
 import { and, eq } from 'drizzle-orm';
 import { SessionModel } from '../../application';
-import {
-    SessionsDataPgTable as SessionsTable,
-    DrizzleService,
-} from '@goran/drizzle-data-access';
+import { SessionsTable, DrizzleService } from '@goran/drizzle-data-access';
 import { None, Some, Option } from 'oxide.ts';
 import { SessionStatus } from '../../domain';
 
 @Injectable()
 export class SessionsReadModelRepositoryPostgres
-    implements SessionsReadModelRepository
-{
-    constructor(private readonly drizzleService: DrizzleService) {}
+    implements SessionsReadModelRepository {
+    constructor(private readonly drizzleService: DrizzleService) { }
 
     async findByRefreshToken(token: string): Promise<Option<SessionModel>> {
         const [session] = await this.drizzleService.db

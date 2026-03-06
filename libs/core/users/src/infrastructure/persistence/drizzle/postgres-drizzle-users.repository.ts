@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
-import { DrizzleService, UsersDataPgTable } from '@goran/drizzle-data-access';
+import { DrizzleService, UsersTable } from '@goran/drizzle-data-access';
 import {
     UserMapper,
     UserModel,
@@ -25,15 +25,15 @@ export class PostgreSqlDrizzleUsersRepository
 {
     constructor(
         private readonly drizzleService: DrizzleService,
-        private readonly mapper: UserMapper
+        private readonly mapper: UserMapper,
     ) {}
 
     async findAllPaginated(
-        params: PaginatedQueryParams
+        params: PaginatedQueryParams,
     ): Promise<Paginated<UserModel>> {
         const query = this.drizzleService.db
             .select()
-            .from(UsersDataPgTable)
+            .from(UsersTable)
             .limit(params.limit)
             .offset(params.offset);
 
@@ -50,8 +50,8 @@ export class PostgreSqlDrizzleUsersRepository
     async findOneById(userId: string): Promise<Option<UserModel>> {
         const query = this.drizzleService.db
             .select()
-            .from(UsersDataPgTable)
-            .where(eq(UsersDataPgTable.id, userId));
+            .from(UsersTable)
+            .where(eq(UsersTable.id, userId));
 
         const result = await query.execute();
         return result.length > 0 ? Some(result[0]) : None;
@@ -60,8 +60,8 @@ export class PostgreSqlDrizzleUsersRepository
     async findOneByEmail(email: string): Promise<Option<UserModel>> {
         return await this.drizzleService.db
             .select()
-            .from(UsersDataPgTable)
-            .where(eq(UsersDataPgTable.email, email))
+            .from(UsersTable)
+            .where(eq(UsersTable.email, email))
             .then((result: UserModel[]) => {
                 return result && result.length > 0 ? Some(result[0]) : None;
             });
@@ -70,15 +70,15 @@ export class PostgreSqlDrizzleUsersRepository
     async findOneByUsername(username: string): Promise<Option<UserModel>> {
         return await this.drizzleService.db
             .select()
-            .from(UsersDataPgTable)
-            .where(eq(UsersDataPgTable.username, username))
+            .from(UsersTable)
+            .where(eq(UsersTable.username, username))
             .then((result: UserModel[]) => {
                 return result && result.length > 0 ? Some(result[0]) : None;
             });
     }
 
     async insertOne(
-        user: UserEntity
+        user: UserEntity,
     ): Promise<Result<UserEntity, ExceptionBase>> {
         const userFound = await this.findOneById(user.id);
         if (userFound.isSome()) return Err(new UserAlreadyExistsError());
@@ -92,8 +92,8 @@ export class PostgreSqlDrizzleUsersRepository
         ) {
             return Err(
                 new UserCreationFailedError(
-                    new Error('Missing required fields')
-                )
+                    new Error('Missing required fields'),
+                ),
             );
         }
 
@@ -107,56 +107,56 @@ export class PostgreSqlDrizzleUsersRepository
             fullname: persistenceModel.fullname ?? null,
         };
         return await this.drizzleService.db
-            .insert(UsersDataPgTable)
+            .insert(UsersTable)
             .values(recordToInsert)
             .returning()
             .then(async (result: UserModel[]) =>
-                Ok(await this.mapper.toDomain(result[0]))
+                Ok(await this.mapper.toDomain(result[0])),
             )
             .catch((err: Error) => Err(new UserCreationFailedError(err)));
     }
 
     async updateEmail(
         user: UserEntity,
-        email: string
+        email: string,
     ): Promise<Option<UserEntity>> {
         return await this.drizzleService.db
-            .update(UsersDataPgTable)
+            .update(UsersTable)
             .set({ email })
-            .where(eq(UsersDataPgTable.email, user.getProps().email))
+            .where(eq(UsersTable.email, user.getProps().email))
             .returning()
             .then(async (result: UserModel[]) =>
-                Some(await this.mapper.toDomain(result[0]))
+                Some(await this.mapper.toDomain(result[0])),
             )
             .catch(() => None);
     }
 
     async updateUsername(
         user: UserEntity,
-        username: string
+        username: string,
     ): Promise<Option<UserEntity>> {
         return await this.drizzleService.db
-            .update(UsersDataPgTable)
+            .update(UsersTable)
             .set({ username })
-            .where(eq(UsersDataPgTable.username, user.getProps().username))
+            .where(eq(UsersTable.username, user.getProps().username))
             .returning()
             .then(async (result: UserModel[]) =>
-                Some(await this.mapper.toDomain(result[0]))
+                Some(await this.mapper.toDomain(result[0])),
             )
             .catch(() => None);
     }
 
     async updatePassword(
         user: UserEntity,
-        password: string
+        password: string,
     ): Promise<Option<UserEntity>> {
         return await this.drizzleService.db
-            .update(UsersDataPgTable)
+            .update(UsersTable)
             .set({ password })
-            .where(eq(UsersDataPgTable.id, user.getProps().id))
+            .where(eq(UsersTable.id, user.getProps().id))
             .returning()
             .then(async (result: UserModel[]) =>
-                Some(await this.mapper.toDomain(result[0]))
+                Some(await this.mapper.toDomain(result[0])),
             )
             .catch(() => None);
     }
@@ -165,8 +165,8 @@ export class PostgreSqlDrizzleUsersRepository
         const userFound = await this.findOneById(user.id);
         if (userFound.isNone()) return Err(new UserNotFoundError());
         return this.drizzleService.db
-            .delete(UsersDataPgTable)
-            .where(eq(UsersDataPgTable.id, user.id))
+            .delete(UsersTable)
+            .where(eq(UsersTable.id, user.id))
             .then(() => Ok(true))
             .catch((err: Error) => Err(new UserDeletionFailedError(err)));
     }
