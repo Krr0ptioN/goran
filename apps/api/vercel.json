@@ -1,0 +1,17 @@
+{
+    "$schema": "https://openapi.vercel.sh/vercel.json",
+    "installCommand": "corepack enable && pnpm install --frozen-lockfile",
+    "functions": {
+        "apps/api/src/vercel.ts": {
+            "runtime": "nodejs20.x",
+            "memory": 1024,
+            "maxDuration": 60
+        }
+    },
+    "routes": [
+        {
+            "src": "/(.*)",
+            "dest": "apps/api/src/vercel.ts"
+        }
+    ]
+}

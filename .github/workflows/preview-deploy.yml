@@ -1,0 +1,137 @@
+name: Preview Deploy
+
+on:
+    pull_request:
+        types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+    contents: read
+    pull-requests: write
+
+jobs:
+    detect-changes:
+        runs-on: ubuntu-latest
+        outputs:
+            web: ${{ steps.filter.outputs.web }}
+            api: ${{ steps.filter.outputs.api }}
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - id: filter
+              uses: dorny/paths-filter@v3
+              with:
+                  filters: |
+                      web:
+                        - 'apps/web/**'
+                        - 'libs/ui/**'
+                        - 'libs/shared/common/**'
+                        - 'libs/shared/config/**'
+                        - 'package.json'
+                        - 'pnpm-lock.yaml'
+                      api:
+                        - 'apps/api/**'
+                        - 'libs/core/**'
+                        - 'libs/files/**'
+                        - 'libs/mail/**'
+                        - 'libs/shared/config/**'
+                        - 'libs/shared/common/**'
+                        - 'libs/generics/**'
+                        - 'package.json'
+                        - 'pnpm-lock.yaml'
+
+    deploy-api:
+        needs: detect-changes
+        if: needs.detect-changes.outputs.api == 'true' && github.event.pull_request.head.repo.full_name == github.repository
+        runs-on: ubuntu-latest
+        outputs:
+            preview_url: ${{ steps.deploy.outputs.preview_url }}
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Deploy API preview
+              id: deploy
+              env:
+                  VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+                  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+                  VERCEL_API_PROJECT_ID: ${{ secrets.VERCEL_API_PROJECT_ID }}
+              run: |
+                  DEPLOY_JSON=$(npx vercel deploy --yes --token "$VERCEL_TOKEN" --scope "$VERCEL_ORG_ID" --project "$VERCEL_API_PROJECT_ID" --target=preview --local-config apps/api/vercel.json --env JWT_ACCESS_SECRET=preview_access --env JWT_REFRESH_SECRET=preview_refresh --env SECURITY_EXPIRES_IN=1h --env SECURITY_REFRESH_IN=7d --env SECURITY_BCRYPT_SALT=10 --json)
+                  API_HOST=$(echo "$DEPLOY_JSON" | jq -r '.url')
+                  echo "preview_url=https://${API_HOST}/api" >> "$GITHUB_OUTPUT"
+
+    deploy-web:
+        needs: [detect-changes, deploy-api]
+        if: needs.detect-changes.outputs.web == 'true' && github.event.pull_request.head.repo.full_name == github.repository
+        runs-on: ubuntu-latest
+        outputs:
+            preview_url: ${{ steps.deploy.outputs.preview_url }}
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Resolve API base URL
+              id: resolve-api
+              env:
+                  API_FROM_DEPLOY: ${{ needs.deploy-api.outputs.preview_url }}
+                  API_FROM_FALLBACK: ${{ vars.PREVIEW_API_BASE_URL }}
+              run: |
+                  API_BASE_URL="$API_FROM_DEPLOY"
+                  if [ -z "$API_BASE_URL" ]; then
+                    API_BASE_URL="$API_FROM_FALLBACK"
+                  fi
+                  if [ -z "$API_BASE_URL" ]; then
+                    echo "PREVIEW_API_BASE_URL is required when web deploy runs without an api deploy in the same workflow." >&2
+                    exit 1
+                  fi
+                  echo "api_base_url=$API_BASE_URL" >> "$GITHUB_OUTPUT"
+
+            - name: Deploy Web preview
+              id: deploy
+              env:
+                  VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+                  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+                  VERCEL_WEB_PROJECT_ID: ${{ secrets.VERCEL_WEB_PROJECT_ID }}
+                  API_BASE_URL: ${{ steps.resolve-api.outputs.api_base_url }}
+              run: |
+                  DEPLOY_JSON=$(npx vercel deploy --yes --token "$VERCEL_TOKEN" --scope "$VERCEL_ORG_ID" --project "$VERCEL_WEB_PROJECT_ID" --target=preview --local-config apps/web/vercel.json --build-env API_BASE_URL="$API_BASE_URL" --env API_BASE_URL="$API_BASE_URL" --json)
+                  WEB_HOST=$(echo "$DEPLOY_JSON" | jq -r '.url')
+                  echo "preview_url=https://${WEB_HOST}" >> "$GITHUB_OUTPUT"
+
+    report:
+        needs: [detect-changes, deploy-api, deploy-web]
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        runs-on: ubuntu-latest
+        steps:
+            - name: Comment preview links
+              uses: actions/github-script@v7
+              with:
+                  script: |
+                      const webChanged = '${{ needs.detect-changes.outputs.web }}' === 'true'
+                      const apiChanged = '${{ needs.detect-changes.outputs.api }}' === 'true'
+                      const webUrl = `${{ needs.deploy-web.outputs.preview_url }}`
+                      const apiUrl = `${{ needs.deploy-api.outputs.preview_url }}`
+
+                      const lines = ['## Preview Deployments']
+                      if (!webChanged && !apiChanged) {
+                        lines.push('- No web/api changes detected; deployment skipped.')
+                      } else {
+                        if (webChanged) {
+                          lines.push(`- Web: ${webUrl || 'deployment failed or skipped'}`)
+                        } else {
+                          lines.push('- Web: skipped (no related changes)')
+                        }
+
+                        if (apiChanged) {
+                          lines.push(`- API: ${apiUrl || 'deployment failed or skipped'}`)
+                        } else {
+                          lines.push('- API: skipped (no related changes)')
+                        }
+                      }
+
+                      await github.rest.issues.createComment({
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        issue_number: context.issue.number,
+                        body: lines.join('\n'),
+                      })
