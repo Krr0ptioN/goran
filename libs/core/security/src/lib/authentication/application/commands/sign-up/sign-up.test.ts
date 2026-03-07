@@ -18,6 +18,17 @@ import { Ok, Err } from 'oxide.ts';
 import { AuthenticationCredentialDto } from '../../dtos';
 import { TokenValueObject } from '../../../../tokens';
 import { PinoLogger } from 'nestjs-pino';
+import {
+    generateTestPassword,
+    generateTestEmail,
+    generateTestUsername,
+} from '@goran/utils';
+
+const TEST_PASSWORD = generateTestPassword();
+const MOCK_HASHED_PASSWORD = `hashed_${TEST_PASSWORD}`;
+const WRONG_PASSWORD = generateTestPassword();
+const TEST_EMAIL = generateTestEmail();
+const TEST_USERNAME = generateTestUsername();
 
 describe('SignUpCommandHandler', () => {
     let handler: SignUpCommandHandler;
@@ -80,14 +91,14 @@ describe('SignUpCommandHandler', () => {
 
     it('should successfully sign up a user', async () => {
         const command = new SignUpCommand({
-            email: 'test@example.com',
-            username: 'testuser',
-            password: '***',
+            email: TEST_EMAIL,
+            username: TEST_USERNAME,
+            password: TEST_PASSWORD,
             fullname: 'Test User',
             clientInfo: { ip: '127.0.0.1', userAgent: 'test-agent' },
         });
 
-        const hashedPassword = 'REDACTED_HASH';
+        const hashedPassword = MOCK_HASHED_PASSWORD;
 
         const user = UserEntity.create({
             username: command.username,
@@ -148,9 +159,9 @@ describe('SignUpCommandHandler', () => {
 
     it('should return an error if user creation fails', async () => {
         const command = new SignUpCommand({
-            email: 'test@example.com',
-            username: 'testuser',
-            password: '***',
+            email: TEST_EMAIL,
+            username: TEST_USERNAME,
+            password: TEST_PASSWORD,
             fullname: 'Test User',
             clientInfo: { ip: '127.0.0.1', userAgent: 'test-agent' },
         });
@@ -168,15 +179,15 @@ describe('SignUpCommandHandler', () => {
 
     it('should handle empty IP address', async () => {
         const command = new SignUpCommand({
-            email: 'test@example.com',
-            username: 'testuser',
-            password: '***',
+            email: TEST_EMAIL,
+            username: TEST_USERNAME,
+            password: TEST_PASSWORD,
             fullname: 'Test User',
             clientInfo: { ip: '', userAgent: 'test-agent' },
         });
 
-        const hashedPassword = 'REDACTED_HASH';
-        const user = { id: 'user-id', email: 'test@example.com' };
+        const hashedPassword = MOCK_HASHED_PASSWORD;
+        const user = { id: 'user-id', email: TEST_EMAIL };
         const tokens = new TokenValueObject({
             accessToken: 'access-token',
             refreshToken: 'refresh-token',
@@ -208,15 +219,15 @@ describe('SignUpCommandHandler', () => {
 
     it('should handle empty user agent', async () => {
         const command = new SignUpCommand({
-            email: 'test@example.com',
-            username: 'testuser',
-            password: '***',
+            email: TEST_EMAIL,
+            username: TEST_USERNAME,
+            password: TEST_PASSWORD,
             fullname: 'Test User',
             clientInfo: { ip: '127.0.0.1', userAgent: '' },
         });
 
-        const hashedPassword = 'REDACTED_HASH';
-        const user = { id: 'user-id', email: 'test@example.com' };
+        const hashedPassword = MOCK_HASHED_PASSWORD;
+        const user = { id: 'user-id', email: TEST_EMAIL };
         const tokens = new TokenValueObject({
             accessToken: 'access-token',
             refreshToken: 'refresh-token',
@@ -247,14 +258,14 @@ describe('SignUpCommandHandler', () => {
 
     it('should handle session creation failure', async () => {
         const command = new SignUpCommand({
-            email: 'test@example.com',
-            username: 'testuser',
-            password: '***',
+            email: TEST_EMAIL,
+            username: TEST_USERNAME,
+            password: TEST_PASSWORD,
             fullname: 'Test User',
             clientInfo: { ip: '127.0.0.1', userAgent: 'test-agent' },
         });
 
-        const hashedPassword = 'REDACTED_HASH';
+        const hashedPassword = MOCK_HASHED_PASSWORD;
         const user = UserEntity.create({
             username: command.username,
             password: hashedPassword,

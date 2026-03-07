@@ -6,15 +6,24 @@ import { DeleteUserCommand } from './delete-user.command';
 import { Err, Ok, Result } from 'oxide.ts';
 import { UserNotFoundError } from '../../../domain/errors';
 import { UserEntity } from '../../../domain/entities/user/user.entity';
+import {
+    generateTestPassword,
+    generateTestEmail,
+    generateTestUsername,
+} from '@goran/utils';
+
+const TEST_PASSWORD = generateTestPassword();
+const TEST_EMAIL = generateTestEmail();
+const TEST_USERNAME = generateTestUsername();
 
 describe('DeleteUserCommandHandler', () => {
     let commandHandler: DeleteUserCommandHandler;
     let userRepo: WriteModelUsersRepository;
 
     const mockUser: UserEntity = UserEntity.create({
-        email: 'test@example.com',
-        username: 'testuser',
-        password: '***',
+        email: TEST_EMAIL,
+        username: TEST_USERNAME,
+        password: TEST_PASSWORD,
         fullname: 'Test User',
     });
 
@@ -32,15 +41,20 @@ describe('DeleteUserCommandHandler', () => {
             ],
         }).compile();
 
-        commandHandler = module.get<DeleteUserCommandHandler>(DeleteUserCommandHandler);
-        userRepo = module.get<WriteModelUsersRepository>(WriteModelUsersRepository);
+        commandHandler = module.get<DeleteUserCommandHandler>(
+            DeleteUserCommandHandler,
+        );
+        userRepo = module.get<WriteModelUsersRepository>(
+            WriteModelUsersRepository,
+        );
     });
 
     it('should delete a user successfully', async () => {
         const command = new DeleteUserCommand({ user: mockUser });
         jest.spyOn(userRepo, 'delete').mockResolvedValue(Ok(true));
 
-        const result: Result<boolean, any> = await commandHandler.execute(command);
+        const result: Result<boolean, any> =
+            await commandHandler.execute(command);
 
         expect(result.isOk()).toBe(true);
         expect(userRepo.delete).toHaveBeenCalledWith(mockUser);
@@ -48,9 +62,12 @@ describe('DeleteUserCommandHandler', () => {
 
     it('should return a UserNotFoundError if the user is not found', async () => {
         const command = new DeleteUserCommand({ user: mockUser });
-        jest.spyOn(userRepo, 'delete').mockResolvedValue(Err(new UserNotFoundError()));
+        jest.spyOn(userRepo, 'delete').mockResolvedValue(
+            Err(new UserNotFoundError()),
+        );
 
-        const result: Result<boolean, any> = await commandHandler.execute(command);
+        const result: Result<boolean, any> =
+            await commandHandler.execute(command);
 
         expect(result.isErr()).toBe(true);
         expect(result.unwrapErr()).toBeInstanceOf(UserNotFoundError);
@@ -61,6 +78,8 @@ describe('DeleteUserCommandHandler', () => {
         const unexpectedError = new Error('Unexpected error');
         jest.spyOn(userRepo, 'delete').mockRejectedValue(unexpectedError);
 
-        await expect(commandHandler.execute(command)).rejects.toThrow(unexpectedError);
+        await expect(commandHandler.execute(command)).rejects.toThrow(
+            unexpectedError,
+        );
     });
 });
