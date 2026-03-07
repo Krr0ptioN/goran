@@ -1,13 +1,18 @@
 import { Simplify } from 'type-fest';
 import { ResendInfraProviderOption, ResendProviderOptions } from './resend';
 import { MailerInfraProviderOption, MailerProviderOptions } from './mailer';
+import {
+    DisabledInfraProviderOption,
+    DisabledProviderOptions,
+} from './disabled';
 
 export type MailInfraProvider =
     | MailerInfraProviderOption
-    | ResendInfraProviderOption;
+    | ResendInfraProviderOption
+    | DisabledInfraProviderOption;
 
 export type MailInfraProviderOptions = Simplify<
-    MailerProviderOptions | ResendProviderOptions
+    MailerProviderOptions | ResendProviderOptions | DisabledProviderOptions
 >;
 
 export interface MailOptions {

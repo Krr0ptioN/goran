@@ -65,14 +65,16 @@ export const configSchema = Joi.object({
     SECURITY_REFRESH_IN: Joi.string().required(),
 
     // Mail
-    MAIL_INFRA: Joi.string().valid('resend', 'mailer').default('mailer'),
-    RESEND_GORAN_API: Joi.string(),
-    MAIL_HOST_ADDRESS: Joi.string().email({ tlds: false }),
+    MAIL_INFRA: Joi.string()
+        .valid('resend', 'mailer', 'disabled')
+        .default('disabled'),
+    RESEND_GORAN_API: Joi.string().allow('').optional(),
+    MAIL_HOST: Joi.string().allow('').optional(),
     MAIL_PORT: Joi.number().port(),
     MAIL_SECURE: Joi.boolean(),
-    MAIL_USER: Joi.string(),
-    MAIL_PASSWORD: Joi.string(),
-    MAIL_FROM: Joi.string(),
+    MAIL_USER: Joi.string().allow('').optional(),
+    MAIL_PASSWORD: Joi.string().allow('').optional(),
+    MAIL_FROM: Joi.string().allow('').optional(),
 
     // File Storage
     FILES_INFRA: Joi.string().valid('minio').default('minio'),

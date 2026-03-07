@@ -56,6 +56,7 @@ export class AppModule {
                 CacheModule.register({ isGlobal: true }),
                 DatabaseModule.forRoot(options.database),
                 FilesModule.register(options.fileStorage),
+                // Email provider is currently disabled by default via MAIL_INFRA=disabled.
                 MailModule.register(options.mail),
                 JwtModule.register({
                     global: true,

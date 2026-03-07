@@ -3,6 +3,21 @@
     "version": "0.1.0",
     "license": "MIT",
     "private": true,
+    "scripts": {
+        "dev:setup": "bash scripts/dev/setup.sh",
+        "dev:check-env": "node scripts/dev/check-env.mjs",
+        "dev:db:up": "bash scripts/dev/db-up.sh",
+        "dev:db:down": "bash scripts/dev/db-down.sh",
+        "dev:db:debug": "docker compose -f docker-compose.dev.yml --profile debug up -d pgadmin",
+        "dev:db:logs": "docker compose -f docker-compose.dev.yml logs -f postgres minio mailpit",
+        "dev:backend": "bash scripts/dev/start-backend.sh",
+        "dev:backend:debug": "bash scripts/dev/start-backend-debug.sh",
+        "dev:frontend": "bash scripts/dev/start-frontend.sh",
+        "dev:frontend:debug": "bash scripts/dev/start-frontend-debug.sh",
+        "db:migrate": "pnpm nx run drizzle-data-access:db-migrate",
+        "build:api:mem": "NODE_OPTIONS=--max-old-space-size=4096 pnpm nx build api",
+        "build:web:mem": "NODE_OPTIONS=--max-old-space-size=4096 pnpm nx build web"
+    },
     "dependencies": {
         "@hookform/resolvers": "^5.2.1",
         "@nestjs-modules/mailer": "^2.0.2",

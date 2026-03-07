@@ -5,15 +5,16 @@ import {
 } from './mail-modules.type';
 import { MailerProviderModule, MailerProviderOptions } from './mailer';
 import { ResendProviderModule, ResendProviderOptions } from './resend';
+import { DisabledProviderModule } from './disabled';
 
 export function isMailerProviderOptionsCorrect(
-    options: MailInfraProviderOptions
+    options: MailInfraProviderOptions,
 ): options is MailerProviderOptions {
     return 'host' in options && 'port' in options && 'auth' in options;
 }
 
 export function isResendProviderOptionsCorrect(
-    options: MailInfraProviderOptions
+    options: MailInfraProviderOptions,
 ): options is ResendProviderOptions {
     return 'apiKey' in options;
 }
@@ -25,6 +26,10 @@ export function configMailProviderModule({
     provider: MailInfraProvider;
     options: MailInfraProviderOptions;
 }): DynamicModule {
+    if (provider === 'disabled') {
+        return DisabledProviderModule.register();
+    }
+
     if (provider === 'resend' && isResendProviderOptionsCorrect(options)) {
         return ResendProviderModule.register(options);
     } else if (
