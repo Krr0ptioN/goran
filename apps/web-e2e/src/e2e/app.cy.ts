@@ -1,13 +1,15 @@
-describe('auth flows', () => {
-    const getCredentials = () => {
-        const stamp = Math.random().toString(36).slice(2, 10);
+import {
+    generateTestEmail,
+    generateTestPassword,
+    generateTestUsername,
+} from '@goran/utils';
 
-        return {
-            email: `e2e-${stamp}@example.com`,
-            username: `e2e${stamp}`,
-            password: 'StrongP@ssw0rd!',
-        };
-    };
+describe('auth flows', () => {
+    const getCredentials = () => ({
+        email: generateTestEmail(),
+        username: generateTestUsername(),
+        password: generateTestPassword(),
+    });
 
     it('redirects guests from home to sign-in', () => {
         cy.visit('/');

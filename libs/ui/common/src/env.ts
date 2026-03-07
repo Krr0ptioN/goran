@@ -8,6 +8,8 @@ export const env = createEnv({
     },
     client: {},
     runtimeEnv: {
-        API_BASE_URL: process.env[CONFIG_APP.API_BASE_URL],
+        API_BASE_URL:
+            process.env[CONFIG_APP.API_BASE_URL] ??
+            'https://placeholder-api.local/api',
     },
 });

@@ -8,3 +8,12 @@ tmp
 coverage
 npm-debug.log
 yarn-error.log
+.env
+.env.*
+.logs
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+*.log

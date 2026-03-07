@@ -10,7 +10,14 @@ RUN corepack enable
 COPY package.json pnpm-lock.yaml nx.json tsconfig.base.json .npmrc ./
 RUN pnpm install --frozen-lockfile
 
-COPY . .
+COPY apps/web ./apps/web
+COPY libs ./libs
+COPY scripts ./scripts
+COPY components.json jest.config.ts jest.preset.js vitest.workspace.ts eslint.config.js ./
+
+RUN chown -R node:node /workspace
+
+USER node
 
 ENV NODE_OPTIONS=--max-old-space-size=4096
 

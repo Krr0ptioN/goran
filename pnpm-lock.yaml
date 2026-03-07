@@ -489,6 +489,9 @@ importers:
       eslint-plugin-cypress:
         specifier: ^5.1.1
         version: 5.4.0(eslint@9.39.3(jiti@2.6.1))
+      eslint-plugin-import:
+        specifier: ^2.32.0
+        version: 2.32.0(@typescript-eslint/parser@8.39.1(eslint@9.39.3(jiti@2.6.1))(typescript@5.9.2))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.3(jiti@2.6.1))
       eslint-plugin-jsx-a11y:
         specifier: 6.10.2
         version: 6.10.2(eslint@9.39.3(jiti@2.6.1))
@@ -513,6 +516,9 @@ importers:
       jsdom:
         specifier: ~26.1.0
         version: 26.1.0
+      jsonc-eslint-parser:
+        specifier: ^2.4.2
+        version: 2.4.2
       madge:
         specifier: ^8.0.0
         version: 8.0.0(typescript@5.9.2)
