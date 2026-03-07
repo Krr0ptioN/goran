@@ -1,6 +1,6 @@
 'use client';
 
-import { useFormStatus } from 'react-dom';
+import { useState } from 'react';
 import { Form, Button } from '@goran/ui-components';
 import { EmailField, PasswordField } from '../../components';
 import { signIn } from './sign-in.action';
@@ -12,7 +12,7 @@ import { useRouter } from 'next/navigation';
 
 export const SignInForm = () => {
     const router = useRouter();
-    const { pending } = useFormStatus();
+    const [submitError, setSubmitError] = useState<string | null>(null);
 
     const form = useFormAction<SignInValues>({
         resolver: zodResolver(SignInSchema),
@@ -20,17 +20,29 @@ export const SignInForm = () => {
     });
 
     const handleSubmit = async (data: SignInValues) => {
-        const result = await signIn(data);
-        if (result.errors) {
-            console.error('Sign In Error:', result.errors);
-        } else {
+        setSubmitError(null);
+
+        try {
+            const result = await signIn(data);
+
+            if (result.errors) {
+                console.error('Sign In Error:', result.errors);
+                setSubmitError(
+                    result.message ?? 'Unable to sign in right now.',
+                );
+                return;
+            }
+
             router.push('/');
+        } catch (error) {
+            console.error('Sign In Error:', error);
+            setSubmitError('Unable to sign in right now.');
         }
     };
 
     return (
         <Form {...form}>
-            <form {...form.submitAction(handleSubmit)}>
+            <form onSubmit={form.handleSubmit(handleSubmit)}>
                 <EmailField />
                 <PasswordField />
                 <Link
@@ -39,10 +51,15 @@ export const SignInForm = () => {
                 >
                     Forgot your password?
                 </Link>
+                {submitError ? (
+                    <p className="text-sm font-medium text-destructive">
+                        {submitError}
+                    </p>
+                ) : null}
                 <Button
                     className="mt-3 w-full"
                     type="submit"
-                    disabled={pending}
+                    disabled={form.formState.isSubmitting}
                 >
                     Sign In
                 </Button>

@@ -1,5 +1,3 @@
-'use server';
-
 import { SignInForm } from '@goran/ui-module-auth';
 import Link from 'next/link';
 

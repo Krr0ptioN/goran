@@ -1,0 +1,10 @@
+node_modules
+dist
+.next
+.nx
+.git
+.vscode
+tmp
+coverage
+npm-debug.log
+yarn-error.log

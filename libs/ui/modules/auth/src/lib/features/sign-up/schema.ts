@@ -42,6 +42,8 @@ export const signUpInitialState = {
 };
 
 export const signUpInitialValues = {
+    fullname: '',
+    username: '',
     email: '',
     password: '',
 };

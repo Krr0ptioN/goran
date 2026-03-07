@@ -18,7 +18,7 @@ interface StringFieldProps {
     placeholder?: string;
     desc?: string;
     withMessage?: boolean;
-    type?: "url" | "tel" | "text" | "email" | "password";
+    type?: 'url' | 'tel' | 'text' | 'email' | 'password';
 }
 
 export const StringField: FC<StringFieldProps> = ({
@@ -43,6 +43,7 @@ export const StringField: FC<StringFieldProps> = ({
                             type={type}
                             placeholder={placeholder}
                             {...field}
+                            value={field.value ?? ''}
                         />
                     </FormControl>
                     {desc && <FormDescription>{desc}</FormDescription>}

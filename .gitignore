@@ -42,6 +42,7 @@ Thumbs.db
 .nx/workspace-data
 .env.local.development
 .env.*
+!.env.example
 .env
 .vercel
 infra/postgres/data
@@ -56,3 +57,4 @@ infra/minio/data
 
 .cursor/rules/nx-rules.mdc
 .github/instructions/nx.instructions.md
+/.logs

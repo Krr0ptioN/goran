@@ -2,7 +2,7 @@
 
 import { fetchApi } from '@goran/ui-common';
 import { SignUpSchema, SignUpValues } from './schema';
-import { setAccessToken, setRefreshToken } from '../../actions';
+import { cookies } from 'next/headers';
 
 /**
  * Server action to handle user sign-in.
@@ -24,14 +24,37 @@ export async function signUp(data: SignUpValues) {
     });
 
     if (!response.ok) {
-        const errorData = await response.json();
-        throw { message: errorData.message };
+        const errorData = await response
+            .json()
+            .catch(() => ({ message: 'Internal server error' }));
+
+        return {
+            message: errorData.message ?? 'Internal server error',
+            errors: {
+                root: [errorData.message ?? 'Internal server error'],
+            },
+        };
     }
 
     const res = await response.json();
+    const session = await cookies();
+    const isSecureCookie = process.env.NODE_ENV === 'production';
 
-    setAccessToken(res.data.accessToken);
-    setRefreshToken(res.data.refreshToken);
+    session.set('session-access', res.data.accessToken, {
+        httpOnly: true,
+        secure: isSecureCookie,
+        expires: new Date(Date.now() + 5 * 60 * 60 * 1000),
+        sameSite: 'lax',
+        path: '/',
+    });
+
+    session.set('session-refresh', res.data.refreshToken, {
+        httpOnly: true,
+        secure: isSecureCookie,
+        expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        sameSite: 'lax',
+        path: '/',
+    });
 
     return { message: res.message, code: res.code };
 }

@@ -1,0 +1,62 @@
+services:
+    postgres:
+        image: postgres:16-alpine
+        container_name: goran-postgres
+        restart: unless-stopped
+        environment:
+            POSTGRES_DB: ${DB_DATABASE:-goran}
+            POSTGRES_USER: ${DB_USER:-admin}
+            POSTGRES_PASSWORD: ${DB_PASSWORD:-admin}
+        ports:
+            - '${DB_PORT:-5432}:5432'
+        volumes:
+            - postgres-data:/var/lib/postgresql/data
+            - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+        healthcheck:
+            test:
+                [
+                    'CMD-SHELL',
+                    'pg_isready -U ${DB_USER:-admin} -d ${DB_DATABASE:-goran}',
+                ]
+            interval: 10s
+            timeout: 5s
+            retries: 10
+
+    pgadmin:
+        image: dpage/pgadmin4:8
+        container_name: goran-pgadmin
+        restart: unless-stopped
+        profiles: ['debug']
+        depends_on:
+            - postgres
+        environment:
+            PGADMIN_DEFAULT_EMAIL: admin@goran.local
+            PGADMIN_DEFAULT_PASSWORD: admin
+        ports:
+            - '8080:80'
+
+    minio:
+        image: quay.io/minio/minio:latest
+        container_name: goran-minio
+        restart: unless-stopped
+        environment:
+            MINIO_ROOT_USER: ${FILES_MINIO_ACCESSKEY:-minioadmin}
+            MINIO_ROOT_PASSWORD: ${FILES_MINIO_SECRETKEY:-minioadmin}
+        command: server /data --console-address ':9001'
+        ports:
+            - '${FILES_MINIO_PORT:-9000}:9000'
+            - '9001:9001'
+        volumes:
+            - minio-data:/data
+
+    mailpit:
+        image: axllent/mailpit:latest
+        container_name: goran-mailpit
+        restart: unless-stopped
+        ports:
+            - '1025:1025'
+            - '8025:8025'
+
+volumes:
+    postgres-data:
+    minio-data:

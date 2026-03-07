@@ -1,9 +1,7 @@
-'use server';
-
 import { SignUpForm } from '@goran/ui-module-auth';
 import Link from 'next/link';
 
-export default async function SignIn() {
+export default async function SignUp() {
     return (
         <>
             <div className="grid gap-2 text-center">
