@@ -10,8 +10,8 @@ export default (): ApplicationBootstrapOptions => ({
         expiresIn: process.env[CONFIG_APP.SECURITY_EXPIRES_IN] ?? '1h',
         refreshIn: process.env[CONFIG_APP.SECURITY_REFRESH_IN] ?? '7d',
         bcryptSalt: process.env[CONFIG_APP.SECURITY_BCRYPT_SALT] ?? '10',
-        jwtRefreshSecret: process.env[CONFIG_APP.JWT_ACCESS_SECRET] ?? 'secret',
-        jwtAccessSecret: process.env[CONFIG_APP.JWT_REFRESH_SECRET] ?? 'secret',
+        jwtRefreshSecret: process.env[CONFIG_APP.JWT_ACCESS_SECRET] as string,
+        jwtAccessSecret: process.env[CONFIG_APP.JWT_REFRESH_SECRET] as string,
     },
     fileStorage: {
         provider: process.env[CONFIG_APP.FILES_INFRA] as FilesInfraProvider,
@@ -44,7 +44,7 @@ export default (): ApplicationBootstrapOptions => ({
         host: process.env[CONFIG_APP.DB_HOST] ?? 'localhost',
         port: Number.parseInt(process.env[CONFIG_APP.DB_PORT] ?? '5432'),
         database: process.env[CONFIG_APP.DB_DATABASE] ?? 'goran',
-        user: process.env[CONFIG_APP.DB_USER] ?? 'goran',
-        password: process.env[CONFIG_APP.DB_PASSWORD] ?? 'goran',
+        user: process.env[CONFIG_APP.DB_USER] as string,
+        password: process.env[CONFIG_APP.DB_PASSWORD] as string,
     },
 });
