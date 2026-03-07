@@ -2,66 +2,89 @@ name: CI
 
 on:
     push:
-        branches:
-            - main
+        branches: [main]
     pull_request:
 
-permissions:
-    actions: read
-    contents: read
+env:
+    NODE_VERSION: '20'
 
 jobs:
     lint:
         runs-on: ubuntu-latest
+        permissions:
+            actions: read
+            contents: read
+        environment: Preview
+        env:
+            API_BASE_URL: ${{ vars.API_BASE_URL }}
+            JWT_ACCESS_SECRET: ${{ secrets.JWT_ACCESS_SECRET }}
+            JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET }}
+            SECURITY_EXPIRES_IN: ${{ vars.SECURITY_EXPIRES_IN }}
+            SECURITY_REFRESH_IN: ${{ vars.SECURITY_REFRESH_IN }}
+            SECURITY_BCRYPT_SALT: ${{ vars.SECURITY_BCRYPT_SALT }}
         steps:
             - uses: actions/checkout@v4
               with:
                   fetch-depth: 0
-            - uses: actions/setup-node@v3
+
+            - name: Setup CI toolchain
+              uses: ./.github/actions/setup-ci
               with:
-                  node-version: 20
-                  cache: 'yarn'
-            - run: yarn install --immutable
-            - run: yarn nx affected --base=origin/main -t lint
+                  node_version: ${{ env.NODE_VERSION }}
+
+            - name: Lint (affected)
+              run: pnpm nx affected --base=origin/main -t lint
 
     build:
-        needs: ['lint']
+        needs: [lint]
         runs-on: ubuntu-latest
+        permissions:
+            actions: read
+            contents: read
+        environment: Preview
+        env:
+            API_BASE_URL: ${{ vars.API_BASE_URL }}
+            JWT_ACCESS_SECRET: ${{ secrets.JWT_ACCESS_SECRET }}
+            JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET }}
+            SECURITY_EXPIRES_IN: ${{ vars.SECURITY_EXPIRES_IN }}
+            SECURITY_REFRESH_IN: ${{ vars.SECURITY_REFRESH_IN }}
+            SECURITY_BCRYPT_SALT: ${{ vars.SECURITY_BCRYPT_SALT }}
         steps:
             - uses: actions/checkout@v4
               with:
                   fetch-depth: 0
-            - uses: actions/setup-node@v3
+
+            - name: Setup CI toolchain
+              uses: ./.github/actions/setup-ci
               with:
-                  node-version: 20
-                  cache: 'yarn'
-            - run: yarn install --immutable
-            - run: yarn nx affected --base=origin/main -t build
+                  node_version: ${{ env.NODE_VERSION }}
+
+            - name: Build (affected)
+              run: pnpm nx affected --base=origin/main -t build
 
     test:
-        needs: ['build']
+        needs: [build]
         runs-on: ubuntu-latest
+        permissions:
+            actions: read
+            contents: read
+        environment: Preview
+        env:
+            API_BASE_URL: ${{ vars.API_BASE_URL }}
+            JWT_ACCESS_SECRET: ${{ secrets.JWT_ACCESS_SECRET }}
+            JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET }}
+            SECURITY_EXPIRES_IN: ${{ vars.SECURITY_EXPIRES_IN }}
+            SECURITY_REFRESH_IN: ${{ vars.SECURITY_REFRESH_IN }}
+            SECURITY_BCRYPT_SALT: ${{ vars.SECURITY_BCRYPT_SALT }}
         steps:
             - uses: actions/checkout@v4
               with:
                   fetch-depth: 0
-            - uses: actions/setup-node@v3
-              with:
-                  node-version: 20
-                  cache: 'yarn'
-            - run: yarn install --immutable
-            - run: yarn nx affected --base=origin/main -t test
 
-    e2e:
-        needs: ['build', 'test']
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
+            - name: Setup CI toolchain
+              uses: ./.github/actions/setup-ci
               with:
-                  fetch-depth: 0
-            - uses: actions/setup-node@v3
-              with:
-                  node-version: 20
-                  cache: 'yarn'
-            - run: yarn install --immutable
-            - run: yarn nx affected -t e2e
+                  node_version: ${{ env.NODE_VERSION }}
+
+            - name: Test (affected)
+              run: pnpm nx affected --base=origin/main -t test

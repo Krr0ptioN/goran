@@ -3,6 +3,7 @@ import { HttpService } from '@nestjs/axios';
 import { IpLocatorService } from './ip-locator.service';
 import { of, throwError } from 'rxjs';
 import { IpLocationDto, Geolocation } from '../types';
+import { PreconditionedLocationFails } from './preconditioned-location-fails';
 
 describe('IpLocatorService', () => {
     let service: IpLocatorService;
@@ -51,21 +52,27 @@ describe('IpLocatorService', () => {
 
             expect(result).toEqual(mockResponse);
             expect(mockHttpService.get).toHaveBeenCalledWith(
-                service.getApi(mockIp)
+                service.getApi(mockIp),
             );
         });
 
-        it('should throw an error for an invalid IP', async () => {
+        it('should return fallback location for an invalid IP', async () => {
             const mockIp = 'invalid-ip';
-
+            const consoleErrorSpy = jest
+                .spyOn(console, 'error')
+                .mockImplementation(() => undefined);
             mockHttpService.get.mockReturnValue(
-                throwError(() => new Error('Invalid IP'))
+                throwError(() => new Error('Invalid IP')),
             );
 
-            await expect(service.locate(mockIp)).rejects.toThrow('Invalid IP');
-            expect(mockHttpService.get).toHaveBeenCalledWith(
-                service.getApi(mockIp)
+            await expect(service.locate(mockIp)).resolves.toEqual(
+                PreconditionedLocationFails.unknownLocation,
             );
+
+            expect(mockHttpService.get).toHaveBeenCalledWith(
+                service.getApi(mockIp),
+            );
+            expect(consoleErrorSpy).toHaveBeenCalled();
         });
     });
 
