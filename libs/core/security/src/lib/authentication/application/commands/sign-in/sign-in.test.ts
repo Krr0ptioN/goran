@@ -1,15 +1,11 @@
 import { Test } from '@nestjs/testing';
 import { SignInCommandHandler } from './sign-in.command-handler';
 import { SignInCommand } from './sign-in.command';
-import {
-    UserEntity,
-    UsersService,
-    UserMapper
-} from '@goran/users';
+import { UserEntity, UsersService, UserMapper } from '@goran/users';
 import {
     SessionCreationFailedError,
     SessionsService,
-    SessionEntity
+    SessionEntity,
 } from '../../../../sessions';
 import { PasswordService } from '../../../../password';
 import { IpLocatorService } from '@goran/ip-locator';
@@ -17,8 +13,19 @@ import { DeviceDetectorService } from '@goran/device-detector';
 import { Ok, Err } from 'oxide.ts';
 import { AuthenticationCredentialDto } from '../../dtos';
 import { TokenValueObject } from '../../../../tokens';
-import { InvalidAuthenticationCredentials } from "../../../domain";
+import { InvalidAuthenticationCredentials } from '../../../domain';
 import { PinoLogger } from 'nestjs-pino';
+import {
+    generateTestPassword,
+    generateTestEmail,
+    generateTestUsername,
+} from '@goran/utils';
+
+const TEST_PASSWORD = generateTestPassword();
+const MOCK_HASHED_PASSWORD = `hashed_${TEST_PASSWORD}`;
+const WRONG_PASSWORD = generateTestPassword();
+const TEST_EMAIL = generateTestEmail();
+const TEST_USERNAME = generateTestUsername();
 
 describe('SignInCommandHandler', () => {
     let handler: SignInCommandHandler;
@@ -67,12 +74,12 @@ describe('SignInCommandHandler', () => {
                 {
                     provide: 'PinoLogger:SignInCommandHandler',
                     useValue: {
-                    setContext: jest.fn(),
-                    info: jest.fn(),
-                    error: jest.fn(),
-                    warn: jest.fn(),
-                    debug: jest.fn(),
-                    trace: jest.fn(),
+                        setContext: jest.fn(),
+                        info: jest.fn(),
+                        error: jest.fn(),
+                        warn: jest.fn(),
+                        debug: jest.fn(),
+                        trace: jest.fn(),
                     },
                 },
             ],
@@ -89,16 +96,16 @@ describe('SignInCommandHandler', () => {
 
     it('should successfully sign in a user', async () => {
         const command = new SignInCommand({
-            username: 'testuser',
-            email: 'test@example.com',
-            password: 'password123',
+            username: TEST_USERNAME,
+            email: TEST_EMAIL,
+            password: TEST_PASSWORD,
             clientInfo: { ip: '127.0.0.1', userAgent: 'test-agent' },
         });
 
         const user = UserEntity.create({
-            username: 'testuser',
-            email: 'test@example.com',
-            password: 'hashedPassword123',
+            username: TEST_USERNAME,
+            email: TEST_EMAIL,
+            password: MOCK_HASHED_PASSWORD,
         });
 
         const tokens = new TokenValueObject({
@@ -114,8 +121,12 @@ describe('SignInCommandHandler', () => {
         });
 
         passwordService.comparePassword.mockResolvedValue(true);
-        usersService.findUserByIdenfitier.mockResolvedValue(Ok(userMapper.toPersistence(user)));
-        ipLocatorService.getLocation.mockResolvedValue('Germany (GER) / Berlin (Brl)');
+        usersService.findUserByIdenfitier.mockResolvedValue(
+            Ok(userMapper.toPersistence(user)),
+        );
+        ipLocatorService.getLocation.mockResolvedValue(
+            'Germany (GER) / Berlin (Brl)',
+        );
         deviceDetectorService.getDevice.mockReturnValue('Local Device');
         sessionsService.createSession.mockResolvedValue(Ok([tokens, session]));
 
@@ -137,78 +148,92 @@ describe('SignInCommandHandler', () => {
         });
         expect(passwordService.comparePassword).toHaveBeenCalledWith(
             command.password,
-            user.getProps().password
+            user.getProps().password,
         );
     });
 
     it('should return an error if user is not found', async () => {
         const command = new SignInCommand({
-            username: 'testuser',
-            email: 'test@example.com',
-            password: 'password123',
+            username: TEST_USERNAME,
+            email: TEST_EMAIL,
+            password: TEST_PASSWORD,
             clientInfo: { ip: '127.0.0.1', userAgent: 'test-agent' },
         });
 
-        usersService.findUserByIdenfitier.mockResolvedValue(Err(new InvalidAuthenticationCredentials()));
+        usersService.findUserByIdenfitier.mockResolvedValue(
+            Err(new InvalidAuthenticationCredentials()),
+        );
 
         const result = await handler.execute(command);
 
         expect(result.isErr()).toBe(true);
         if (result.isErr()) {
-            expect(result.unwrapErr()).toBeInstanceOf(InvalidAuthenticationCredentials);
+            expect(result.unwrapErr()).toBeInstanceOf(
+                InvalidAuthenticationCredentials,
+            );
         }
     });
 
     it('should return an error if password is invalid', async () => {
         const command = new SignInCommand({
-            username: 'testuser',
-            email: 'test@example.com',
-            password: 'wrongpassword',
+            username: TEST_USERNAME,
+            email: TEST_EMAIL,
+            password: WRONG_PASSWORD,
             clientInfo: { ip: '127.0.0.1', userAgent: 'test-agent' },
         });
 
         const user = UserEntity.create({
-            username: 'testuser',
-            email: 'test@example.com',
-            password: 'hashedPassword123',
+            username: TEST_USERNAME,
+            email: TEST_EMAIL,
+            password: MOCK_HASHED_PASSWORD,
         });
 
-        usersService.findUserByIdenfitier.mockResolvedValue(Ok(userMapper.toPersistence(user)));
+        usersService.findUserByIdenfitier.mockResolvedValue(
+            Ok(userMapper.toPersistence(user)),
+        );
         passwordService.comparePassword.mockResolvedValue(false);
 
         const result = await handler.execute(command);
 
         expect(result.isErr()).toBe(true);
         if (result.isErr()) {
-            expect(result.unwrapErr()).toBeInstanceOf(InvalidAuthenticationCredentials);
+            expect(result.unwrapErr()).toBeInstanceOf(
+                InvalidAuthenticationCredentials,
+            );
         }
     });
 
     it('should handle session creation failure', async () => {
         const command = new SignInCommand({
-            username: 'testuser',
-            email: 'test@example.com',
-            password: 'password123',
+            username: TEST_USERNAME,
+            email: TEST_EMAIL,
+            password: TEST_PASSWORD,
             clientInfo: { ip: '127.0.0.1', userAgent: 'test-agent' },
         });
 
         const user = UserEntity.create({
-            username: 'testuser',
-            email: 'test@example.com',
-            password: 'hashedPassword123',
+            username: TEST_USERNAME,
+            email: TEST_EMAIL,
+            password: MOCK_HASHED_PASSWORD,
         });
 
         passwordService.comparePassword.mockResolvedValue(true);
-        usersService.findUserByIdenfitier.mockResolvedValue(Ok(userMapper.toPersistence(user)));
+        usersService.findUserByIdenfitier.mockResolvedValue(
+            Ok(userMapper.toPersistence(user)),
+        );
         ipLocatorService.getLocation.mockResolvedValue('Test Location');
         deviceDetectorService.getDevice.mockReturnValue('Test Device');
-        sessionsService.createSession.mockResolvedValue(Err(new SessionCreationFailedError()));
+        sessionsService.createSession.mockResolvedValue(
+            Err(new SessionCreationFailedError()),
+        );
 
         const result = await handler.execute(command);
 
         expect(result.isErr()).toBe(true);
         if (result.isErr()) {
-            expect(result.unwrapErr()).toBeInstanceOf(SessionCreationFailedError);
+            expect(result.unwrapErr()).toBeInstanceOf(
+                SessionCreationFailedError,
+            );
         }
     });
 });

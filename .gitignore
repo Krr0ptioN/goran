@@ -44,7 +44,7 @@ Thumbs.db
 .env.*
 .env
 .vercel
-infra/postgres
+infra/postgres/data
 
 # Next.js
 .next

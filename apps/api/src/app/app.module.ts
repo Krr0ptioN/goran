@@ -20,6 +20,12 @@ import { JwtModule } from '@nestjs/jwt';
 import { CqrsModule } from '@nestjs/cqrs';
 import { LoggerModule } from 'nestjs-pino';
 import { PassportModule } from '@nestjs/passport';
+import { FilesModule } from '@goran/files';
+import { CatalogModule } from '@goran/catalog';
+
+type JwtExpiresIn =
+    | number
+    | `${number}${'ms' | 's' | 'm' | 'h' | 'd' | 'w' | 'y'}`;
 
 export class AppModule {
     static register(options: ApplicationBootstrapOptions) {
@@ -30,7 +36,7 @@ export class AppModule {
             imports: [
                 LoggerModule.forRoot({
                     pinoHttp: {
-                        customProps: (req, res) => ({
+                        customProps: () => ({
                             context: 'HTTP',
                         }),
                         transport: {
@@ -49,12 +55,13 @@ export class AppModule {
                 }),
                 CacheModule.register({ isGlobal: true }),
                 DatabaseModule.forRoot(options.database),
+                FilesModule.register(options.fileStorage),
                 MailModule.register(options.mail),
                 JwtModule.register({
                     global: true,
                     secret: options.security.jwtAccessSecret,
                     signOptions: {
-                        expiresIn: options.security.expiresIn,
+                        expiresIn: options.security.expiresIn as JwtExpiresIn,
                     },
                 }),
                 PassportModule.register({ global: true }),
@@ -68,6 +75,7 @@ export class AppModule {
                 }),
                 AuthenticationModule,
                 PasswordResetModule,
+                CatalogModule,
             ],
         };
     }

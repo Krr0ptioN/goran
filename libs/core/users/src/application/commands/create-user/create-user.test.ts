@@ -6,6 +6,16 @@ import { CreateUserCommand } from './create-user.command';
 import { WriteModelUsersRepository } from '../../ports';
 import { UserEntity, UserCreationFailedError } from '../../../domain';
 import { Ok, Err } from 'oxide.ts';
+import {
+    generateTestPassword,
+    generateTestEmail,
+    generateTestUsername,
+} from '@goran/utils';
+
+const TEST_PASSWORD = generateTestPassword();
+const TEST_EMAIL = generateTestEmail();
+const TEST_EMAIL_2 = generateTestEmail();
+const TEST_USERNAME = generateTestUsername();
 
 describe('CreateUserCommandHandler', () => {
     let handler: CreateUserCommandHandler;
@@ -33,16 +43,16 @@ describe('CreateUserCommandHandler', () => {
         }).compile();
 
         handler = module.get<CreateUserCommandHandler>(
-            CreateUserCommandHandler
+            CreateUserCommandHandler,
         );
         userRepo = module.get(WriteModelUsersRepository);
     });
 
     it('should create a user successfully', async () => {
         const command = new CreateUserCommand({
-            email: 'test@example.com',
-            username: 'testuser',
-            password: 'password123',
+            email: TEST_EMAIL,
+            username: TEST_USERNAME,
+            password: TEST_PASSWORD,
         });
 
         const user = UserEntity.create(command);
@@ -58,9 +68,9 @@ describe('CreateUserCommandHandler', () => {
 
     it('should not create a user with pre-registered email', async () => {
         const command = new CreateUserCommand({
-            email: 'test@example.com',
-            username: 'testuser',
-            password: 'password123',
+            email: TEST_EMAIL,
+            username: TEST_USERNAME,
+            password: TEST_PASSWORD,
         });
 
         const error = new UserCreationFailedError();
@@ -77,9 +87,9 @@ describe('CreateUserCommandHandler', () => {
 
     it('should not create a user with pre-registered username', async () => {
         const command = new CreateUserCommand({
-            email: 'test2@example.com',
-            username: 'testuser',
-            password: 'password123',
+            email: TEST_EMAIL_2,
+            username: TEST_USERNAME,
+            password: TEST_PASSWORD,
         });
 
         const error = new UserCreationFailedError();
