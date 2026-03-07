@@ -3,7 +3,13 @@ import 'server-only';
 import { Err, Ok, Result } from 'oxide.ts';
 import { getUserInfo, UserInfo } from './get-user-info.action';
 import { getFreshTokens } from './refresh-token.action';
-import { setAccessToken, setRefreshToken } from './session-set.action';
+
+export type VerifiedSession = UserInfo & {
+    refreshedTokens?: {
+        accessToken: string;
+        refreshToken: string;
+    };
+};
 
 /**
  * Main function to verify session cookies.
@@ -17,18 +23,27 @@ export async function verifySessionCookies({
 }: {
     accessCookie?: string;
     refreshCookie?: string;
-}): Promise<Result<UserInfo, { error: string }>> {
+}): Promise<Result<VerifiedSession, { error: string }>> {
     try {
         const info = await getUserInfo(accessCookie);
         return Ok(info);
-    } catch (error) {
+    } catch {
         try {
-            const crednetial = await getFreshTokens(refreshCookie);
-            setAccessToken(crednetial.accessToken);
-            setRefreshToken(crednetial.refreshToken);
+            if (!refreshCookie) {
+                return Err({ error: 'Missing refresh token' });
+            }
 
-            const info = await getUserInfo(accessCookie);
-            return Ok(info);
+            const credential = await getFreshTokens(refreshCookie);
+
+            const info = await getUserInfo(credential.accessToken);
+
+            return Ok({
+                ...info,
+                refreshedTokens: {
+                    accessToken: credential.accessToken,
+                    refreshToken: credential.refreshToken,
+                },
+            });
         } catch (refreshError) {
             console.error('Error refreshing token:', refreshError);
             return Err({ error: 'Token refresh failed' });
