@@ -1,6 +1,10 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { randomUUID } from 'node:crypto';
+import {
+    generateTestEmail,
+    generateTestPassword,
+    generateTestUsername,
+} from '@goran/utils';
 
 /* eslint-disable @nx/enforce-module-boundaries */
 import { AppModule } from 'apps/api/src/app/app.module';
@@ -25,14 +29,13 @@ import request from 'supertest';
 
 describe('Authentication /auth', () => {
     let app: INestApplication;
-    const generatedAuthCredential = `Aa1!${randomUUID().replace(/-/g, '')}`;
     const testPassword =
-        process.env.TEST_AUTH_CREDENTIAL ?? generatedAuthCredential;
+        process.env.TEST_AUTH_CREDENTIAL ?? generateTestPassword();
 
     // Unique test user (strong password includes uppercase, lowercase, number, special char)
     const testUser = {
-        email: `user${Date.now()}@example.com`,
-        username: `user${Date.now()}`,
+        email: generateTestEmail(),
+        username: generateTestUsername(),
         fullname: 'Test User',
         password: testPassword,
     };
@@ -112,7 +115,7 @@ describe('Authentication /auth', () => {
         //     email: `weak${Date.now()}@example.com`,
         //     username: `weak${Date.now()}`,
         //     fullname: 'Weak Password User',
-        //     password: 'weakpass', // missing uppercase, number, special char
+        //     password: 'weak', // intentionally weak credential example
         //   });
         //
         // expect(res.status).toBe(400);
