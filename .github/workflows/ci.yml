@@ -9,26 +9,77 @@ permissions:
     actions: read
     contents: read
 
+env:
+    NODE_VERSION: '20'
+
 jobs:
     lint:
-        name: Lint (affected)
-        uses: ./.github/workflows/nx-affected-template.yml
-        with:
-            nx_target: lint
-        secrets: inherit
+        runs-on: ubuntu-latest
+        environment: Preview
+        env:
+            API_BASE_URL: ${{ vars.API_BASE_URL }}
+            JWT_ACCESS_SECRET: ${{ secrets.JWT_ACCESS_SECRET }}
+            JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET }}
+            SECURITY_EXPIRES_IN: ${{ vars.SECURITY_EXPIRES_IN }}
+            SECURITY_REFRESH_IN: ${{ vars.SECURITY_REFRESH_IN }}
+            SECURITY_BCRYPT_SALT: ${{ vars.SECURITY_BCRYPT_SALT }}
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Setup CI toolchain
+              uses: ./.github/actions/setup-ci
+              with:
+                  node_version: ${{ env.NODE_VERSION }}
+
+            - name: Lint (affected)
+              run: pnpm nx affected --base=origin/main -t lint
 
     build:
-        name: Build (affected)
         needs: [lint]
-        uses: ./.github/workflows/nx-affected-template.yml
-        with:
-            nx_target: build
-        secrets: inherit
+        runs-on: ubuntu-latest
+        environment: Preview
+        env:
+            API_BASE_URL: ${{ vars.API_BASE_URL }}
+            JWT_ACCESS_SECRET: ${{ secrets.JWT_ACCESS_SECRET }}
+            JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET }}
+            SECURITY_EXPIRES_IN: ${{ vars.SECURITY_EXPIRES_IN }}
+            SECURITY_REFRESH_IN: ${{ vars.SECURITY_REFRESH_IN }}
+            SECURITY_BCRYPT_SALT: ${{ vars.SECURITY_BCRYPT_SALT }}
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Setup CI toolchain
+              uses: ./.github/actions/setup-ci
+              with:
+                  node_version: ${{ env.NODE_VERSION }}
+
+            - name: Build (affected)
+              run: pnpm nx affected --base=origin/main -t build
 
     test:
-        name: Test (affected)
         needs: [build]
-        uses: ./.github/workflows/nx-affected-template.yml
-        with:
-            nx_target: test
-        secrets: inherit
+        runs-on: ubuntu-latest
+        environment: Preview
+        env:
+            API_BASE_URL: ${{ vars.API_BASE_URL }}
+            JWT_ACCESS_SECRET: ${{ secrets.JWT_ACCESS_SECRET }}
+            JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET }}
+            SECURITY_EXPIRES_IN: ${{ vars.SECURITY_EXPIRES_IN }}
+            SECURITY_REFRESH_IN: ${{ vars.SECURITY_REFRESH_IN }}
+            SECURITY_BCRYPT_SALT: ${{ vars.SECURITY_BCRYPT_SALT }}
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Setup CI toolchain
+              uses: ./.github/actions/setup-ci
+              with:
+                  node_version: ${{ env.NODE_VERSION }}
+
+            - name: Test (affected)
+              run: pnpm nx affected --base=origin/main -t test
