@@ -5,16 +5,15 @@ on:
         branches: [main]
     pull_request:
 
-permissions:
-    actions: read
-    contents: read
-
 env:
     NODE_VERSION: '20'
 
 jobs:
     lint:
         runs-on: ubuntu-latest
+        permissions:
+            actions: read
+            contents: read
         environment: Preview
         env:
             API_BASE_URL: ${{ vars.API_BASE_URL }}
@@ -39,6 +38,9 @@ jobs:
     build:
         needs: [lint]
         runs-on: ubuntu-latest
+        permissions:
+            actions: read
+            contents: read
         environment: Preview
         env:
             API_BASE_URL: ${{ vars.API_BASE_URL }}
@@ -63,6 +65,9 @@ jobs:
     test:
         needs: [build]
         runs-on: ubuntu-latest
+        permissions:
+            actions: read
+            contents: read
         environment: Preview
         env:
             API_BASE_URL: ${{ vars.API_BASE_URL }}

@@ -1,5 +1,6 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import { randomUUID } from 'node:crypto';
 
 /* eslint-disable @nx/enforce-module-boundaries */
 import { AppModule } from 'apps/api/src/app/app.module';
@@ -24,8 +25,9 @@ import request from 'supertest';
 
 describe('Authentication /auth', () => {
     let app: INestApplication;
+    const generatedAuthCredential = `Aa1!${randomUUID().replace(/-/g, '')}`;
     const testPassword =
-        process.env.TEST_AUTH_PASSWORD ?? `A!${Date.now().toString(36)}z9`;
+        process.env.TEST_AUTH_CREDENTIAL ?? generatedAuthCredential;
 
     // Unique test user (strong password includes uppercase, lowercase, number, special char)
     const testUser = {
