@@ -58,3 +58,8 @@ infra/minio/data
 .cursor/rules/nx-rules.mdc
 .github/instructions/nx.instructions.md
 /.logs
+
+# Backend logs
+apps/api/**/*.log
+apps/api/logs/
+.logs/backend/
