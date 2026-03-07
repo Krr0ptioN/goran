@@ -22,3 +22,7 @@ runs:
         - name: Install dependencies
           shell: bash
           run: pnpm install --frozen-lockfile
+
+        - name: Rebuild nx postinstall artifacts
+          shell: bash
+          run: pnpm rebuild nx
