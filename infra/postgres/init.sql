@@ -1,1 +1,1 @@
-CREATE USER admin WITH PASSWORD 'admin';
+CREATE USER admin WITH PASSWORD 'changeme';
