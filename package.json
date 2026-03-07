@@ -212,6 +212,19 @@
             "minimatch@>=9.0.0 <9.0.7": "9.0.7",
             "minimatch@>=10.0.0 <10.2.3": "10.2.3",
             "serialize-javascript@<=7.0.2": "7.0.3"
-        }
+        },
+        "onlyBuiltDependencies": [
+            "@nestjs/core",
+            "@parcel/watcher",
+            "@scarf/scarf",
+            "@swc/core",
+            "bcrypt",
+            "cypress",
+            "esbuild",
+            "less",
+            "nx",
+            "sharp",
+            "unrs-resolver"
+        ]
     }
 }
