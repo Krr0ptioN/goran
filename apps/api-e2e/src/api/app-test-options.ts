@@ -1,5 +1,6 @@
 /* eslint-disable @nx/enforce-module-boundaries */
 import { ApplicationBootstrapOptions } from 'apps/api/src/bootstrap';
+import { generateTestPassword } from '@goran/utils';
 /* eslint-enable @nx/enforce-module-boundaries */
 
 export const testOptions: ApplicationBootstrapOptions = {
@@ -8,10 +9,17 @@ export const testOptions: ApplicationBootstrapOptions = {
         expiresIn: '15m',
         refreshIn: '7d',
         bcryptSalt: '10',
-        jwtAccessSecret: 'test-access',
-        jwtRefreshSecret: 'test-refresh',
+        jwtAccessSecret:
+            process.env.JWT_ACCESS_SECRET ?? generateTestPassword(),
+        jwtRefreshSecret:
+            process.env.JWT_REFRESH_SECRET ?? generateTestPassword(),
     },
-    mail: { provider: 'resend', options: { apiKey: 'test' } },
+    mail: {
+        provider: 'resend',
+        options: {
+            apiKey: process.env.RESEND_API_KEY ?? generateTestPassword(),
+        },
+    },
     fileStorage: {
         provider: 'minio',
         options: {
@@ -19,8 +27,8 @@ export const testOptions: ApplicationBootstrapOptions = {
             port: 9000,
             useSSL: false,
             keys: {
-                access: 'admin',
-                secret: 'goran',
+                access: process.env.MINIO_ACCESS_KEY ?? generateTestPassword(),
+                secret: process.env.MINIO_SECRET_KEY ?? generateTestPassword(),
             },
             bucketName: 'songs',
         },
