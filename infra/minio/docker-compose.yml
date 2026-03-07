@@ -6,7 +6,7 @@ services:
             - minionetwork
         environment:
             MINIO_ROOT_USER: 'admin'
-            MINIO_ROOT_PASSWORD: '***'
+            MINIO_ROOT_PASSWORD: '${MINIO_ROOT_PASSWORD}'
         env_file:
             - ./development.env
         ports:
