@@ -122,6 +122,20 @@ jobs:
         permissions:
             actions: read
             contents: read
+        services:
+            postgres:
+                image: postgres:16-alpine
+                env:
+                    POSTGRES_USER: postgres
+                    POSTGRES_PASSWORD: postgres
+                    POSTGRES_DB: goran
+                ports:
+                    - 5432:5432
+                options: >-
+                    --health-cmd "pg_isready -U postgres -d goran"
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 10
         strategy:
             fail-fast: false
             matrix:
@@ -136,6 +150,12 @@ jobs:
             SECURITY_BCRYPT_SALT: ${{ vars.SECURITY_BCRYPT_SALT }}
             CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
             SERVER_PORT: '9000'
+            DB_HOST: localhost
+            DB_PORT: '5432'
+            DB_USER: postgres
+            DB_PASS: postgres
+            DB_PASSWORD: postgres
+            DB_DATABASE: goran
         steps:
             - uses: actions/checkout@v4
               with:
@@ -148,6 +168,9 @@ jobs:
 
             - name: Install Cypress binary
               run: pnpm exec cypress install
+
+            - name: Run DB migrations
+              run: pnpm nx run drizzle-data-access:db-migrate
 
             - name: Cypress E2E (PR + Cloud)
               if: ${{ env.CYPRESS_RECORD_KEY != '' }}
