@@ -41,7 +41,10 @@ import {
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
+import { ApiService } from '../../lib/api/api-service';
+import { PlaylistsService } from '../../lib/api/playlists-service';
+import { usePlaylists } from '../_hooks/use-playlists';
 
 function AnimatedSidebarLink({
     href,
@@ -94,70 +97,37 @@ type PlaylistItem = {
 
 export default function AppSidebar() {
     const pathname = usePathname();
+    const apiService = useMemo(() => new ApiService(), []);
+    const playlistsService = useMemo(
+        () => new PlaylistsService(apiService),
+        [apiService],
+    );
+
     const [createPlaylistDialogOpen, setCreatePlaylistDialogOpen] =
         useState(false);
     const [newPlaylistName, setNewPlaylistName] = useState('New Playlist');
-    const [playlists, setPlaylists] = useState<PlaylistItem[]>([]);
-    const [isPlaylistsLoading, setIsPlaylistsLoading] = useState(true);
-    const [playlistsError, setPlaylistsError] = useState('');
-    const [isCreatingPlaylist, setIsCreatingPlaylist] = useState(false);
     const [lastCreatedPlaylistName, setLastCreatedPlaylistName] = useState('');
-
-    useEffect(() => {
-        const loadPlaylists = async () => {
-            try {
-                setIsPlaylistsLoading(true);
-                setPlaylistsError('');
-                const response = await fetch('/api/playlists', {
-                    method: 'GET',
-                    cache: 'no-store',
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch playlists');
-                }
-
-                const result = (await response.json()) as PlaylistItem[];
-                setPlaylists(result);
-            } catch {
-                setPlaylistsError('Could not load playlists.');
-            } finally {
-                setIsPlaylistsLoading(false);
-            }
-        };
-
-        void loadPlaylists();
-    }, []);
+    const {
+        playlists,
+        playlistsError,
+        isPlaylistsLoading,
+        createPlaylist,
+        createPlaylistError,
+        isCreatingPlaylist,
+    } = usePlaylists(playlistsService);
+    const playlistFeedbackError = createPlaylistError || playlistsError;
 
     const handleCreatePlaylist = async () => {
         const name =
             newPlaylistName.trim() || `New Playlist ${playlists.length + 1}`;
 
         try {
-            setIsCreatingPlaylist(true);
-            setPlaylistsError('');
-
-            const response = await fetch('/api/playlists', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ name }),
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to create playlist');
-            }
-
-            const created = (await response.json()) as PlaylistItem;
-            setPlaylists((current) => [created, ...current]);
+            const created = (await createPlaylist({ name })) as PlaylistItem;
             setLastCreatedPlaylistName(created.name);
             setCreatePlaylistDialogOpen(false);
             setNewPlaylistName('New Playlist');
         } catch {
-            setPlaylistsError('Could not create playlist.');
-        } finally {
-            setIsCreatingPlaylist(false);
+            // Handled by createPlaylistError state from TanStack Query.
         }
     };
 
@@ -352,8 +322,8 @@ export default function AppSidebar() {
                             aria-live="polite"
                             className="px-2 pt-2 text-xs text-muted-foreground"
                         >
-                            {playlistsError
-                                ? playlistsError
+                            {playlistFeedbackError
+                                ? playlistFeedbackError
                                 : lastCreatedPlaylistName
                                   ? `Created: ${lastCreatedPlaylistName}`
                                   : 'Create playlists to organize your listening.'}
