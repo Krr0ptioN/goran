@@ -126,13 +126,13 @@ jobs:
             postgres:
                 image: postgres:16-alpine
                 env:
-                    POSTGRES_USER: postgres
-                    POSTGRES_PASSWORD: postgres
-                    POSTGRES_DB: goran
+                    POSTGRES_USER: ${{ vars.DB_USER }}
+                    POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+                    POSTGRES_DB: ${{ vars.DB_DATABASE }}
                 ports:
                     - 5432:5432
                 options: >-
-                    --health-cmd "pg_isready -U postgres -d goran"
+                    --health-cmd "pg_isready -U ${{ vars.DB_USER }} -d ${{ vars.DB_DATABASE }}"
                     --health-interval 10s
                     --health-timeout 5s
                     --health-retries 10
@@ -150,12 +150,11 @@ jobs:
             SECURITY_BCRYPT_SALT: ${{ vars.SECURITY_BCRYPT_SALT }}
             CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
             SERVER_PORT: '9000'
-            DB_HOST: localhost
-            DB_PORT: '5432'
-            DB_USER: postgres
-            DB_PASS: postgres
-            DB_PASSWORD: postgres
-            DB_DATABASE: goran
+            DB_HOST: ${{ vars.DB_HOST }}
+            DB_PORT: ${{ vars.DB_PORT }}
+            DB_USER: ${{ vars.DB_USER }}
+            DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+            DB_DATABASE: ${{ vars.DB_DATABASE }}
         steps:
             - uses: actions/checkout@v4
               with:
