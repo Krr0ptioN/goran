@@ -127,7 +127,7 @@ jobs:
                 image: postgres:16-alpine
                 env:
                     POSTGRES_USER: ${{ vars.DB_USER }}
-                    POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+                    POSTGRES_PASSWORD: ${{ vars.DB_PASSWORD }}
                     POSTGRES_DB: ${{ vars.DB_DATABASE }}
                 ports:
                     - 5432:5432
@@ -153,7 +153,7 @@ jobs:
             DB_HOST: ${{ vars.DB_HOST }}
             DB_PORT: ${{ vars.DB_PORT }}
             DB_USER: ${{ vars.DB_USER }}
-            DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+            DB_PASSWORD: ${{ vars.DB_PASSWORD }}
             DB_DATABASE: ${{ vars.DB_DATABASE }}
         steps:
             - uses: actions/checkout@v4
