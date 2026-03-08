@@ -102,6 +102,20 @@ const releases = [
     { id: 'r3', name: 'Sea Glass', artist: 'Waveside', trackId: 't2' },
 ];
 
+function getRandomIndex(length: number) {
+    if (length <= 0) {
+        return 0;
+    }
+
+    if (typeof globalThis.crypto !== 'undefined') {
+        const randomBuffer = new Uint32Array(1);
+        globalThis.crypto.getRandomValues(randomBuffer);
+        return randomBuffer[0] % length;
+    }
+
+    return 0;
+}
+
 function formatDuration(totalSeconds: number) {
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
@@ -224,7 +238,7 @@ export default function MusicApp() {
         if (!trendingTracks.length) {
             return;
         }
-        const randomIndex = Math.floor(Math.random() * trendingTracks.length);
+        const randomIndex = getRandomIndex(trendingTracks.length);
         setCurrentTrackIndex(randomIndex);
         setElapsedSec(0);
         setIsPlaying(true);
