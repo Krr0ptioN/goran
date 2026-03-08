@@ -88,3 +88,30 @@ jobs:
 
             - name: Test (affected)
               run: pnpm nx affected --base=origin/main -t test
+
+    e2e:
+        needs: [build]
+        runs-on: ubuntu-latest
+        permissions:
+            actions: read
+            contents: read
+        environment: Preview
+        env:
+            API_BASE_URL: ${{ vars.API_BASE_URL }}
+            JWT_ACCESS_SECRET: ${{ secrets.JWT_ACCESS_SECRET }}
+            JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET }}
+            SECURITY_EXPIRES_IN: ${{ vars.SECURITY_EXPIRES_IN }}
+            SECURITY_REFRESH_IN: ${{ vars.SECURITY_REFRESH_IN }}
+            SECURITY_BCRYPT_SALT: ${{ vars.SECURITY_BCRYPT_SALT }}
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Setup CI toolchain
+              uses: ./.github/actions/setup-ci
+              with:
+                  node_version: ${{ env.NODE_VERSION }}
+
+            - name: E2E (affected)
+              run: pnpm nx affected --base=origin/main -t e2e-ci
