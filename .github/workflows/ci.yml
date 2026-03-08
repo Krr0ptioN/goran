@@ -154,9 +154,11 @@ jobs:
               with:
                   install: false
                   working-directory: apps/web-e2e
-                  start: pnpm nx run web:serve-static -- --port=4400
-                  wait-on: http://localhost:4400
-                  wait-on-timeout: 120
+                  start: |
+                      pnpm nx run api:serve
+                      pnpm nx run web:serve-static -- --port=4400
+                  wait-on: http://localhost:9000/health,http://localhost:4400
+                  wait-on-timeout: 180
                   record: true
                   parallel: true
                   group: web-e2e
@@ -173,9 +175,11 @@ jobs:
               with:
                   install: false
                   working-directory: apps/web-e2e
-                  start: pnpm nx run web:serve-static -- --port=4400
-                  wait-on: http://localhost:4400
-                  wait-on-timeout: 120
+                  start: |
+                      pnpm nx run api:serve
+                      pnpm nx run web:serve-static -- --port=4400
+                  wait-on: http://localhost:9000/health,http://localhost:4400
+                  wait-on-timeout: 180
 
             - name: Upload Cypress artifacts
               if: failure()
