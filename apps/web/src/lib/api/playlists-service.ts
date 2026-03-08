@@ -6,6 +6,20 @@ export type Playlist = {
     tracks: number;
 };
 
+export type PlaylistSong = {
+    id: string;
+    title: string;
+    duration: number;
+};
+
+export type PlaylistDetails = {
+    id: string;
+    name: string;
+    description: string | null;
+    tracks: number;
+    songs: PlaylistSong[];
+};
+
 export type CreatePlaylistInput = {
     name: string;
     description?: string | null;
@@ -22,5 +36,11 @@ export class PlaylistsService {
 
     create(input: CreatePlaylistInput) {
         return this.api.post<Playlist>('/api/playlists', input);
+    }
+
+    getById(playlistId: string) {
+        return this.api.get<PlaylistDetails>(`/api/playlists/${playlistId}`, {
+            cache: 'no-store',
+        });
     }
 }
