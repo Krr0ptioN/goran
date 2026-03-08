@@ -113,5 +113,8 @@ jobs:
               with:
                   node_version: ${{ env.NODE_VERSION }}
 
+            - name: Install Cypress binary
+              run: pnpm exec cypress install
+
             - name: E2E (affected)
               run: pnpm nx affected --base=origin/main -t e2e
