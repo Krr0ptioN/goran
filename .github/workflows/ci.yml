@@ -89,7 +89,7 @@ jobs:
             - name: Test (affected)
               run: pnpm nx affected --base=origin/main -t test
 
-    e2e:
+    api-e2e:
         needs: [build]
         runs-on: ubuntu-latest
         permissions:
@@ -113,8 +113,77 @@ jobs:
               with:
                   node_version: ${{ env.NODE_VERSION }}
 
+            - name: API E2E (affected)
+              run: pnpm nx affected --base=origin/main --exclude=web-e2e -t e2e
+
+    cypress-e2e:
+        needs: [build]
+        runs-on: ubuntu-latest
+        permissions:
+            actions: read
+            contents: read
+        strategy:
+            fail-fast: false
+            matrix:
+                container: [1, 2]
+        environment: Preview
+        env:
+            API_BASE_URL: ${{ vars.API_BASE_URL }}
+            JWT_ACCESS_SECRET: ${{ secrets.JWT_ACCESS_SECRET }}
+            JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET }}
+            SECURITY_EXPIRES_IN: ${{ vars.SECURITY_EXPIRES_IN }}
+            SECURITY_REFRESH_IN: ${{ vars.SECURITY_REFRESH_IN }}
+            SECURITY_BCRYPT_SALT: ${{ vars.SECURITY_BCRYPT_SALT }}
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Setup CI toolchain
+              uses: ./.github/actions/setup-ci
+              with:
+                  node_version: ${{ env.NODE_VERSION }}
+
             - name: Install Cypress binary
               run: pnpm exec cypress install
 
-            - name: E2E (affected)
-              run: pnpm nx affected --base=origin/main -t e2e
+            - name: Cypress E2E (PR + Cloud)
+              if: ${{ secrets.CYPRESS_RECORD_KEY != '' }}
+              uses: cypress-io/github-action@v7
+              with:
+                  install: false
+                  working-directory: apps/web-e2e
+                  start: pnpm nx run web:serve-static -- --port=4400
+                  wait-on: http://localhost:4400
+                  wait-on-timeout: 120
+                  record: true
+                  parallel: true
+                  group: web-e2e
+                  ci-build-id: ${{ github.run_id }}-${{ github.run_attempt }}
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+                  COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title || github.event.head_commit.message }}
+                  COMMIT_INFO_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+            - name: Cypress E2E
+              if: ${{ secrets.CYPRESS_RECORD_KEY == '' && matrix.container == 1 }}
+              uses: cypress-io/github-action@v7
+              with:
+                  install: false
+                  working-directory: apps/web-e2e
+                  start: pnpm nx run web:serve-static -- --port=4400
+                  wait-on: http://localhost:4400
+                  wait-on-timeout: 120
+
+            - name: Upload Cypress artifacts
+              if: failure()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: cypress-artifacts
+                  path: |
+                      apps/web-e2e/cypress/screenshots
+                      apps/web-e2e/cypress/videos
+                      dist/cypress/apps/web-e2e/screenshots
+                      dist/cypress/apps/web-e2e/videos
+                  if-no-files-found: ignore

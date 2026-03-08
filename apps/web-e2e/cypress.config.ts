@@ -10,5 +10,6 @@ export default defineConfig({
             ciWebServerCommand: 'nx run web:serve-static -- --port=4400',
         }),
         baseUrl: 'http://localhost:4400',
+        projectId: 'jrzhua',
     },
 });
