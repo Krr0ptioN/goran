@@ -116,9 +116,10 @@ describe('playlist flows', () => {
             .should('be.visible')
             .within(() => {
                 cy.contains('h2', 'Create playlist').should('be.visible');
-                cy.get('input[placeholder="Playlist name"]')
-                    .clear()
-                    .type('Roadtrip Mix');
+                cy.get('input[placeholder="Playlist name"]').clear();
+                cy.get('input[placeholder="Playlist name"]').type(
+                    'Roadtrip Mix',
+                );
                 cy.contains('button', /^Create$/).click();
             });
 
@@ -137,9 +138,8 @@ describe('playlist flows', () => {
             .should('be.visible')
             .within(() => {
                 cy.contains('h2', 'Create playlist').should('be.visible');
-                cy.get('input[placeholder="Playlist name"]')
-                    .clear()
-                    .type('Focus Set');
+                cy.get('input[placeholder="Playlist name"]').clear();
+                cy.get('input[placeholder="Playlist name"]').type('Focus Set');
                 cy.contains('button', /^Create$/).click();
             });
 
