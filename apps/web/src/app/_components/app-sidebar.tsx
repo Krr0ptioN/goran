@@ -41,7 +41,7 @@ import {
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 function AnimatedSidebarLink({
     href,
@@ -86,30 +86,79 @@ const queueTracks = [
     { id: 'q3', title: 'City Lights', artist: 'Waveside' },
 ];
 
-const initialPlaylists = [
-    { id: 'p1', name: 'Night Drive', tracks: 21 },
-    { id: 'p2', name: 'Focus Hour', tracks: 34 },
-    { id: 'p3', name: 'Sunday Vinyl', tracks: 18 },
-];
+type PlaylistItem = {
+    id: string;
+    name: string;
+    tracks: number;
+};
 
 export default function AppSidebar() {
     const pathname = usePathname();
     const [createPlaylistDialogOpen, setCreatePlaylistDialogOpen] =
         useState(false);
     const [newPlaylistName, setNewPlaylistName] = useState('New Playlist');
-    const [playlists, setPlaylists] = useState(initialPlaylists);
+    const [playlists, setPlaylists] = useState<PlaylistItem[]>([]);
+    const [isPlaylistsLoading, setIsPlaylistsLoading] = useState(true);
+    const [playlistsError, setPlaylistsError] = useState('');
+    const [isCreatingPlaylist, setIsCreatingPlaylist] = useState(false);
     const [lastCreatedPlaylistName, setLastCreatedPlaylistName] = useState('');
 
-    const handleCreatePlaylist = () => {
+    useEffect(() => {
+        const loadPlaylists = async () => {
+            try {
+                setIsPlaylistsLoading(true);
+                setPlaylistsError('');
+                const response = await fetch('/api/playlists', {
+                    method: 'GET',
+                    cache: 'no-store',
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch playlists');
+                }
+
+                const result = (await response.json()) as PlaylistItem[];
+                setPlaylists(result);
+            } catch {
+                setPlaylistsError('Could not load playlists.');
+            } finally {
+                setIsPlaylistsLoading(false);
+            }
+        };
+
+        void loadPlaylists();
+    }, []);
+
+    const handleCreatePlaylist = async () => {
         const name =
             newPlaylistName.trim() || `New Playlist ${playlists.length + 1}`;
-        setPlaylists((current) => [
-            { id: `p${Date.now()}`, name, tracks: 0 },
-            ...current,
-        ]);
-        setLastCreatedPlaylistName(name);
-        setCreatePlaylistDialogOpen(false);
-        setNewPlaylistName('New Playlist');
+
+        try {
+            setIsCreatingPlaylist(true);
+            setPlaylistsError('');
+
+            const response = await fetch('/api/playlists', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to create playlist');
+            }
+
+            const created = (await response.json()) as PlaylistItem;
+            setPlaylists((current) => [created, ...current]);
+            setLastCreatedPlaylistName(created.name);
+            setCreatePlaylistDialogOpen(false);
+            setNewPlaylistName('New Playlist');
+        } catch {
+            setPlaylistsError('Could not create playlist.');
+        } finally {
+            setIsCreatingPlaylist(false);
+        }
     };
 
     const isActivePath = (href: string) =>
@@ -245,6 +294,7 @@ export default function AppSidebar() {
                                         <DialogFooter>
                                             <Button
                                                 variant="outline"
+                                                disabled={isCreatingPlaylist}
                                                 onClick={() =>
                                                     setCreatePlaylistDialogOpen(
                                                         false,
@@ -255,14 +305,26 @@ export default function AppSidebar() {
                                             </Button>
                                             <Button
                                                 onClick={handleCreatePlaylist}
+                                                disabled={isCreatingPlaylist}
                                                 className="bg-primary text-primary-foreground hover:bg-primary/90"
                                             >
-                                                Create
+                                                {isCreatingPlaylist
+                                                    ? 'Creating...'
+                                                    : 'Create'}
                                             </Button>
                                         </DialogFooter>
                                     </DialogContent>
                                 </Dialog>
                             </SidebarMenuItem>
+
+                            {isPlaylistsLoading ? (
+                                <SidebarMenuItem>
+                                    <SidebarMenuButton disabled>
+                                        <ListMusic />
+                                        <span>Loading playlists...</span>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            ) : null}
 
                             {playlists.map((playlist) => (
                                 <SidebarMenuItem key={playlist.id}>
@@ -290,9 +352,11 @@ export default function AppSidebar() {
                             aria-live="polite"
                             className="px-2 pt-2 text-xs text-muted-foreground"
                         >
-                            {lastCreatedPlaylistName
-                                ? `Created: ${lastCreatedPlaylistName}`
-                                : 'Create playlists to organize your listening.'}
+                            {playlistsError
+                                ? playlistsError
+                                : lastCreatedPlaylistName
+                                  ? `Created: ${lastCreatedPlaylistName}`
+                                  : 'Create playlists to organize your listening.'}
                         </p>
                     </SidebarGroupContent>
                 </SidebarGroup>
