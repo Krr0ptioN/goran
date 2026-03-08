@@ -40,54 +40,26 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 
 function AnimatedSidebarLink({
     href,
     children,
+    isActive = false,
 }: {
     href: string;
     children: React.ReactNode;
+    isActive?: boolean;
 }) {
     return (
         <SidebarMenuButton
             asChild
-            className="relative overflow-hidden hover:bg-muted transition-colors"
+            isActive={isActive}
+            className="justify-start transition-colors"
         >
-            <Link
-                href={href}
-                className="flex items-center gap-2 min-w-0 relative z-10"
-            >
+            <Link href={href} className="flex min-w-0 items-center gap-2">
                 {children}
-                <motion.div
-                    className="absolute inset-0 z-0"
-                    initial={{
-                        opacity: 0,
-                        backgroundPositionX: '100%',
-                        boxShadow: '0 0 0px hsl(var(--primary) / 0)',
-                    }}
-                    whileHover={{
-                        opacity: 1,
-                        backgroundPositionX: '-100%',
-                        boxShadow: '0 0 20px hsl(var(--primary) / 0.8)',
-                        transition: {
-                            backgroundPositionX: {
-                                duration: 1.5,
-                                ease: 'linear',
-                                repeat: Number.POSITIVE_INFINITY,
-                                repeatType: 'loop',
-                            },
-                            opacity: { duration: 0.4 },
-                            boxShadow: { duration: 0.4 },
-                        },
-                    }}
-                    style={{
-                        background:
-                            'linear-gradient(90deg, hsl(var(--primary) / 0) 0%, hsl(var(--primary) / 0.9) 15%, hsl(var(--primary) / 0.9) 85%, hsl(var(--primary) / 0) 100%)',
-                        backgroundSize: '300% 100%',
-                        pointerEvents: 'none',
-                    }}
-                />
             </Link>
         </SidebarMenuButton>
     );
@@ -121,10 +93,12 @@ const initialPlaylists = [
 ];
 
 export default function AppSidebar() {
+    const pathname = usePathname();
     const [createPlaylistDialogOpen, setCreatePlaylistDialogOpen] =
         useState(false);
     const [newPlaylistName, setNewPlaylistName] = useState('New Playlist');
     const [playlists, setPlaylists] = useState(initialPlaylists);
+    const [lastCreatedPlaylistName, setLastCreatedPlaylistName] = useState('');
 
     const handleCreatePlaylist = () => {
         const name =
@@ -133,9 +107,13 @@ export default function AppSidebar() {
             { id: `p${Date.now()}`, name, tracks: 0 },
             ...current,
         ]);
+        setLastCreatedPlaylistName(name);
         setCreatePlaylistDialogOpen(false);
         setNewPlaylistName('New Playlist');
     };
+
+    const isActivePath = (href: string) =>
+        href === '/' ? pathname === '/' : pathname.startsWith(href);
 
     return (
         <Sidebar
@@ -163,7 +141,10 @@ export default function AppSidebar() {
                         <SidebarMenu>
                             {primaryLinks.map((item) => (
                                 <SidebarMenuItem key={item.href}>
-                                    <AnimatedSidebarLink href={item.href}>
+                                    <AnimatedSidebarLink
+                                        href={item.href}
+                                        isActive={isActivePath(item.href)}
+                                    >
                                         <item.icon />
                                         <span>{item.label}</span>
                                     </AnimatedSidebarLink>
@@ -183,7 +164,10 @@ export default function AppSidebar() {
                         <SidebarMenu>
                             {libraryLinks.map((item) => (
                                 <SidebarMenuItem key={item.href}>
-                                    <AnimatedSidebarLink href={item.href}>
+                                    <AnimatedSidebarLink
+                                        href={item.href}
+                                        isActive={isActivePath(item.href)}
+                                    >
                                         <item.icon />
                                         <span>{item.label}</span>
                                     </AnimatedSidebarLink>
@@ -249,10 +233,26 @@ export default function AppSidebar() {
                                                     e.target.value,
                                                 )
                                             }
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    e.preventDefault();
+                                                    handleCreatePlaylist();
+                                                }
+                                            }}
                                             placeholder="Playlist name"
                                             className="bg-input border-border"
                                         />
                                         <DialogFooter>
+                                            <Button
+                                                variant="outline"
+                                                onClick={() =>
+                                                    setCreatePlaylistDialogOpen(
+                                                        false,
+                                                    )
+                                                }
+                                            >
+                                                Cancel
+                                            </Button>
                                             <Button
                                                 onClick={handleCreatePlaylist}
                                                 className="bg-primary text-primary-foreground hover:bg-primary/90"
@@ -268,6 +268,10 @@ export default function AppSidebar() {
                                 <SidebarMenuItem key={playlist.id}>
                                     <AnimatedSidebarLink
                                         href={`/playlists/${playlist.id}`}
+                                        isActive={
+                                            pathname ===
+                                            `/playlists/${playlist.id}`
+                                        }
                                     >
                                         <ListMusic />
                                         <div className="min-w-0">
@@ -282,6 +286,14 @@ export default function AppSidebar() {
                                 </SidebarMenuItem>
                             ))}
                         </SidebarMenu>
+                        <p
+                            aria-live="polite"
+                            className="px-2 pt-2 text-xs text-muted-foreground"
+                        >
+                            {lastCreatedPlaylistName
+                                ? `Created: ${lastCreatedPlaylistName}`
+                                : 'Create playlists to organize your listening.'}
+                        </p>
                     </SidebarGroupContent>
                 </SidebarGroup>
             </SidebarContent>
