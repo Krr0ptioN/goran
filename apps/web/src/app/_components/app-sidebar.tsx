@@ -41,7 +41,10 @@ import {
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { ApiService } from '../../lib/api/api-service';
+import { PlaylistsService } from '../../lib/api/playlists-service';
+import { usePlaylists } from '../_hooks/use-playlists';
 
 function AnimatedSidebarLink({
     href,
@@ -86,30 +89,46 @@ const queueTracks = [
     { id: 'q3', title: 'City Lights', artist: 'Waveside' },
 ];
 
-const initialPlaylists = [
-    { id: 'p1', name: 'Night Drive', tracks: 21 },
-    { id: 'p2', name: 'Focus Hour', tracks: 34 },
-    { id: 'p3', name: 'Sunday Vinyl', tracks: 18 },
-];
+type PlaylistItem = {
+    id: string;
+    name: string;
+    tracks: number;
+};
 
 export default function AppSidebar() {
     const pathname = usePathname();
+    const apiService = useMemo(() => new ApiService(), []);
+    const playlistsService = useMemo(
+        () => new PlaylistsService(apiService),
+        [apiService],
+    );
+
     const [createPlaylistDialogOpen, setCreatePlaylistDialogOpen] =
         useState(false);
     const [newPlaylistName, setNewPlaylistName] = useState('New Playlist');
-    const [playlists, setPlaylists] = useState(initialPlaylists);
     const [lastCreatedPlaylistName, setLastCreatedPlaylistName] = useState('');
+    const {
+        playlists,
+        playlistsError,
+        isPlaylistsLoading,
+        createPlaylist,
+        createPlaylistError,
+        isCreatingPlaylist,
+    } = usePlaylists(playlistsService);
+    const playlistFeedbackError = createPlaylistError || playlistsError;
 
-    const handleCreatePlaylist = () => {
+    const handleCreatePlaylist = async () => {
         const name =
             newPlaylistName.trim() || `New Playlist ${playlists.length + 1}`;
-        setPlaylists((current) => [
-            { id: `p${Date.now()}`, name, tracks: 0 },
-            ...current,
-        ]);
-        setLastCreatedPlaylistName(name);
-        setCreatePlaylistDialogOpen(false);
-        setNewPlaylistName('New Playlist');
+
+        try {
+            const created = (await createPlaylist({ name })) as PlaylistItem;
+            setLastCreatedPlaylistName(created.name);
+            setCreatePlaylistDialogOpen(false);
+            setNewPlaylistName('New Playlist');
+        } catch {
+            // Handled by createPlaylistError state from TanStack Query.
+        }
     };
 
     const isActivePath = (href: string) =>
@@ -245,6 +264,7 @@ export default function AppSidebar() {
                                         <DialogFooter>
                                             <Button
                                                 variant="outline"
+                                                disabled={isCreatingPlaylist}
                                                 onClick={() =>
                                                     setCreatePlaylistDialogOpen(
                                                         false,
@@ -255,14 +275,26 @@ export default function AppSidebar() {
                                             </Button>
                                             <Button
                                                 onClick={handleCreatePlaylist}
+                                                disabled={isCreatingPlaylist}
                                                 className="bg-primary text-primary-foreground hover:bg-primary/90"
                                             >
-                                                Create
+                                                {isCreatingPlaylist
+                                                    ? 'Creating...'
+                                                    : 'Create'}
                                             </Button>
                                         </DialogFooter>
                                     </DialogContent>
                                 </Dialog>
                             </SidebarMenuItem>
+
+                            {isPlaylistsLoading ? (
+                                <SidebarMenuItem>
+                                    <SidebarMenuButton disabled>
+                                        <ListMusic />
+                                        <span>Loading playlists...</span>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            ) : null}
 
                             {playlists.map((playlist) => (
                                 <SidebarMenuItem key={playlist.id}>
@@ -290,9 +322,11 @@ export default function AppSidebar() {
                             aria-live="polite"
                             className="px-2 pt-2 text-xs text-muted-foreground"
                         >
-                            {lastCreatedPlaylistName
-                                ? `Created: ${lastCreatedPlaylistName}`
-                                : 'Create playlists to organize your listening.'}
+                            {playlistFeedbackError
+                                ? playlistFeedbackError
+                                : lastCreatedPlaylistName
+                                  ? `Created: ${lastCreatedPlaylistName}`
+                                  : 'Create playlists to organize your listening.'}
                         </p>
                     </SidebarGroupContent>
                 </SidebarGroup>

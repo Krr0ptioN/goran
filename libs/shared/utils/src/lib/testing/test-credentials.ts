@@ -1,6 +1,4 @@
-import { randomUUID } from 'node:crypto';
-
-const compactUuid = () => randomUUID().replace(/-/g, '');
+const compactUuid = () => globalThis.crypto.randomUUID().replace(/-/g, '');
 
 export const generateTestPassword = () => `Aa1!${compactUuid()}`;
 

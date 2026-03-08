@@ -4,12 +4,25 @@ import {
     generateTestUsername,
 } from '@goran/utils';
 
+const createCredentials = () => ({
+    email: generateTestEmail(),
+    username: generateTestUsername(),
+    password: generateTestPassword(),
+});
+
+const signUpAndOpenDashboard = () => {
+    const creds = createCredentials();
+
+    cy.visit('/sign-up');
+    cy.get('input[name="username"]').type(creds.username);
+    cy.get('input[name="email"]').type(creds.email);
+    cy.get('input[name="password"]').type(creds.password);
+    cy.contains('button', 'Sign Up').click();
+    cy.location('pathname').should('eq', '/');
+};
+
 describe('auth flows', () => {
-    const getCredentials = () => ({
-        email: generateTestEmail(),
-        username: generateTestUsername(),
-        password: generateTestPassword(),
-    });
+    const getCredentials = () => createCredentials();
 
     it('redirects guests from home to sign-in', () => {
         cy.visit('/');
@@ -91,5 +104,49 @@ describe('auth flows', () => {
         cy.location('pathname').should('eq', '/');
         cy.getCookie('session-access').should('exist');
         cy.getCookie('session-refresh').should('exist');
+    });
+});
+
+describe('playlist flows', () => {
+    it('creates a playlist from the sidebar', () => {
+        signUpAndOpenDashboard();
+
+        cy.contains('button', 'Create Playlist').click();
+        cy.get('[role="dialog"]')
+            .should('be.visible')
+            .within(() => {
+                cy.contains('h2', 'Create playlist').should('be.visible');
+                cy.get('input[placeholder="Playlist name"]').clear();
+                cy.get('input[placeholder="Playlist name"]').type(
+                    'Roadtrip Mix',
+                );
+                cy.contains('button', /^Create$/).click();
+            });
+
+        cy.contains('div', 'Roadtrip Mix').should('be.visible');
+        cy.get('p[aria-live="polite"]').should(
+            'contain.text',
+            'Created: Roadtrip Mix',
+        );
+    });
+
+    it('opens the playlist details page from sidebar click', () => {
+        signUpAndOpenDashboard();
+
+        cy.contains('button', 'Create Playlist').click();
+        cy.get('[role="dialog"]')
+            .should('be.visible')
+            .within(() => {
+                cy.contains('h2', 'Create playlist').should('be.visible');
+                cy.get('input[placeholder="Playlist name"]').clear();
+                cy.get('input[placeholder="Playlist name"]').type('Focus Set');
+                cy.contains('button', /^Create$/).click();
+            });
+
+        cy.contains('a', 'Focus Set').click();
+
+        cy.location('pathname').should('match', /\/playlists\/.+/);
+        cy.contains('h1', 'Focus Set').should('be.visible');
+        cy.contains('This playlist has no songs yet.').should('be.visible');
     });
 });

@@ -10,6 +10,7 @@ env:
 
 jobs:
     lint:
+        needs: [build, test, api-e2e, cypress-e2e]
         runs-on: ubuntu-latest
         permissions:
             actions: read
@@ -36,7 +37,6 @@ jobs:
               run: pnpm nx affected --base=origin/main -t lint
 
     build:
-        needs: [lint]
         runs-on: ubuntu-latest
         permissions:
             actions: read
@@ -88,3 +88,130 @@ jobs:
 
             - name: Test (affected)
               run: pnpm nx affected --base=origin/main -t test
+
+    api-e2e:
+        needs: [build]
+        runs-on: ubuntu-latest
+        permissions:
+            actions: read
+            contents: read
+        environment: Preview
+        env:
+            API_BASE_URL: ${{ vars.API_BASE_URL }}
+            JWT_ACCESS_SECRET: ${{ secrets.JWT_ACCESS_SECRET }}
+            JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET }}
+            SECURITY_EXPIRES_IN: ${{ vars.SECURITY_EXPIRES_IN }}
+            SECURITY_REFRESH_IN: ${{ vars.SECURITY_REFRESH_IN }}
+            SECURITY_BCRYPT_SALT: ${{ vars.SECURITY_BCRYPT_SALT }}
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Setup CI toolchain
+              uses: ./.github/actions/setup-ci
+              with:
+                  node_version: ${{ env.NODE_VERSION }}
+
+            - name: API E2E (affected)
+              run: pnpm nx affected --base=origin/main --exclude=web-e2e -t e2e
+
+    cypress-e2e:
+        needs: [build]
+        runs-on: ubuntu-latest
+        permissions:
+            actions: read
+            contents: read
+        services:
+            postgres:
+                image: postgres:16-alpine
+                env:
+                    POSTGRES_USER: ${{ vars.DB_USER }}
+                    POSTGRES_PASSWORD: ${{ vars.DB_PASSWORD }}
+                    POSTGRES_DB: ${{ vars.DB_DATABASE }}
+                ports:
+                    - 5432:5432
+                options: >-
+                    --health-cmd "pg_isready -U ${{ vars.DB_USER }} -d ${{ vars.DB_DATABASE }}"
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 10
+        strategy:
+            fail-fast: false
+            matrix:
+                container: [1, 2]
+        environment: Preview
+        env:
+            API_BASE_URL: ${{ vars.API_BASE_URL }}
+            JWT_ACCESS_SECRET: ${{ secrets.JWT_ACCESS_SECRET }}
+            JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET }}
+            SECURITY_EXPIRES_IN: ${{ vars.SECURITY_EXPIRES_IN }}
+            SECURITY_REFRESH_IN: ${{ vars.SECURITY_REFRESH_IN }}
+            SECURITY_BCRYPT_SALT: ${{ vars.SECURITY_BCRYPT_SALT }}
+            CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+            SERVER_PORT: '9000'
+            DB_HOST: ${{ vars.DB_HOST }}
+            DB_PORT: ${{ vars.DB_PORT }}
+            DB_USER: ${{ vars.DB_USER }}
+            DB_PASSWORD: ${{ vars.DB_PASSWORD }}
+            DB_DATABASE: ${{ vars.DB_DATABASE }}
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Setup CI toolchain
+              uses: ./.github/actions/setup-ci
+              with:
+                  node_version: ${{ env.NODE_VERSION }}
+
+            - name: Install Cypress binary
+              run: pnpm exec cypress install
+
+            - name: Run DB migrations
+              run: pnpm nx run drizzle-data-access:db-migrate
+
+            - name: Cypress E2E (PR + Cloud)
+              if: ${{ env.CYPRESS_RECORD_KEY != '' }}
+              uses: cypress-io/github-action@v7
+              with:
+                  install: false
+                  working-directory: apps/web-e2e
+                  start: |
+                      pnpm nx run api:serve
+                      pnpm nx run web:serve-static -- --port=4400
+                  wait-on: http://localhost:9000/api/health,http://localhost:4400
+                  wait-on-timeout: 180
+                  record: true
+                  parallel: true
+                  group: web-e2e
+                  ci-build-id: ${{ github.run_id }}-${{ github.run_attempt }}
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  CYPRESS_RECORD_KEY: ${{ env.CYPRESS_RECORD_KEY }}
+                  COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title || github.event.head_commit.message }}
+                  COMMIT_INFO_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+            - name: Cypress E2E
+              if: ${{ env.CYPRESS_RECORD_KEY == '' && matrix.container == 1 }}
+              uses: cypress-io/github-action@v7
+              with:
+                  install: false
+                  working-directory: apps/web-e2e
+                  start: |
+                      pnpm nx run api:serve
+                      pnpm nx run web:serve-static -- --port=4400
+                  wait-on: http://localhost:9000/api/health,http://localhost:4400
+                  wait-on-timeout: 180
+
+            - name: Upload Cypress artifacts
+              if: failure()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: cypress-artifacts
+                  path: |
+                      apps/web-e2e/cypress/screenshots
+                      apps/web-e2e/cypress/videos
+                      dist/cypress/apps/web-e2e/screenshots
+                      dist/cypress/apps/web-e2e/videos
+                  if-no-files-found: ignore
