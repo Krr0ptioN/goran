@@ -22,6 +22,7 @@ jobs:
             SECURITY_EXPIRES_IN: ${{ vars.SECURITY_EXPIRES_IN }}
             SECURITY_REFRESH_IN: ${{ vars.SECURITY_REFRESH_IN }}
             SECURITY_BCRYPT_SALT: ${{ vars.SECURITY_BCRYPT_SALT }}
+            CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
         steps:
             - uses: actions/checkout@v4
               with:
@@ -148,7 +149,7 @@ jobs:
               run: pnpm exec cypress install
 
             - name: Cypress E2E (PR + Cloud)
-              if: ${{ secrets.CYPRESS_RECORD_KEY != '' }}
+              if: ${{ env.CYPRESS_RECORD_KEY != '' }}
               uses: cypress-io/github-action@v7
               with:
                   install: false
@@ -162,12 +163,12 @@ jobs:
                   ci-build-id: ${{ github.run_id }}-${{ github.run_attempt }}
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+                  CYPRESS_RECORD_KEY: ${{ env.CYPRESS_RECORD_KEY }}
                   COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title || github.event.head_commit.message }}
                   COMMIT_INFO_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 
             - name: Cypress E2E
-              if: ${{ secrets.CYPRESS_RECORD_KEY == '' && matrix.container == 1 }}
+              if: ${{ env.CYPRESS_RECORD_KEY == '' && matrix.container == 1 }}
               uses: cypress-io/github-action@v7
               with:
                   install: false
