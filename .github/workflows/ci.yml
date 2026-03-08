@@ -114,4 +114,4 @@ jobs:
                   node_version: ${{ env.NODE_VERSION }}
 
             - name: E2E (affected)
-              run: pnpm nx affected --base=origin/main -t e2e-ci
+              run: pnpm nx affected --base=origin/main -t e2e
