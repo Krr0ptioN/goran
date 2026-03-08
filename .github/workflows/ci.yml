@@ -10,6 +10,7 @@ env:
 
 jobs:
     lint:
+        needs: [build, test, api-e2e, cypress-e2e]
         runs-on: ubuntu-latest
         permissions:
             actions: read
@@ -22,7 +23,6 @@ jobs:
             SECURITY_EXPIRES_IN: ${{ vars.SECURITY_EXPIRES_IN }}
             SECURITY_REFRESH_IN: ${{ vars.SECURITY_REFRESH_IN }}
             SECURITY_BCRYPT_SALT: ${{ vars.SECURITY_BCRYPT_SALT }}
-            CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
         steps:
             - uses: actions/checkout@v4
               with:
@@ -37,7 +37,6 @@ jobs:
               run: pnpm nx affected --base=origin/main -t lint
 
     build:
-        needs: [lint]
         runs-on: ubuntu-latest
         permissions:
             actions: read
@@ -135,6 +134,8 @@ jobs:
             SECURITY_EXPIRES_IN: ${{ vars.SECURITY_EXPIRES_IN }}
             SECURITY_REFRESH_IN: ${{ vars.SECURITY_REFRESH_IN }}
             SECURITY_BCRYPT_SALT: ${{ vars.SECURITY_BCRYPT_SALT }}
+            CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+            SERVER_PORT: '9000'
         steps:
             - uses: actions/checkout@v4
               with:
@@ -157,7 +158,7 @@ jobs:
                   start: |
                       pnpm nx run api:serve
                       pnpm nx run web:serve-static -- --port=4400
-                  wait-on: http://localhost:9000/health,http://localhost:4400
+                  wait-on: http://localhost:9000/api/health,http://localhost:4400
                   wait-on-timeout: 180
                   record: true
                   parallel: true
@@ -178,7 +179,7 @@ jobs:
                   start: |
                       pnpm nx run api:serve
                       pnpm nx run web:serve-static -- --port=4400
-                  wait-on: http://localhost:9000/health,http://localhost:4400
+                  wait-on: http://localhost:9000/api/health,http://localhost:4400
                   wait-on-timeout: 180
 
             - name: Upload Cypress artifacts
